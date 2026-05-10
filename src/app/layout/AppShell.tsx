@@ -8,11 +8,18 @@ import { workspaceDefinitions } from '@shared/config/workspaces.tsx'
 import { OverviewWorkspace } from '@features/overview/components/OverviewWorkspace.tsx'
 import { PatientWorkspace } from '@features/patient/components/PatientWorkspace.tsx'
 import { DoctorWorkspace } from '@features/doctor/components/DoctorWorkspace.tsx'
-import { DiscoveryWorkspace } from '@features/discovery/components/DiscoveryWorkspace.tsx'
+import { DiscoveryWorkspace } from '@features/discovery/DiscoveryWorkspace.tsx'
 import { ConsultationWorkspace } from '@features/consultation/components/ConsultationWorkspace.tsx'
 import { BillingWorkspace } from '@features/billing/components/BillingWorkspace.tsx'
 import { ClinicalWorkspace } from '@features/clinical/components/ClinicalWorkspace.tsx'
 import { OperationsWorkspace } from '@features/operations/components/OperationsWorkspace.tsx'
+import { AppointmentsWorkspace } from '@features/appointments/AppointmentsWorkspace.tsx'
+import { NotificationsWorkspace } from '@features/notifications/NotificationsWorkspace.tsx'
+import { ProfileWorkspace } from '@features/profile/ProfileWorkspace.tsx'
+import { SettingsPage } from '@features/settings/components/SettingsPage.tsx'
+import { GDPRWorkspace } from '@features/gdpr/GDPRWorkspace.tsx'
+import { ResearchWorkspace } from '@features/research/ResearchWorkspace.tsx'
+import { AdminWorkspace } from '@features/admin/AdminWorkspace.tsx'
 import { usePatientOnboarding } from '@features/patient/hooks/usePatientOnboarding.ts'
 import { useDoctorWorkspace } from '@features/doctor/hooks/useDoctorWorkspace.ts'
 import { useAppTitle } from '@shared/hooks/useAppTitle.ts'
@@ -83,14 +90,24 @@ export function AppShell() {
                       )}
                     </Stack>
                   </Stack>
-                  {selectedWorkspace === 'overview' ? <OverviewWorkspace /> : null}
-                  {selectedWorkspace === 'patient' ? <PatientWorkspace onboarding={patientOnboarding} /> : null}
-                  {selectedWorkspace === 'doctor' ? <DoctorWorkspace workspace={doctorWorkspace} /> : null}
-                  {selectedWorkspace === 'discovery' ? <DiscoveryWorkspace /> : null}
-                  {selectedWorkspace === 'consultation' ? <ConsultationWorkspace /> : null}
-                  {selectedWorkspace === 'billing' ? <BillingWorkspace /> : null}
-                  {selectedWorkspace === 'clinical' ? <ClinicalWorkspace /> : null}
-                  {selectedWorkspace === 'operations' ? <OperationsWorkspace /> : null}
+
+                  {/* === WORKSPACE ROUTING === */}
+                  {selectedWorkspace === 'overview' && <OverviewWorkspace />}
+                  {selectedWorkspace === 'patient' && <PatientWorkspace onboarding={patientOnboarding} />}
+                  {selectedWorkspace === 'doctor' && <DoctorWorkspace workspace={doctorWorkspace} />}
+                  {selectedWorkspace === 'discovery' && (
+                    <DiscoveryWorkspace onBookDoctor={(id) => { setSelectedWorkspace('consultation') }} />
+                  )}
+                  {selectedWorkspace === 'consultation' && <ConsultationWorkspace />}
+                  {selectedWorkspace === 'appointments' && <AppointmentsWorkspace />}
+                  {selectedWorkspace === 'billing' && <BillingWorkspace />}
+                  {selectedWorkspace === 'clinical' && <ClinicalWorkspace />}
+                  {selectedWorkspace === 'notifications' && <NotificationsWorkspace />}
+                  {selectedWorkspace === 'operations' && <OperationsWorkspace />}
+                  {selectedWorkspace === 'settings' && <ProfileWorkspace />}
+                  {selectedWorkspace === 'gdpr' && <GDPRWorkspace />}
+                  {selectedWorkspace === 'research' && <ResearchWorkspace />}
+                  {selectedWorkspace === 'admin' && <AdminWorkspace />}
                 </Stack>
               </Paper>
             </Stack>

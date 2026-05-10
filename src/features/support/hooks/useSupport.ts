@@ -1,134 +1,89 @@
-import { useState, useEffect } from 'react'
-import { apiBaseUrl } from '@shared/config/patient.ts'
+import { useState, useCallback } from 'react'
+import { apiClient } from '@shared/api/Client.ts'
 import type { SupportTicket, TicketForm, TicketMessage } from '@shared/types/support.ts'
 
-export function useSupport(userId: string | null) {
+export function useSupportTickets() {
   const [tickets, setTickets] = useState<SupportTicket[]>([])
-  const [messages, setMessages] = useState<Record<string, TicketMessage[]>>({})
+  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null)
+  const [messages, setMessages] = useState<TicketMessage[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [submitting, setSubmitting] = useState(false)
 
-  // Fetch tickets
-  useEffect(() => {
-    if (!userId) return
-
-    const fetchTickets = async () => {
-      setLoading(true)
-      setError(null)
-      try {
-        const response = await fetch(`${apiBaseUrl}/support/my-tickets`)
-        if (!response.ok) {
-          throw new Error('Failed to fetch tickets')
-        }
-        const data = await response.json()
-        setTickets(data.tickets || [])
-      } catch (err) {
-        console.error('[API Error] Failed to fetch support tickets:', {
-          error: err instanceof Error ? err.message : String(err),
-          timestamp: new Date().toISOString(),
-          endpoint: `/platform/users/${userId}/tickets`
-        })
-        setError(err instanceof Error ? err.message : 'Failed to load tickets')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchTickets()
-  }, [userId])
-
-  // Fetch messages for a ticket
-  const fetchMessages = async (ticketId: string) => {
-    try {
-      const response = await fetch(`${apiBaseUrl}/support/tickets/${ticketId}`)
-      if (!response.ok) {
-        throw new Error('Failed to fetch messages')
-      }
-      const data = await response.json()
-      setMessages(prev => ({ ...prev, [ticketId]: data.messages || [] }))
-    } catch (err) {
-      console.error('[API Error] Failed to fetch ticket messages:', {
-        error: err instanceof Error ? err.message : String(err),
-        timestamp: new Date().toISOString(),
-        endpoint: `/platform/tickets/${ticketId}/messages`
-      })
-    }
-  }
-
-  // Create ticket
-  const createTicket = async (form: TicketForm) => {
-    if (!userId) return null
-
-    setSubmitting(true)
+  const fetchTickets = useCallback(async (status?: string) => {
+    setLoading(true)
     setError(null)
     try {
-      const response = await fetch(`${apiBaseUrl}/support/tickets`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId,
-          ...form,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to create ticket')
-      }
-
-      const data = await response.json()
-      setTickets(prev => [data.ticket, ...prev])
-      return data.ticket
+      const res = await apiClient.get(`/platform/support/my-tickets?status=${status || ''}`)
+      setTickets(res.items || [])
     } catch (err) {
-      console.error('[API Error] Failed to create support ticket:', {
-        error: err instanceof Error ? err.message : String(err),
-        timestamp: new Date().toISOString(),
-        endpoint: '/platform/tickets'
-      })
-      setError(err instanceof Error ? err.message : 'Failed to create ticket')
+      setError(err instanceof Error ? err.message : 'Failed to fetch tickets')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const fetchTicketDetail = useCallback(async (ticketId: string) => {
+    setLoading(true)
+    try {
+      const res = await apiClient.get(`/platform/support/tickets/${ticketId}`)
+      setSelectedTicket(res)
+      setMessages(res.comments || [])
+      return res
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch ticket details')
       return null
     } finally {
-      setSubmitting(false)
+      setLoading(false)
     }
-  }
+  }, [])
 
-  // Add message to ticket
-  const addMessage = async (ticketId: string, message: string) => {
+  const createTicket = useCallback(async (form: TicketForm) => {
+    setLoading(true)
+    setError(null)
     try {
-      const response = await fetch(`${apiBaseUrl}/platform/tickets/${ticketId}/messages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to send message')
-      }
-
-      const data = await response.json()
-      setMessages(prev => ({
-        ...prev,
-        [ticketId]: [...(prev[ticketId] || []), data.message],
-      }))
-      return data.message
+      const res = await apiClient.post('/platform/support/tickets', form)
+      setTickets(prev => [res.ticket, ...prev])
+      return { success: true, ticket: res.ticket }
     } catch (err) {
-      console.error('[API Error] Failed to add ticket message:', {
-        error: err instanceof Error ? err.message : String(err),
-        timestamp: new Date().toISOString(),
-        endpoint: `/platform/tickets/${ticketId}/messages`
-      })
-      return null
+      setError(err instanceof Error ? err.message : 'Failed to create ticket')
+      return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
+    } finally {
+      setLoading(false)
     }
-  }
+  }, [])
+
+  const replyToTicket = useCallback(async (ticketId: string, content: string) => {
+    try {
+      const res = await apiClient.post(`/platform/support/tickets/${ticketId}/reply`, { content })
+      setMessages(prev => [...prev, res.message])
+      return { success: true }
+    } catch (err) {
+      return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
+    }
+  }, [])
+
+  const closeTicket = useCallback(async (ticketId: string, reason: string) => {
+    try {
+      await apiClient.post(`/platform/support/tickets/${ticketId}/close`, { reason })
+      setTickets(prev =>
+        prev.map(t => t.id === ticketId ? { ...t, status: 'resolved' as const } : t)
+      )
+      return { success: true }
+    } catch (err) {
+      return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
+    }
+  }, [])
 
   return {
     tickets,
+    selectedTicket,
     messages,
     loading,
     error,
-    submitting,
-    fetchMessages,
+    fetchTickets,
+    fetchTicketDetail,
     createTicket,
-    addMessage,
+    replyToTicket,
+    closeTicket,
   }
 }

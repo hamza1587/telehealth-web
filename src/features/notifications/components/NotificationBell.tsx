@@ -1,74 +1,181 @@
-import { useState } from 'react'
-import { Badge, IconButton, Menu, MenuItem, Typography, Box } from '@mui/material'
-import { NotificationsIcon } from '@mui/icons-material'
+import {
+  Badge, IconButton, Popover, Typography, List, ListItem,
+  ListItemText, CircularProgress, Box, Chip, Stack, Avatar,
+} from '@mui/material'
+import {
+  Notifications as NotificationsIcon,
+  CheckCircle as CheckIcon,
+} from '@mui/icons-material'
+import { useState, useEffect, useRef } from 'react'
 import type { Notification } from '@shared/types/notification.ts'
+import { useNotifications } from '../hooks/useNotifications.ts'
 
 interface NotificationBellProps {
-  unreadCount: number
-  notifications: Notification[]
-  onMarkAsRead: (id: string) => void
+  onOpen?: () => void
 }
 
-export function NotificationBell({ unreadCount, notifications, onMarkAsRead }: NotificationBellProps) {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
+export function NotificationBell({ onOpen }: NotificationBellProps) {
+  const { notifications, unreadCount, fetchNotifications, markAsRead } = useNotifications()
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
+  const [localUnread, setLocalUnread] = useState(unreadCount)
+  const prevUnreadRef = useRef(unreadCount)
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  useEffect(() => {
+    if (unreadCount > prevUnreadRef.current) {
+      setLocalUnread(unreadCount)
+    }
+    prevUnreadRef.current = unreadCount
+  }, [unreadCount])
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
+    fetchNotifications()
+    if (onOpen) onOpen()
   }
 
   const handleClose = () => {
     setAnchorEl(null)
   }
 
-  const recentNotifications = notifications.slice(0, 5)
+  const handleMarkRead = (notificationId: string) => {
+    markAsRead(notificationId)
+    setLocalUnread(prev => Math.max(0, prev - 1))
+  }
+
+  const open = Boolean(anchorEl)
+  const id = open ? 'notification-popover' : undefined
 
   return (
     <>
-      <IconButton color="inherit" onClick={handleClick}>
-        <Badge badgeContent={unreadCount} color="error">
-          <NotificationsIcon />
-        </Badge>
+      <IconButton
+        onClick={handleClick}
+        sx={{ position: 'relative' }}
+        size="large"
+      >
+        <NotificationsIcon />
+        {localUnread > 0 && (
+          <Badge
+            badgeContent={localUnread > 99 ? '99+' : localUnread}
+            color="error"
+            sx={{
+              '& .MuiBadge-badge': {
+                fontSize: 11,
+                height: 18,
+                minWidth: 18,
+              },
+            }}
+          />
+        )}
       </IconButton>
 
-      <Menu
-        anchorEl={anchorEl}
+      <Popover
+        id={id}
         open={open}
+        anchorEl={anchorEl}
         onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
         PaperProps={{
-          sx: { width: 350, maxHeight: 500 },
+          sx: {
+            width: 380,
+            maxHeight: 480,
+            mt: 1,
+            borderRadius: 3,
+          },
         }}
       >
-        <Box sx={{ p: 2 }}>
-          <Typography variant="h6">Notifications</Typography>
+        <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography variant="h6">Notifications</Typography>
+            {localUnread > 0 && (
+              <Chip
+                label={`${localUnread} new`}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
+            )}
+          </Stack>
         </Box>
-        {recentNotifications.length === 0 ? (
-          <MenuItem disabled>
-            <Typography color="text.secondary">No notifications</Typography>
-          </MenuItem>
-        ) : (
-          recentNotifications.map(notification => (
-            <MenuItem
-              key={notification.id}
+
+        <Box sx={{ maxHeight: 380, overflow: 'auto' }}>
+          {notifications.length === 0 ? (
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
+                No notifications
+              </Typography>
+            </Box>
+          ) : (
+            notifications.map((notification: Notification) => (
+              <ListItem
+                key={notification.id}
+                divider
+                sx={{
+                  px: 2,
+                  py: 1.5,
+                  cursor: 'pointer',
+                  bgcolor: notification.status !== 'read' ? 'action.hover' : 'transparent',
+                }}
+                onClick={() => handleMarkRead(notification.id)}
+              >
+                <Avatar
+                  sx={{
+                    width: 36,
+                    height: 36,
+                    bgcolor: notification.status !== 'read'
+                      ? 'primary.light'
+                      : 'action.disabledBackground',
+                    mr: 1.5,
+                  }}
+                >
+                  <CheckIcon fontSize="small" />
+                </Avatar>
+                <ListItemText
+                  primary={
+                    <Typography
+                      variant="body2"
+                      fontWeight={notification.status !== 'read' ? 700 : 400}
+                      noWrap
+                    >
+                      {notification.title}
+                    </Typography>
+                  }
+                  secondary={
+                    <Typography variant="caption" noWrap>
+                      {notification.message.length > 60
+                        ? notification.message.substring(0, 60) + '...'
+                        : notification.message}
+                    </Typography>
+                  }
+                />
+              </ListItem>
+            ))
+          )}
+        </Box>
+
+        {notifications.length > 0 && (
+          <Box sx={{ p: 1, borderTop: 1, borderColor: 'divider' }}>
+            <Typography
+              variant="body2"
+              color="primary"
+              align="center"
+              sx={{ cursor: 'pointer', py: 0.5 }}
               onClick={() => {
-                onMarkAsRead(notification.id)
                 handleClose()
-              }}
-              sx={{
-                borderLeft: notification.status !== 'delivered' ? '3px solid' : 'none',
-                borderColor: 'primary.main',
+                if (onOpen) onOpen()
               }}
             >
-              <Box>
-                <Typography variant="subtitle2">{notification.title}</Typography>
-                <Typography variant="body2" color="text.secondary" noWrap>
-                  {notification.message}
-                </Typography>
-              </Box>
-            </MenuItem>
-          ))
+              View all notifications
+            </Typography>
+          </Box>
         )}
-      </Menu>
+      </Popover>
     </>
   )
 }

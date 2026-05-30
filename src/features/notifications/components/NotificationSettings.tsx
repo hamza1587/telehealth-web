@@ -1,7 +1,6 @@
 import {
-  Box, Card, CardContent, Typography, Grid, Stack, TextField,
-  FormControlLabel, Switch, Chip, Button, Alert, AlertTitle,
-  CircularProgress, Divider, Paper,
+  Box, Card, CardContent, Typography, Grid, Stack,
+  FormControlLabel, Switch, Button, Alert, Divider, Paper,
 } from '@mui/material'
 import {
   Notifications as NotificationsIcon,
@@ -113,7 +112,7 @@ export function NotificationCenter({
             Delivery Channels
           </Typography>
 
-          <Grid container spacing={3} sx={{ ={} }}>
+          <Grid container spacing={3}>
             <Grid item xs={12} sm={6} md={3}>
               <Paper
                 variant="outlined"

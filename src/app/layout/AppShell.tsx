@@ -14,7 +14,6 @@ import { BillingWorkspace } from '@features/billing/components/BillingWorkspace.
 import { ClinicalWorkspace } from '@features/clinical/components/ClinicalWorkspace.tsx'
 import { OperationsWorkspace } from '@features/operations/components/OperationsWorkspace.tsx'
 import { AppointmentsWorkspace } from '@features/appointments/AppointmentsWorkspace.tsx'
-import { NotificationsWorkspace } from '@features/notifications/NotificationsWorkspace.tsx'
 import { ProfileWorkspace } from '@features/profile/ProfileWorkspace.tsx'
 import { GDPRWorkspace } from '@features/gdpr/GDPRWorkspace.tsx'
 import { ResearchWorkspace } from '@features/research/ResearchWorkspace.tsx'
@@ -52,20 +51,19 @@ export function AppShell() {
   useAppTitle(`Telehealth Platform | ${activeWorkspace.label}`)
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background:
-          'radial-gradient(circle at top left, rgba(47, 125, 246, 0.12), transparent 20%), radial-gradient(circle at right top, rgba(13, 148, 136, 0.12), transparent 18%), linear-gradient(180deg, #f6f9fc 0%, #eef5f2 100%)',
-        py: { xs: 3, md: 4 },
-      }}
+    <Box sx={{
+      minHeight: '100vh',
+      background:
+        'radial-gradient(circle at top left, rgba(47, 125, 246, 0.12), transparent 20%), radial-gradient(circle at right top, rgba(13, 148, 136, 0.12), transparent 18%), linear-gradient(180deg, #f6f9fc 0%, #eef5f2 100%)',
+      py: { xs: 3, md: 4 },
+    }}
     >
       <Container maxWidth="xl">
         <Grid container spacing={3}>
           <Grid xs={12} lg={3}>
             <Sidebar activeKey={selectedWorkspace} onSelect={setSelectedWorkspace} statusMessage={patientOnboarding.statusMessage} />
           </Grid>
-          <Grid  ={}  ={} >
+          <Grid>
             <Stack spacing={3}>
               <Paper elevation={0} sx={{ p: { xs: 2.5, md: 3.5 }, borderRadius: 6, border: '1px solid', borderColor: 'divider' }}>
                 <Stack spacing={2}>
@@ -95,7 +93,7 @@ export function AppShell() {
                   {selectedWorkspace === 'patient' && <PatientWorkspace onboarding={patientOnboarding} />}
                   {selectedWorkspace === 'doctor' && <DoctorWorkspace workspace={doctorWorkspace} />}
                   {selectedWorkspace === 'discovery' && (
-                    <DiscoveryWorkspace onBookDoctor={(id) => { setSelectedWorkspace('consultation') }} />
+                    <DiscoveryWorkspace onBookDoctor={() => { setSelectedWorkspace('consultation') }} />
                   )}
                   {selectedWorkspace === 'consultation' && <ConsultationWorkspace />}
                   {selectedWorkspace === 'appointments' && <AppointmentsWorkspace />}
@@ -113,8 +111,7 @@ export function AppShell() {
         </Grid>
       </Container>
 
-      <AuthModal
-        open={authModalOpen}
+      <AuthModal open={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
       />
     </Box>

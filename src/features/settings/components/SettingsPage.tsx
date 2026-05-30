@@ -143,7 +143,7 @@ export function SettingsPage({
           </Stack>
 
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }} onClose={() => {}}>
+            <Alert severity="error" sx={{ mb: 2 }} onClose={() => { }}>
               {error}
             </Alert>
           )}
@@ -268,7 +268,7 @@ export function SettingsPage({
                   <LockIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} />
                   Change Password
                 </Typography>
-                <Grid container spacing={2} sx={{ ={} }}>
+                <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <TextField
                       fullWidth

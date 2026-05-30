@@ -69,9 +69,9 @@ export function AdminDashboard({
   return (
     <Box>
       {/* Stat Cards */}
-      <Grid container spacing={2} sx={{ ={} }}>
+      <Grid container spacing={2}>
         {statCards.map((stat, i) => (
-          <Grid size={{ ={}, ={}, ={} }} key={i}>
+          <Grid>
             <Card variant="outlined" sx={{ borderRadius: 4 }}>
               <CardContent>
                 <Stack direction="row" spacing={2}>
@@ -102,7 +102,7 @@ export function AdminDashboard({
 
       <Grid container spacing={3}>
         {/* Recent Activity */}
-        <Grid  ={}  ={} >
+        <Grid>
           <Card variant="outlined" sx={{ borderRadius: 4 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -115,8 +115,8 @@ export function AdminDashboard({
                       <ListItemAvatar>
                         <Avatar sx={{ bgcolor: statusColors[activity.status] + '20', color: statusColors[activity.status] }}>
                           {activity.status === 'success' ? <CheckCircle fontSize="small" /> :
-                           activity.status === 'pending' ? <Pending fontSize="small" /> :
-                           <ErrorIcon fontSize="small" />}
+                            activity.status === 'pending' ? <Pending fontSize="small" /> :
+                              <ErrorIcon fontSize="small" />}
                         </Avatar>
                       </ListItemAvatar>
                       <ListItemText
@@ -141,7 +141,7 @@ export function AdminDashboard({
         </Grid>
 
         {/* Quick Stats */}
-        <Grid  ={}  ={} >
+        <Grid>
           <Card variant="outlined" sx={{ borderRadius: 4, mb: 2 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>System Status</Typography>

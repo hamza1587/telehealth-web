@@ -11,7 +11,7 @@ export function BillingWorkspace() {
         <Card sx={{ borderRadius: 5 }}>
           <CardContent>
             <SectionHeader eyebrow="Billing and payments" title="Credit wallet, purchase bundles, and per-second charging" status="MVP monetization" statusColor="success" />
-            <Grid container spacing={2} sx={{ ={} }}>
+            <Grid container spacing={2}>
               <Grid item xs={12} md={4}>
                 <SurfaceTile title="Wallet card" items={['Available minutes and reserved balance', 'Top-up CTA with hosted checkout', 'Insufficient balance warnings', 'Transaction state visibility']} />
               </Grid>

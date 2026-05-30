@@ -56,11 +56,11 @@ export function AppointmentsWorkspace() {
         appointment={selectedAppointment}
         loading={loading}
         error={error || undefined}
-        onJoin={() => {}}
+        onJoin={() => { }}
         onCancel={() => {
           if (selectedId) handleCancel(selectedId, 'Patient requested')
         }}
-        onReschedule={() => {}}
+        onReschedule={() => { }}
         onBack={handleBack}
       />
     )
@@ -107,7 +107,7 @@ export function AppointmentsWorkspace() {
       </Paper>
 
       {/* Stats Row */}
-      <Grid container spacing={2} sx={{ ={} }}>
+      <Grid container spacing={2}>
         <Grid item xs={6} sm={3}>
           <Card variant="outlined" sx={{ borderRadius: 3 }}>
             <CardContent sx={{ textAlign: 'center' }}>
@@ -175,7 +175,7 @@ export function AppointmentsWorkspace() {
         error={error || undefined}
         onCancel={(id) => handleCancel(id, 'Patient requested')}
         onView={handleView}
-        onReschedule={(id) => {}}
+        onReschedule={(id) => { }}
       />
     </Box>
   )

@@ -187,7 +187,7 @@ export function DoctorProfileDetail({
           </Card>
 
           {/* Education & Languages */}
-          <Grid container spacing={2} sx={{ ={} }}>
+          <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <Card variant="outlined" sx={{ borderRadius: 4 }}>
                 <CardContent>
@@ -285,7 +285,7 @@ export function DoctorProfileDetail({
                 label={doctor.marketplaceStatus}
                 color={
                   doctor.marketplaceStatus === 'Available' ? 'success' :
-                  doctor.marketplaceStatus === 'Hidden' ? 'default' : 'warning'
+                    doctor.marketplaceStatus === 'Hidden' ? 'default' : 'warning'
                 }
                 variant="outlined"
               />

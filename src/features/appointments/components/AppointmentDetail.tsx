@@ -1,18 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type JSX } from 'react'
 import {
   Box, Card, CardContent, Typography, Paper, Stack, Grid, Chip,
   Divider, IconButton, Button, Alert, CircularProgress, Avatar,
-  List, ListItem, ListItemText, ListItemIcon, Timeline, TimelineItem,
-  TimelineSeparator, TimelineConnector, TimelineContent, TimelineDot,
-  Badge,
+  Badge
 } from '@mui/material'
+import { Timeline, TimelineItem, TimelineSeparator, TimelineDot, TimelineConnector, TimelineContent } from '@mui/lab'
 import {
-  CalendarToday, AccessTime, Videocam, Phone, LocationOn,
-  Person, MedicalServices, Payment, Assignment,
-  CheckCircle, Cancel, Pending, Error as ErrorIcon,
-  NavigateBefore, NavigateNext, Refresh,
+  CalendarToday, AccessTime, Videocam, MedicalServices,
+  CheckCircle, Pending, Error as ErrorIcon,
+  NavigateBefore, CancelOutlined, Cancel, Refresh,
 } from '@mui/icons-material'
 import type { AppointmentDetail } from '@shared/types/index.ts'
+import { EditIcon } from 'lucide-react'
 
 interface AppointmentDetailProps {
   appointment: AppointmentDetail | null
@@ -22,7 +21,6 @@ interface AppointmentDetailProps {
   onCancel: () => void
   onReschedule: () => void
   onBack: () => void
-  onRefresh?: () => void
 }
 
 const statusColors: Record<string, { bg: string; icon: JSX.Element; label: string }> = {
@@ -90,7 +88,10 @@ export function AppointmentDetailView({
   const startDate = new Date(appointment.scheduledStart)
   const endDate = new Date(appointment.scheduledEnd)
   const config = statusColors[appointment.status] || statusColors.draft
-  const estimatedCost = (appointment.creditsUsed * appointment.pricePerSecond / 100).toFixed(2)
+  // Calculate duration in seconds
+  const durationSeconds = (endDate.getTime() - startDate.getTime()) / 1000
+  // Calculate estimated cost based on duration and price per second
+  const estimatedCost = (durationSeconds * appointment.pricePerSecond / 100).toFixed(2)
 
   return (
     <Box>
@@ -116,7 +117,7 @@ export function AppointmentDetailView({
               <Box sx={{
                 width: 12, height: 12, borderRadius: '50%',
                 bgcolor: appointment.status === 'in_progress' ? '#4caf50' :
-                        appointment.status === 'confirmed' ? '#2196f3' : '#757575',
+                  appointment.status === 'confirmed' ? '#2196f3' : '#757575',
                 boxShadow: 2,
               }} />
             }
@@ -290,7 +291,7 @@ export function AppointmentDetailView({
         <Grid item xs={12}>
           <Stack direction="row" spacing={2} justifyContent="flex-end">
             {(appointment.status === 'confirmed' || appointment.status === 'pending_payment') && (
-              <Button variant="outlined" color="error" startIcon={<CancelIcon />} onClick={onCancel}>
+              <Button variant="outlined" color="error" startIcon={<CancelOutlined />} onClick={onCancel}>
                 Cancel
               </Button>
             )}

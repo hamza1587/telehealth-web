@@ -1,7 +1,7 @@
 import { Avatar, Box, Card, CardContent, Typography, Grid, Button, Chip,
 Stack, Divider, CircularProgress, Alert,
 } from '@mui/material'
-import { Science, Person, CalendarToday, CheckCircle } from '@mui/icons-material'
+import { Science, Person, CalendarToday, CheckCircle, Public, Cancel } from '@mui/icons-material'
 import type { ResearchStudy, ResearchEnrollmentForm } from '@shared/types/index.ts'
 
 interface StudiesListProps {

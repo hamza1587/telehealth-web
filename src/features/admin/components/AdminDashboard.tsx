@@ -70,7 +70,7 @@ export function AdminDashboard({
     <Box>
       {/* Stat Cards */}
       <Grid container spacing={2}>
-        {statCards.map((stat, i) => (
+        {statCards.map((stat) => (
           <Grid>
             <Card variant="outlined" sx={{ borderRadius: 4 }}>
               <CardContent>

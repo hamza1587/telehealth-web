@@ -1,10 +1,26 @@
 import {
-  Box, Card, CardContent, Typography, Paper, Stack,
-  CircularProgress, Alert, Timeline, TimelineItem,
-  TimelineSeparator, TimelineConnector, TimelineContent,
-  TimelineDot, List, ListItem, ListItemText, ListItemIcon,
+  Box,
+  Typography,
+  Paper,
+  Stack,
+  CircularProgress,
+  Alert,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
   Divider,
+  Avatar,
+  Chip,
 } from '@mui/material'
+import {
+  Timeline,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot
+} from '@mui/lab'
 import {
   Public as PublicIcon,
   CheckCircle as CheckIcon,
@@ -14,6 +30,7 @@ import {
   Info as InfoIcon,
 } from '@mui/icons-material'
 import type { DataRightRequest } from '@shared/types/dataRights.ts'
+import type { JSX } from 'react'
 
 const typeLabels: Record<string, string> = {
   access: 'Right of Access',
@@ -140,7 +157,6 @@ export function GDPRRequestList({
                             <TimelineDot
                               color={request.identityVerified ? 'success' : 'warning'}
                               variant="outlined"
-                              size="sm"
                             />
                             <TimelineConnector />
                           </TimelineSeparator>
@@ -153,7 +169,7 @@ export function GDPRRequestList({
                         {request.completedAt && (
                           <TimelineItem>
                             <TimelineSeparator>
-                              <TimelineDot color="success" variant="filled" size="sm" />
+                              <TimelineDot color="success" variant="filled" />
                             </TimelineSeparator>
                             <TimelineContent>
                               <Typography variant="caption">

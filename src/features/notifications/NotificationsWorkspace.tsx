@@ -1,22 +1,12 @@
 import {
-  Box, Card, CardContent, Typography, Stack, Switch,
-  FormControlLabel, Divider, TextField, Button, Alert,
-  CircularProgress, Grid,
+  Box, Card, CardContent, Typography, Stack,
+  Button, Grid,
 } from '@mui/material'
-import {
-  Notifications as NotificationsIcon,
-  Email as EmailIcon,
-  SmsFailed as SmsIcon,
-  NotificationsActive as PushIcon,
-  Public as PublicIcon,
-} from '@mui/icons-material'
-import { useAuth } from '@shared/auth/AuthContext.tsx'
 import { useNotifications } from './hooks/useNotifications.ts'
 import { NotificationList } from './components/NotificationList.tsx'
 import { NotificationCenter } from './components/NotificationSettings.tsx'
 
 export function NotificationsWorkspace() {
-  const { user } = useAuth()
   const {
     notifications,
     preferences,
@@ -58,7 +48,7 @@ export function NotificationsWorkspace() {
             error={error || undefined}
             onMarkRead={markAsRead}
             onMarkAllRead={markAllAsRead}
-            onDelete={() => {}}
+            onDelete={() => { }}
           />
         </Grid>
         <Grid item xs={12} md={5}>
@@ -71,8 +61,8 @@ export function NotificationsWorkspace() {
               if (ok) fetchNotifications()
               return ok
             }}
-            onExportData={() => {}}
-            onDeleteAccount={() => {}}
+            onExportData={() => { }}
+            onDeleteAccount={() => { }}
           />
         </Grid>
       </Grid>

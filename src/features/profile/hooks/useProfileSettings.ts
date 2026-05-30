@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { apiClient } from '@shared/api/Client.ts'
-import type { User, AuthState, MfaSetupResponse, AuthTokens } from '@shared/types/auth.ts'
+import type { User, MfaSetupResponse } from '@shared/types/auth.ts'
 import type { ProfileForm, SecuritySettingsForm, MfaSettingsForm } from '@shared/types/index.ts'
 
 export function useProfileSettings() {

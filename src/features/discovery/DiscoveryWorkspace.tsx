@@ -9,7 +9,6 @@ import {
   StarBorder as StarBorderIcon,
   Verified as VerifiedIcon,
   Public as PublicIcon,
-  CalendarToday,
 } from '@mui/icons-material'
 import { useState } from 'react'
 import { useDoctorProfiles } from './hooks/useDoctorProfiles.ts'
@@ -48,18 +47,6 @@ export function DiscoveryWorkspace({ onBookDoctor }: Props) {
     'Endocrinology', 'Pulmonology', 'Oncology', 'Rheumatology',
   ]
 
-  const doctorSpecialties: Record<string, string> = {
-    'dr-smith': 'Cardiology',
-    'dr-johnson': 'Dermatology',
-    'dr-williams': 'Mental Health',
-    'dr-brown': 'Pediatrics',
-    'dr-davis': 'General Practice',
-    'dr-miller': 'Orthopedics',
-    'dr-wilson': 'Neurology',
-    'dr-taylor': 'Gastroenterology',
-    'dr-anderson': 'Endocrinology',
-    'dr-thomas': 'Pulmonology',
-  }
 
   return (
     <Box>

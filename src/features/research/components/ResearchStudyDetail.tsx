@@ -5,14 +5,13 @@ Stack, CircularProgress, Alert, Paper, Grid,
 Avatar, Chip, Divider,
 } from '@mui/material'
 import {
-Science as ScienceIcon,
-Person as PersonIcon,
-CheckCircle,
-Cancel,
-Save,
-CalendarToday,
+ Science as ScienceIcon,
+ Person as PersonIcon,
+ CheckCircle as CheckIcon,
+ CalendarToday,
+ Public,
 } from '@mui/icons-material'
-import type { ResearchStudy, ResearchEnrollmentForm, ResearchEnrollmentForm as EnrollmentForm } from '@shared/types/index.ts'
+import type { ResearchStudy, ResearchEnrollmentForm as EnrollmentForm } from '@shared/types/index.ts'
 
 interface ResearchStudyDetailProps {
   study: ResearchStudy | null

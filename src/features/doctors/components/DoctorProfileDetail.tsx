@@ -1,13 +1,11 @@
 import {
   Box, Card, CardContent, Typography, Grid, Paper, Stack, CircularProgress, Alert,
-  Timeline, TimelineItem, TimelineSeparator, TimelineConnector, TimelineContent,
-  TimelineDot, Avatar, List, ListItem, ListItemText, ListItemIcon, Divider,
-  Chip, Button,
+  Avatar, List, ListItem, ListItemText, ListItemIcon, Divider,
+  Chip, Button, Tooltip,
 } from '@mui/material'
 import {
   Person as PersonIcon,
   MedicalServices as MedicalIcon,
-  LocationOn as LocationIcon,
   CalendarToday as CalendarIcon,
   CheckCircle as CheckIcon,
   School as EducationIcon,
@@ -17,8 +15,7 @@ import {
   Verified as VerifiedIcon,
   Pending as PendingIcon,
   Public as PublicIcon,
-  Phone as PhoneIcon,
-  Email as EmailIcon,
+  Cancel as CancelIcon,
 } from '@mui/icons-material'
 import type { DoctorDetail } from '@shared/types/index.ts'
 

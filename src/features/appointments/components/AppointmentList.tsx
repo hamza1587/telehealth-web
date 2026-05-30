@@ -1,24 +1,18 @@
 import { useState } from 'react'
 import {
-  Box, Button, Card, CardContent, Typography, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Paper, Chip, IconButton, Tooltip,
+  Box, Card, CardContent, Typography, Table, TableBody, TableCell,
+  TableContainer, TableHead, TableRow, Chip, IconButton, Tooltip,
   CircularProgress, Alert, Stack, Pagination, TextField, InputAdornment,
-  FormControl, InputLabel, Select, MenuItem, Grid, Avatar
+  FormControl, InputLabel, Select, MenuItem, Avatar
 } from '@mui/material'
 import {
   Search as SearchIcon,
   CalendarToday as CalendarIcon,
   AccessTime as TimeIcon,
-  LocationOn as LocationIcon,
   Cancel as CancelIcon,
   Edit as EditIcon,
   Videocam as VideoIcon,
-  Phone as PhoneIcon,
-  Refresh as RefreshIcon,
-  Person as PersonIcon,
-  MedicalServices as MedicalIcon,
-  NavigateNext as NavigateNextIcon,
-  NavigateBefore as NavigateBeforeIcon,
+  Person as PersonIcon
 } from '@mui/icons-material'
 import type { Appointment, AppointmentStatus } from '@shared/types/appointment.ts'
 
@@ -238,7 +232,7 @@ export function AppointmentList({
               <Pagination
                 count={totalPages}
                 page={page}
-                onChange={(e, p) => setPage(p)}
+                onChange={(p: any) => setPage(p)}
                 variant="outlined"
                 shape="rounded"
                 siblingCount={1}

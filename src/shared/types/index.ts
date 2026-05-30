@@ -1,25 +1,5 @@
 export { AppointmentStatus } from './appointment.ts'
 export type { AppointmentDetail } from './appointment.ts'
-export type AppointmentDetail = {
-  id: string
-  patientId: string
-  doctorId: string
-  doctorName: string
-  doctorSpecialty: string
-  doctorAvatar?: string
-  scheduledStart: string
-  scheduledEnd: string
-  status: AppointmentStatus
-  pricePerSecond: number
-  currency: string
-  creditsReserved: number
-  creditsUsed: number
-  meetingUrl?: string
-  notes?: string
-  cancellationReason?: string
-  createdAt: string
-  updatedAt: string
-}
 
 export type DoctorDetail = {
   id: string

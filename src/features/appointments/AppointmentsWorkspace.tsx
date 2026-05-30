@@ -1,23 +1,15 @@
 import { useState, useCallback } from 'react'
 import {
-  Box, Card, CardContent, Typography, Grid, CircularProgress, Alert,
-  Chip, Button, Paper, Stack, Divider, IconButton, TextField,
-  InputAdornment, FormControl, InputLabel, Select, MenuItem,
+  Box, Card, CardContent, Typography, Grid,
+  Chip, Button, Paper, Stack,
 } from '@mui/material'
 import {
-  Search as SearchIcon,
-  CalendarToday,
-  Cancel as CancelIcon,
-  Edit as EditIcon,
-  Refresh as RefreshIcon,
-  Videocam as VideoIcon,
   Today as TodayIcon,
 } from '@mui/icons-material'
 import { useAuth } from '@shared/auth/AuthContext.tsx'
 import { useAppointments } from './hooks/useAppointments.ts'
 import { AppointmentList } from './components/AppointmentList.tsx'
 import { AppointmentDetailView } from './components/AppointmentDetail.tsx'
-
 export function AppointmentsWorkspace() {
   const { user } = useAuth()
   const [view, setView] = useState<'list' | 'detail'>('list')
@@ -29,10 +21,8 @@ export function AppointmentsWorkspace() {
     selectedAppointment,
     loading,
     error,
-    fetchAppointments,
     fetchAppointmentDetail,
     cancelAppointment,
-    rescheduleAppointment,
   } = useAppointments(user?.userId || null)
 
   const handleView = useCallback(async (id: string) => {
@@ -46,7 +36,7 @@ export function AppointmentsWorkspace() {
     setSelectedId(null)
   }, [])
 
-  const handleCancel = useCallback(async (id: string, reason: string) => {
+  const handleCancel = useCallback(async (id: string, _reason: string) => {
     await cancelAppointment(id)
   }, [cancelAppointment])
 
@@ -154,7 +144,6 @@ export function AppointmentsWorkspace() {
       <Stack direction="row" spacing={2} mb={3}>
         <Button
           variant="contained"
-          startIcon={<CalendarIcon />}
           sx={{ borderRadius: 3, px: 3 }}
         >
           Book New
@@ -173,9 +162,9 @@ export function AppointmentsWorkspace() {
         appointments={appointments}
         loading={loading}
         error={error || undefined}
-        onCancel={(id) => handleCancel(id, 'Patient requested')}
+        onCancel={(id: any) => handleCancel(id)}
         onView={handleView}
-        onReschedule={(id) => { }}
+        onReschedule={() => { }}
       />
     </Box>
   )

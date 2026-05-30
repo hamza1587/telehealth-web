@@ -1,13 +1,14 @@
 import {
-  Box, Card, CardContent, Typography, IconButton, Tooltip,
+  Box, Typography, IconButton, Tooltip,
   CircularProgress, Alert, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, Badge, Stack, Chip, Avatar,
+  TableHead, TableRow, Paper, Stack, Chip, Avatar,
 } from '@mui/material'
 import {
-  Videocam, VideocamOff, CheckCircle, Cancel, Pending, Error,
-  Visibility, Refresh, History,
+  Videocam, VideocamOff, CheckCircle, Pending, Error,
+  Visibility, Refresh,
 } from '@mui/icons-material'
 import type { ConsultationSession, ConsultationStatus } from '@shared/types/consultation.ts'
+import type { JSX } from 'react'
 
 interface ConsultationSessionListProps {
   sessions: ConsultationSession[]

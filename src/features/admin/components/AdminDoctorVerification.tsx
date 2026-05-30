@@ -1,11 +1,10 @@
 import {
-  Box, Card, CardContent, Typography, Table, TableBody, TableCell,
+  Box, Typography, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, Chip, Avatar, Stack,
-  CircularProgress, Alert, List, ListItem, ListItemText, ListItemAvatar,
-  Divider, Badge, IconButton,
+  CircularProgress, Alert, Badge, IconButton,
 } from '@mui/material'
 import {
-  Verified, Pending, Visibility, Person as PersonIcon,
+  Verified, Pending, Visibility,
   Error as ErrorIcon, CheckCircle as CheckIcon,
   Public as PublicIcon,
 } from '@mui/icons-material'
@@ -104,12 +103,12 @@ export function AdminDoctorVerification({
               <TableCell>
                 <Chip
                   icon={doc.verificationStatus === 'Verified' ? <Verified fontSize="small" /> :
-                         doc.verificationStatus === 'Rejected' ? <ErrorIcon fontSize="small" /> :
-                         <Pending fontSize="small" />}
+                    doc.verificationStatus === 'Rejected' ? <ErrorIcon fontSize="small" /> :
+                      <Pending fontSize="small" />}
                   label={doc.verificationStatus}
                   color={
                     doc.verificationStatus === 'Verified' ? 'success' :
-                    doc.verificationStatus === 'Rejected' ? 'error' : 'warning'
+                      doc.verificationStatus === 'Rejected' ? 'error' : 'warning'
                   }
                   size="small"
                   variant="outlined"

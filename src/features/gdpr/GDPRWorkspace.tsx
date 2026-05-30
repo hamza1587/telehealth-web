@@ -3,18 +3,14 @@ import { Info as InfoIcon } from '@mui/icons-material'
 import { GDPRRequestForm } from './components/GDPRRequest.tsx'
 import { GDPRRequestList } from './components/GDPRRequestList.tsx'
 import { useGDPRRequests } from './hooks/useGDPRRequests.ts'
-import { useAuth } from '@shared/auth/AuthContext.tsx'
 
 export function GDPRWorkspace() {
-  const { user, logout } = useAuth()
   const {
     requests,
     loading,
     error,
-    fetchRequests,
     submitRequest,
     exportData,
-    deleteAccount,
   } = useGDPRRequests()
 
   return (

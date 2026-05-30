@@ -12,6 +12,8 @@ import NotificationsRoundedIcon from '@mui/icons-material/Notifications'
 import SettingsRoundedIcon from '@mui/icons-material/Settings'
 import LockRoundedIcon from '@mui/icons-material/Lock'
 import ScienceRoundedIcon from '@mui/icons-material/Science'
+import QueryStatsRoundedIcon from '@mui/icons-material/QueryStatsRounded'
+import SupportAgentRoundedIcon from '@mui/icons-material/SupportAgentRounded'
 import type { WorkspaceKey } from '@shared/types/workspace.ts'
 
 export type WorkspaceDefinition = {
@@ -36,6 +38,8 @@ export const workspaceDefinitions: WorkspaceDefinition[] = [
   { key: 'settings', label: 'Settings', subtitle: 'Profile and security', icon: <SettingsRoundedIcon />, accent: '#455a64' },
   { key: 'gdpr', label: 'Data Rights', subtitle: 'GDPR & EHDS compliance', icon: <LockRoundedIcon />, accent: '#37474f' },
   { key: 'research', label: 'Research', subtitle: 'Clinical studies', icon: <ScienceRoundedIcon />, accent: '#6a1b9a' },
+  { key: 'analytics', label: 'Analytics', subtitle: 'Platform KPI dashboard', icon: <QueryStatsRoundedIcon />, accent: '#1565c0' },
+  { key: 'support', label: 'Support', subtitle: 'Tickets and help centre', icon: <SupportAgentRoundedIcon />, accent: '#00838f' },
 ]
 
 export const launchTracks = [

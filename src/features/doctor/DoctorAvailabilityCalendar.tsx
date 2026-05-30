@@ -116,7 +116,7 @@ export function DoctorAvailabilityCalendar() {
         {DAYS.map((day, index) => {
           const daySlots = getSlotsForDay(index)
           return (
-            <Grid size={{ ={}, ={}, ={} }} key={day}>
+            <Grid key={day}>
               <Card variant="outlined">
                 <CardContent>
                   <Typography variant="h6" sx={{ mb: 2 }}>
@@ -178,8 +178,8 @@ export function DoctorAvailabilityCalendar() {
           {editingSlot ? 'Edit Availability Slot' : 'Add Availability Slot'}
         </DialogTitle>
         <DialogContent>
-          <Grid container spacing={3} sx={{ ={} }}>
-            <Grid  ={} >
+          <Grid container spacing={3}>
+            <Grid>
               <FormControl fullWidth>
                 <InputLabel>Day of Week</InputLabel>
                 <Select
@@ -195,7 +195,7 @@ export function DoctorAvailabilityCalendar() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid  ={}  ={} >
+            <Grid>
               <FormControl fullWidth>
                 <InputLabel>Start Time</InputLabel>
                 <Select
@@ -213,7 +213,7 @@ export function DoctorAvailabilityCalendar() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid  ={}  ={} >
+            <Grid>
               <FormControl fullWidth>
                 <InputLabel>End Time</InputLabel>
                 <Select
@@ -231,7 +231,7 @@ export function DoctorAvailabilityCalendar() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid  ={} >
+            <Grid>
               <FormControl fullWidth>
                 <InputLabel>Consultation Mode</InputLabel>
                 <Select
@@ -247,7 +247,7 @@ export function DoctorAvailabilityCalendar() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid  ={} >
+            <Grid>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Switch
                   checked={formData.isInstantEnabled}
@@ -259,14 +259,14 @@ export function DoctorAvailabilityCalendar() {
               </Box>
             </Grid>
           </Grid>
-        </DialogContent>
+        </DialogContent >
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveSlot}>
             Save
           </Button>
         </DialogActions>
-      </Dialog>
-    </Box>
+      </Dialog >
+    </Box >
   )
 }

@@ -38,34 +38,34 @@ export function DiscoveryWorkspace() {
 
   return (
     <Grid container spacing={3}>
-      <Grid  ={}  ={} >
+      <Grid>
         {requestError ? <Alert severity="error" sx={{ mb: 3 }}>{requestError}</Alert> : null}
         <Card sx={{ borderRadius: 5 }}>
           <CardContent>
             <SectionHeader eyebrow="Discovery and booking" title="Search specialists and lock scheduled consultation slots" status="Search-first MVP" statusColor="success" />
             <Stack spacing={2} sx={{ mt: 2.5, mb: 1 }}>
               <Grid container spacing={2}>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Patient ID" value={patientId} onChange={setPatientId} placeholder="Paste patient account ID" />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Button variant="outlined" onClick={() => void loadPatientBookings()} disabled={pendingAction === 'history'} sx={{ minHeight: 56, width: '100%' }}>
                     {pendingAction === 'history' ? 'Loading bookings...' : 'Load patient bookings'}
                   </Button>
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Search doctors" value={searchText} onChange={setSearchText} placeholder="Search by specialty, doctor, or language" />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Specialty" value={specialty} onChange={setSpecialty} placeholder="Cardiology" />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Country" value={country} onChange={setCountry} placeholder="DE" />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Language" value={language} onChange={setLanguage} placeholder="en" />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <SelectField
                     label="Consultation mode"
                     value={consultationMode}
@@ -76,7 +76,7 @@ export function DiscoveryWorkspace() {
                     ]}
                   />
                 </Grid>
-                <Grid  ={} >
+                <Grid>
                   <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ alignItems: { md: 'center' } }}>
                     <Button variant="contained" onClick={() => void searchDoctors()} disabled={pendingAction === 'search'}>
                       {pendingAction === 'search' ? 'Searching doctors...' : 'Search doctors'}
@@ -88,8 +88,8 @@ export function DiscoveryWorkspace() {
                 </Grid>
               </Grid>
             </Stack>
-            <Grid container spacing={2} sx={{ ={} }}>
-              <Grid  ={}  ={} >
+            <Grid container spacing={2}>
+              <Grid>
                 <SurfaceTile
                   title="Search results"
                   items={doctors.length
@@ -97,7 +97,7 @@ export function DiscoveryWorkspace() {
                     : ['No verified doctors matched the current search filters.']}
                 />
               </Grid>
-              <Grid  ={}  ={} >
+              <Grid>
                 <Stack spacing={2}>
                   {doctors.map((doctor) => (
                     <Card key={doctor.id} variant="outlined">
@@ -121,7 +121,7 @@ export function DiscoveryWorkspace() {
                   ))}
                 </Stack>
               </Grid>
-              <Grid  ={} >
+              <Grid>
                 {doctorDetail ? (
                   <Card variant="outlined">
                     <CardContent>
@@ -158,7 +158,7 @@ export function DiscoveryWorkspace() {
           </CardContent>
         </Card>
       </Grid>
-      <Grid  ={}  ={} >
+      <Grid>
         <InfoCard title="Booking principles" eyebrow="MVP constraints">
           <List disablePadding>
             <BulletRow text="Scheduled consultations only in Phase 1" />

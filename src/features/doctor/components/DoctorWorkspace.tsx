@@ -32,7 +32,7 @@ export function DoctorWorkspace({
 
   return (
     <Grid container spacing={3}>
-      <Grid  ={}  ={} >
+      <Grid>
         <Stack spacing={3}>
           {requestError ? <Alert severity="error">{requestError}</Alert> : null}
 
@@ -44,62 +44,62 @@ export function DoctorWorkspace({
                 status={doctor?.verificationStatus ?? 'Draft'}
                 statusColor={doctor?.verificationStatus === 'Verified' ? 'success' : 'warning'}
               />
-              <Grid container spacing={2} sx={{ ={} }}>
-                <Grid  ={}  ={} >
+              <Grid container spacing={2}>
+                <Grid>
                   <Field label="Display name" value={doctorForm.displayName} onChange={(value) => setDoctorForm((current) => ({ ...current, displayName: value }))} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Legal name" value={doctorForm.legalName} onChange={(value) => setDoctorForm((current) => ({ ...current, legalName: value }))} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Email" type="email" value={doctorForm.email} onChange={(value) => setDoctorForm((current) => ({ ...current, email: value }))} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Phone number" value={doctorForm.phoneNumber} onChange={(value) => setDoctorForm((current) => ({ ...current, phoneNumber: value }))} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Country" value={doctorForm.countryCode} onChange={(value) => setDoctorForm((current) => ({ ...current, countryCode: value.toUpperCase() }))} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Practice country" value={doctorForm.countryOfPractice} onChange={(value) => setDoctorForm((current) => ({ ...current, countryOfPractice: value.toUpperCase() }))} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Primary specialty" value={doctorForm.primarySpecialty} onChange={(value) => setDoctorForm((current) => ({ ...current, primarySpecialty: value }))} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="License number" value={doctorForm.licenseNumber} onChange={(value) => setDoctorForm((current) => ({ ...current, licenseNumber: value }))} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Licensing authority" value={doctorForm.licensingAuthority} onChange={(value) => setDoctorForm((current) => ({ ...current, licensingAuthority: value }))} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Qualifications" value={doctorForm.qualifications} onChange={(value) => setDoctorForm((current) => ({ ...current, qualifications: value }))} multiline minRows={3} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Biography" value={doctorForm.biography} onChange={(value) => setDoctorForm((current) => ({ ...current, biography: value }))} multiline minRows={3} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Years of experience" type="number" value={doctorForm.yearsOfExperience} onChange={(value) => setDoctorForm((current) => ({ ...current, yearsOfExperience: value }))} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Price per second" type="number" value={doctorForm.defaultPricePerSecondMinor} onChange={(value) => setDoctorForm((current) => ({ ...current, defaultPricePerSecondMinor: value }))} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Currency" value={doctorForm.currency} onChange={(value) => setDoctorForm((current) => ({ ...current, currency: value.toUpperCase() }))} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Insurance provider" value={doctorForm.insuranceProvider} onChange={(value) => setDoctorForm((current) => ({ ...current, insuranceProvider: value }))} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Insurance policy number" value={doctorForm.insurancePolicyNumber} onChange={(value) => setDoctorForm((current) => ({ ...current, insurancePolicyNumber: value }))} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="License expiry date" type="date" value={doctorForm.licenseExpiryDate} onChange={(value) => setDoctorForm((current) => ({ ...current, licenseExpiryDate: value }))} shrink />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Languages (comma separated)" value={doctorForm.languagesText} onChange={(value) => setDoctorForm((current) => ({ ...current, languagesText: value }))} />
                 </Grid>
-                <Grid  ={} >
+                <Grid>
                   <Button variant="contained" onClick={() => void submitDoctorProfile()} disabled={pendingAction === 'profile'}>
                     {pendingAction === 'profile' ? 'Saving doctor profile...' : doctor ? 'Update doctor profile' : 'Submit doctor onboarding'}
                   </Button>
@@ -116,17 +116,17 @@ export function DoctorWorkspace({
                 status={doctor?.marketplaceStatus ?? 'Hidden'}
                 statusColor={doctor?.verificationStatus === 'Verified' ? 'success' : 'warning'}
               />
-              <Grid container spacing={2} sx={{ ={} }}>
-                <Grid  ={}  ={} >
+              <Grid container spacing={2}>
+                <Grid>
                   <SelectField label="Verification status" value={verificationForm.verificationStatus} onChange={(value) => setVerificationForm((current) => ({ ...current, verificationStatus: value }))} options={doctorVerificationOptions} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Reviewer ID" value={verificationForm.reviewerId} onChange={(value) => setVerificationForm((current) => ({ ...current, reviewerId: value }))} />
                 </Grid>
-                <Grid  ={}  ={} >
+                <Grid>
                   <Field label="Review notes" value={verificationForm.reviewNotes} onChange={(value) => setVerificationForm((current) => ({ ...current, reviewNotes: value }))} multiline minRows={3} />
                 </Grid>
-                <Grid  ={} >
+                <Grid>
                   <Button variant="outlined" onClick={() => void updateVerification()} disabled={!doctor || pendingAction === 'verification'}>
                     {pendingAction === 'verification' ? 'Updating verification...' : 'Update verification status'}
                   </Button>
@@ -136,26 +136,26 @@ export function DoctorWorkspace({
           </Card>
         </Stack>
       </Grid>
-      <Grid  ={}  ={} >
+      <Grid>
         <Stack spacing={3}>
           <InfoCard title="Availability management" eyebrow="Scheduling surface">
             <Grid container spacing={2}>
-              <Grid  ={} >
+              <Grid>
                 <Field label="Starts at" type="datetime-local" value={availabilityForm.startsAt} onChange={(value) => setAvailabilityForm((current) => ({ ...current, startsAt: value }))} shrink />
               </Grid>
-              <Grid  ={} >
+              <Grid>
                 <Field label="Ends at" type="datetime-local" value={availabilityForm.endsAt} onChange={(value) => setAvailabilityForm((current) => ({ ...current, endsAt: value }))} shrink />
               </Grid>
-              <Grid  ={} >
+              <Grid>
                 <SelectField label="Consultation mode" value={availabilityForm.consultationMode} onChange={(value) => setAvailabilityForm((current) => ({ ...current, consultationMode: value }))} options={doctorConsultationModeOptions} />
               </Grid>
-              <Grid  ={} >
+              <Grid>
                 <FormControlLabel
                   control={<Switch checked={availabilityForm.isInstantEnabled} onChange={(event) => setAvailabilityForm((current) => ({ ...current, isInstantEnabled: event.target.checked }))} />}
                   label="Instant consult enabled"
                 />
               </Grid>
-              <Grid  ={} >
+              <Grid>
                 <Button variant="contained" onClick={() => void addAvailabilityWindow()} disabled={!doctor || pendingAction === 'availability'}>
                   {pendingAction === 'availability' ? 'Saving availability...' : 'Add availability window'}
                 </Button>

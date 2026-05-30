@@ -14,7 +14,7 @@ export function useAppointments(patientId: string | null) {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.get('/platform/appointments/my-appointments')
+      const res = await apiClient.get<any>('/platform/appointments/my-appointments')
       setAppointments(res.items || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch appointments')
@@ -31,7 +31,7 @@ export function useAppointments(patientId: string | null) {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.get(`/platform/appointments/${appointmentId}`)
+      const res = await apiClient.get<any>(`/platform/appointments/${appointmentId}`)
       setSelectedAppointment(res)
       return res
     } catch (err) {
@@ -68,7 +68,7 @@ export function useAppointments(patientId: string | null) {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.post(
+      const res = await apiClient.post<any>(
         `/platform/appointments/${appointmentId}/reschedule`,
         { newStartTime: newStart, newEndTime: newEnd }
       )
@@ -90,7 +90,7 @@ export function useAppointments(patientId: string | null) {
       const startIso = scheduledStart.toISOString()
       const endIso = scheduledEnd.toISOString()
 
-      const res = await apiClient.post('/platform/appointments/book', {
+      const res = await apiClient.post<any>('/platform/appointments/book', {
         doctorProfileId: doctorId,
         specialtyCode: "GP",        // TODO: make this dynamic based on selected doctor
         consultationMode: "Video",    // TODO: make this dynamic based on UI selection

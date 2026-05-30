@@ -126,7 +126,7 @@ class ApiClient {
       return undefined as T
     }
 
-    return response.json()
+    return (await response.json()) as T
   }
 
   private async refreshAccessToken(): Promise<string | null> {

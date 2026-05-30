@@ -21,7 +21,7 @@ export class PatientApi {
   }
 
   async withdrawConsent(patientAccountId: string, consentType: string): Promise<void> {
-    return apiClient.post(`${this.baseUrl}/${patientAccountId}/consents/${consentType}/withdraw`)
+    return apiClient.get(`${this.baseUrl}/${patientAccountId}/consents/${consentType}/withdraw`)
   }
 }
 

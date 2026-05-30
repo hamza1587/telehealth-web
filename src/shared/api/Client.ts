@@ -59,7 +59,7 @@ export class ApiClient {
       throw new Error(error.message || `HTTP error! status: ${response.status}`);
     }
 
-    return response.json();
+    return response.json() as T;
   }
 
   async post<T>(endpoint: string, data: unknown): Promise<T> {
@@ -69,7 +69,7 @@ export class ApiClient {
     });
   }
 
-  async get<T>(endpoint: string): Promise<T> {
+  async get<T = unknown>(endpoint: string): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'GET',
     });

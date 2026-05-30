@@ -13,7 +13,7 @@ export function useNotifications() {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.get(
+      const res = await apiClient.get<any>(
         `/platform/notifications/my-notifications?page=${page}&pageSize=${pageSize}`
       )
       setNotifications(res.items || [])
@@ -27,7 +27,7 @@ export function useNotifications() {
 
   const fetchPreferences = useCallback(async () => {
     try {
-      const res = await apiClient.get('/platform/notifications/my-preferences')
+      const res = await apiClient.get<any>('/platform/notifications/my-preferences')
       setPreferences(res)
     } catch {
       // Silently fail - preferences are optional
@@ -60,7 +60,7 @@ export function useNotifications() {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.put('/platform/notifications/my-preferences', prefs)
+      const res = await apiClient.put<any>('/platform/notifications/my-preferences', prefs)
       setPreferences(res.preferences || prefs)
       return true
     } catch (err) {

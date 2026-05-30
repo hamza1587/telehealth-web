@@ -152,7 +152,7 @@ export function DoctorOnboardingForm() {
       case 0:
         return (
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid  ={}  ={} >
               <TextField
                 fullWidth
                 label="Legal Name"
@@ -161,7 +161,7 @@ export function DoctorOnboardingForm() {
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid  ={}  ={} >
               <TextField
                 fullWidth
                 label="Email"
@@ -171,7 +171,7 @@ export function DoctorOnboardingForm() {
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid  ={}  ={} >
               <TextField
                 fullWidth
                 label="Phone Number"
@@ -180,7 +180,7 @@ export function DoctorOnboardingForm() {
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid  ={}  ={} >
               <TextField
                 fullWidth
                 label="Country of Practice"
@@ -194,7 +194,7 @@ export function DoctorOnboardingForm() {
       case 1:
         return (
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid  ={}  ={} >
               <FormControl fullWidth required>
                 <InputLabel>Primary Specialty</InputLabel>
                 <Select
@@ -208,7 +208,7 @@ export function DoctorOnboardingForm() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid  ={}  ={} >
               <FormControl fullWidth>
                 <InputLabel>Other Specialties</InputLabel>
                 <Select
@@ -230,7 +230,7 @@ export function DoctorOnboardingForm() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12 }}>
+            <Grid  ={} >
               <FormControl fullWidth required>
                 <InputLabel>Languages</InputLabel>
                 <Select
@@ -252,7 +252,7 @@ export function DoctorOnboardingForm() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12 }}>
+            <Grid  ={} >
               <TextField
                 fullWidth
                 multiline
@@ -264,7 +264,7 @@ export function DoctorOnboardingForm() {
                 placeholder="MD, Board Certification, etc."
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid  ={}  ={} >
               <TextField
                 fullWidth
                 type="number"
@@ -275,7 +275,7 @@ export function DoctorOnboardingForm() {
                 slotProps={{ htmlInput: { min: 0, max: 70 } }}
               />
             </Grid>
-            <Grid size={{ xs: 12 }}>
+            <Grid  ={} >
               <TextField
                 fullWidth
                 multiline
@@ -292,7 +292,7 @@ export function DoctorOnboardingForm() {
       case 2:
         return (
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid  ={}  ={} >
               <TextField
                 fullWidth
                 label="Medical License Number"
@@ -301,7 +301,7 @@ export function DoctorOnboardingForm() {
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid  ={}  ={} >
               <TextField
                 fullWidth
                 label="Licensing Authority"
@@ -310,7 +310,7 @@ export function DoctorOnboardingForm() {
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid  ={}  ={} >
               <TextField
                 fullWidth
                 type="date"
@@ -321,7 +321,7 @@ export function DoctorOnboardingForm() {
                 slotProps={{ inputLabel: { shrink: true } }}
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid  ={}  ={} >
               <TextField
                 fullWidth
                 label="Malpractice Insurance Provider"
@@ -330,7 +330,7 @@ export function DoctorOnboardingForm() {
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid  ={}  ={} >
               <TextField
                 fullWidth
                 label="Insurance Policy Number"
@@ -339,7 +339,7 @@ export function DoctorOnboardingForm() {
                 required
               />
             </Grid>
-            <Grid size={{ xs: 12 }}>
+            <Grid  ={} >
               <Card variant="outlined">
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
@@ -381,27 +381,27 @@ export function DoctorOnboardingForm() {
               Please review all information before submitting. You cannot edit your application once submitted.
             </Alert>
             <Grid container spacing={2}>
-              <Grid size={{ xs: 12, md: 6 }}>
+              <Grid  ={}  ={} >
                 <Typography variant="subtitle2" color="text.secondary">Legal Name</Typography>
                 <Typography>{formData.legalName || '-'}</Typography>
               </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
+              <Grid  ={}  ={} >
                 <Typography variant="subtitle2" color="text.secondary">Email</Typography>
                 <Typography>{formData.email || '-'}</Typography>
               </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
+              <Grid  ={}  ={} >
                 <Typography variant="subtitle2" color="text.secondary">Primary Specialty</Typography>
                 <Typography>{formData.primarySpecialty || '-'}</Typography>
               </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
+              <Grid  ={}  ={} >
                 <Typography variant="subtitle2" color="text.secondary">Years of Experience</Typography>
                 <Typography>{formData.yearsOfExperience || '-'}</Typography>
               </Grid>
-              <Grid size={{ xs: 12 }}>
+              <Grid  ={} >
                 <Typography variant="subtitle2" color="text.secondary">License Number</Typography>
                 <Typography>{formData.licenseNumber || '-'}</Typography>
               </Grid>
-              <Grid size={{ xs: 12 }}>
+              <Grid  ={} >
                 <Typography variant="subtitle2" color="text.secondary">Biography</Typography>
                 <Typography>{formData.biography || '-'}</Typography>
               </Grid>

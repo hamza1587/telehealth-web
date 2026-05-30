@@ -33,7 +33,9 @@ export function Field({
       placeholder={placeholder}
       multiline={multiline}
       minRows={minRows}
-      slotProps={shrink ? { inputLabel: { shrink: true } } : undefined}
+      InputLabelProps={{
+        shrink: shrink ? true : undefined,
+      }}
     />
   )
 }

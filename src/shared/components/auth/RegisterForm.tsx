@@ -159,71 +159,63 @@ export function RegisterForm({ onSuccess, onLoginClick }: RegisterFormProps) {
         
       case 1:
         return (
-          <Stack spacing={2}>
-            <TextField
-              label="Email Address"
-              type="email"
-              required
-              fullWidth
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <EmailIcon color="action" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-            <TextField
-              label="First Name"
-              required
-              fullWidth
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PersonIcon color="action" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-            <TextField
-              label="Last Name"
-              required
-              fullWidth
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PersonIcon color="action" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-            <TextField
-              label="Phone Number (optional)"
-              fullWidth
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <PhoneIcon color="action" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
+      <Stack spacing={2}>
+        <TextField
+          label="Email Address"
+          type="email"
+          required
+          fullWidth
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <EmailIcon color="action" />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <TextField
+          label="First Name"
+          required
+          fullWidth
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <PersonIcon color="action" />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <TextField
+          label="Last Name"
+          required
+          fullWidth
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <PersonIcon color="action" />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <TextField
+          label="Phone Number (optional)"
+          fullWidth
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <PhoneIcon color="action" />
+              </InputAdornment>
+            ),
+          }}
+        />
             <FormControl fullWidth>
               <InputLabel>Country</InputLabel>
               <Select
@@ -249,48 +241,44 @@ export function RegisterForm({ onSuccess, onLoginClick }: RegisterFormProps) {
       case 2:
         return (
           <Stack spacing={2}>
-            <TextField
-              label="Password"
-              type={showPassword ? 'text' : 'password'}
-              required
-              fullWidth
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              helperText="Must be at least 12 characters with uppercase, lowercase, number, and special character"
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockIcon color="action" />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-            <TextField
-              label="Confirm Password"
-              type={showPassword ? 'text' : 'password'}
-              required
-              fullWidth
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockIcon color="action" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
+        <TextField
+          label="Password"
+          type={showPassword ? 'text' : 'password'}
+          required
+          fullWidth
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          helperText="Must be at least 12 characters with uppercase, lowercase, number, and special character"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <LockIcon color="action" />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        <TextField
+          label="Confirm Password"
+          type={showPassword ? 'text' : 'password'}
+          required
+          fullWidth
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <LockIcon color="action" />
+              </InputAdornment>
+            ),
+          }}
+        />
             <FormControlLabel
               control={
                 <Checkbox

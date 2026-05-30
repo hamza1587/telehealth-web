@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import {
-  Dialog,
-  DialogContent,
-  Paper,
-  IconButton,
-  Box,
+Dialog,
+DialogContent,
+Paper,
+IconButton,
+Box,
 } from '@mui/material'
 import { Close as CloseIcon } from '@mui/icons-material'
 import { LoginForm } from './LoginForm.tsx'
@@ -28,23 +28,19 @@ export function AuthModal({ open, onClose, initialView = 'login', onSuccess }: A
   }
 
   return (
-    <Dialog 
-      open={open} 
-      onClose={onClose}
-      maxWidth="sm"
-      fullWidth
-      slots={{
-        paper: Paper
-      }}
-      slotProps={{
-        paper: {
-          sx: {
-            borderRadius: 4,
-            overflow: 'hidden',
-          }
-        }
-      }}
-    >
+  <Dialog
+    open={open}
+    onClose={onClose}
+    maxWidth="sm"
+    fullWidth
+    PaperComponent={Paper}
+    PaperProps={{
+      sx: {
+        borderRadius: 4,
+        overflow: 'hidden',
+      },
+    }}
+  >
       <Box sx={{ position: 'relative' }}>
         <IconButton
           onClick={onClose}

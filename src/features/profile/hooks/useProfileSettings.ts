@@ -13,7 +13,7 @@ export function useProfileSettings() {
     setError(null)
     try {
       const res = await apiClient.get('/platform/auth/me')
-      setProfile(res)
+      setProfile(res as User)
       return res
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch profile')
@@ -60,7 +60,7 @@ export function useProfileSettings() {
     setError(null)
     try {
       const res = await apiClient.post('/platform/auth/mfa/setup', {})
-      return res
+      return res as MfaSetupResponse
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to setup MFA')
       return null

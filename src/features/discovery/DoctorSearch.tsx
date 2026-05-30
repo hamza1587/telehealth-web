@@ -177,8 +177,8 @@ export function DoctorSearch() {
           />
 
           {showFilters && (
-            <Grid container spacing={2} sx={{ mt: 2 }}>
-              <Grid size={{ xs: 12, md: 4 }}>
+            <Grid container spacing={2} sx={{ ={} }}>
+              <Grid  ={}  ={} >
                 <FormControl fullWidth>
                   <InputLabel>Specialty</InputLabel>
                   <Select
@@ -192,7 +192,7 @@ export function DoctorSearch() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid size={{ xs: 12, md: 4 }}>
+              <Grid  ={}  ={} >
                 <FormControl fullWidth>
                   <InputLabel>Language</InputLabel>
                   <Select
@@ -206,7 +206,7 @@ export function DoctorSearch() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid size={{ xs: 12, md: 4 }}>
+              <Grid  ={}  ={} >
                 <TextField
                   fullWidth
                   type="number"
@@ -226,7 +226,7 @@ export function DoctorSearch() {
 
       <Grid container spacing={3}>
         {filteredDoctors.map(doctor => (
-          <Grid size={{ xs: 12, md: 6, lg: 4 }} key={doctor.id}>
+          <Grid size={{ ={}, ={}, ={} }} key={doctor.id}>
             <Card variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <CardContent sx={{ flex: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>

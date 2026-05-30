@@ -116,7 +116,7 @@ export function DoctorAvailabilityCalendar() {
         {DAYS.map((day, index) => {
           const daySlots = getSlotsForDay(index)
           return (
-            <Grid size={{ xs: 12, md: 6, lg: 4 }} key={day}>
+            <Grid size={{ ={}, ={}, ={} }} key={day}>
               <Card variant="outlined">
                 <CardContent>
                   <Typography variant="h6" sx={{ mb: 2 }}>
@@ -178,8 +178,8 @@ export function DoctorAvailabilityCalendar() {
           {editingSlot ? 'Edit Availability Slot' : 'Add Availability Slot'}
         </DialogTitle>
         <DialogContent>
-          <Grid container spacing={3} sx={{ mt: 1 }}>
-            <Grid size={{ xs: 12 }}>
+          <Grid container spacing={3} sx={{ ={} }}>
+            <Grid  ={} >
               <FormControl fullWidth>
                 <InputLabel>Day of Week</InputLabel>
                 <Select
@@ -195,7 +195,7 @@ export function DoctorAvailabilityCalendar() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid  ={}  ={} >
               <FormControl fullWidth>
                 <InputLabel>Start Time</InputLabel>
                 <Select
@@ -213,7 +213,7 @@ export function DoctorAvailabilityCalendar() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid  ={}  ={} >
               <FormControl fullWidth>
                 <InputLabel>End Time</InputLabel>
                 <Select
@@ -231,7 +231,7 @@ export function DoctorAvailabilityCalendar() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12 }}>
+            <Grid  ={} >
               <FormControl fullWidth>
                 <InputLabel>Consultation Mode</InputLabel>
                 <Select
@@ -247,7 +247,7 @@ export function DoctorAvailabilityCalendar() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12 }}>
+            <Grid  ={} >
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Switch
                   checked={formData.isInstantEnabled}

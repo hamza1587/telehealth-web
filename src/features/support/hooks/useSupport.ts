@@ -14,7 +14,8 @@ export function useSupportTickets() {
     setError(null)
     try {
       const res = await apiClient.get(`/platform/support/my-tickets?status=${status || ''}`)
-      setTickets(res.items || [])
+      const data = res as { items?: SupportTicket[] }
+      setTickets(data.items || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch tickets')
     } finally {
@@ -26,9 +27,10 @@ export function useSupportTickets() {
     setLoading(true)
     try {
       const res = await apiClient.get(`/platform/support/tickets/${ticketId}`)
-      setSelectedTicket(res)
-      setMessages(res.comments || [])
-      return res
+      const data = res as SupportTicket & { comments?: TicketMessage[] }
+      setSelectedTicket(data)
+      setMessages(data.comments || [])
+      return data
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch ticket details')
       return null
@@ -42,8 +44,9 @@ export function useSupportTickets() {
     setError(null)
     try {
       const res = await apiClient.post('/platform/support/tickets', form)
-      setTickets(prev => [res.ticket, ...prev])
-      return { success: true, ticket: res.ticket }
+      const data = res as { ticket: SupportTicket }
+      setTickets(prev => [data.ticket, ...prev])
+      return { success: true, ticket: data.ticket }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create ticket')
       return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }
@@ -55,7 +58,8 @@ export function useSupportTickets() {
   const replyToTicket = useCallback(async (ticketId: string, content: string) => {
     try {
       const res = await apiClient.post(`/platform/support/tickets/${ticketId}/reply`, { content })
-      setMessages(prev => [...prev, res.message])
+      const data = res as { message: TicketMessage }
+      setMessages(prev => [...prev, data.message])
       return { success: true }
     } catch (err) {
       return { success: false, error: err instanceof Error ? err.message : 'Unknown error' }

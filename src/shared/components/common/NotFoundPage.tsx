@@ -1,9 +1,7 @@
-import { Box, Button, Card, CardContent, Typography, useTheme } from '@mui/material'
+import { Box, Button, Card, CardContent, Typography } from '@mui/material'
 import { Build as BuildIcon } from '@mui/icons-material'
 
 export function NotFoundPage() {
-  const theme = useTheme()
-
   const handleBackToDashboard = () => {
     window.location.href = '/'
   }
@@ -29,35 +27,35 @@ export function NotFoundPage() {
           textAlign: 'center',
           borderRadius: 4,
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
-          border: '1px solid',
-          borderColor: 'divider',
-          overflow: 'hidden',
-          position: 'relative',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 4,
-            background: `linear-gradient(90deg, \${theme.palette.primary.main} 0%, \${theme.palette.success.main} 100%)`,
-          },
+    border: '1px solid',
+      borderColor: 'divider',
+      overflow: 'hidden',
+      position: 'relative',
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 4,
+        background: 'linear-gradient(90deg, #1976d2 0%, #2e7d32 100%)',
+      },
         }}
       >
         <CardContent sx={{ p: { xs: 4, md: 5 } }}>
           {/* 404 Icon with gradient background */}
           <Box
             sx={{
-              width: 120,
-              height: 120,
-              mx: 'auto',
-              mb: 3,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '50%',
-              background: `linear-gradient(135deg, \${theme.palette.primary.light} 0%, \${theme.palette.primary.main} 100%)`,
-              boxShadow: `0 8px 24px rgba(47, 125, 246, 0.3)`,
+    width: 120,
+      height: 120,
+      mx: 'auto',
+      mb: 3,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: '50%',
+      background: 'linear-gradient(135deg, #42a5f5 0%, #1976d2 100%)',
+      boxShadow: '0 8px 24px rgba(47, 125, 246, 0.3)',
             }}
           >
             <BuildIcon sx={{ fontSize: 60, color: 'white' }} />

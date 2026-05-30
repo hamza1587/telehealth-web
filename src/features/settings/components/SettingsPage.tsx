@@ -268,7 +268,7 @@ export function SettingsPage({
                   <LockIcon sx={{ mr: 1, fontSize: 18, verticalAlign: 'middle' }} />
                   Change Password
                 </Typography>
-                <Grid container spacing={2} sx={{ mt: 1 }}>
+                <Grid container spacing={2} sx={{ ={} }}>
                   <Grid item xs={12}>
                     <TextField
                       fullWidth

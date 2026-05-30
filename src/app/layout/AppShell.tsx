@@ -62,10 +62,10 @@ export function AppShell() {
     >
       <Container maxWidth="xl">
         <Grid container spacing={3}>
-          <Grid size={{ xs: 12, lg: 3 }}>
+          <Grid xs={12} lg={3}>
             <Sidebar activeKey={selectedWorkspace} onSelect={setSelectedWorkspace} statusMessage={patientOnboarding.statusMessage} />
           </Grid>
-          <Grid size={{ xs: 12, lg: 9 }}>
+          <Grid  ={}  ={} >
             <Stack spacing={3}>
               <Paper elevation={0} sx={{ p: { xs: 2.5, md: 3.5 }, borderRadius: 6, border: '1px solid', borderColor: 'divider' }}>
                 <Stack spacing={2}>

@@ -7,25 +7,25 @@ import { MetricRow } from '@shared/components/common/MetricRow.tsx'
 export function ConsultationWorkspace() {
   return (
     <Grid container spacing={3}>
-      <Grid size={{ xs: 12, md: 7 }}>
+      <Grid  ={}  ={} >
         <Card sx={{ borderRadius: 5 }}>
           <CardContent>
             <SectionHeader eyebrow="Consultation flow" title="Voice and video room experience" status="Room shell" statusColor="success" />
-            <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid size={{ xs: 12, md: 6 }}>
+            <Grid container spacing={2} sx={{ ={} }}>
+              <Grid  ={}  ={} >
                 <SurfaceTile title="Pre-call state" items={['Camera and microphone check', 'Patient identity recap', 'Consent and no-recording notice', 'Join room CTA']} />
               </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
+              <Grid  ={}  ={} >
                 <SurfaceTile title="Live room" items={['Doctor and patient panels', 'Call timer and connection health', 'Muted/video-off indicators', 'Escalation and end session controls']} />
               </Grid>
-              <Grid size={{ xs: 12 }}>
+              <Grid  ={} >
                 <SurfaceTile title="Post-call handoff" items={['Route into notes and prescription scaffold', 'Billing finalization and summary', 'Patient follow-up instructions', 'Audit event emission']} />
               </Grid>
             </Grid>
           </CardContent>
         </Card>
       </Grid>
-      <Grid size={{ xs: 12, md: 5 }}>
+      <Grid  ={}  ={} >
         <InfoCard title="Session controls" eyebrow="Trust and safety">
           <MetricRow label="Recording" value="Disabled in MVP" />
           <MetricRow label="Mode" value="Voice and video only" />

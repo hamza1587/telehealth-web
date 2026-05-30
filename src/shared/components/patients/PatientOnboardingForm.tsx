@@ -157,8 +157,8 @@ export function PatientOnboardingForm({ onSubmit, onCancel }: PatientOnboardingF
                 type="date"
                 value={dateOfBirth}
                 onChange={(e) => setDateOfBirth(e.target.value)}
-                slotProps={{ inputLabel: { shrink: true } }}
-                required
+      InputLabelProps={{ shrink: true }}
+      required
                 disabled={loading}
               />
               <FormControl fullWidth required>

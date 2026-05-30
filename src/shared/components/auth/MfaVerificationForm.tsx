@@ -60,23 +60,21 @@ export function MfaVerificationForm({ onSuccess, onCancel }: MfaVerificationForm
           </Alert>
         )}
 
-        <TextField
-          label="Verification Code"
-          type="text"
-          required
-          fullWidth
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          disabled={isLoading}
-          placeholder="000000"
-          slotProps={{
-            htmlInput: {
-              maxLength: 6,
-              pattern: '[0-9]*',
-            }
-          }}
-          helperText="Enter the 6-digit code from your authenticator app"
-        />
+  <TextField
+    label="Verification Code"
+    type="text"
+    required
+    fullWidth
+    value={code}
+    onChange={(e) => setCode(e.target.value)}
+    disabled={isLoading}
+    inputProps={{
+      maxLength: 6,
+      pattern: '[0-9]*',
+    }}
+    placeholder="000000"
+    helperText="Enter the 6-digit code from your authenticator app"
+  />
 
         <Button
           type="submit"

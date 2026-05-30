@@ -113,7 +113,7 @@ export function NotificationCenter({
             Delivery Channels
           </Typography>
 
-          <Grid container spacing={3} sx={{ mb: 3 }}>
+          <Grid container spacing={3} sx={{ ={} }}>
             <Grid item xs={12} sm={6} md={3}>
               <Paper
                 variant="outlined"

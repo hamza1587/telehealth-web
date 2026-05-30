@@ -1,5 +1,5 @@
-import { Component, ErrorInfo, ReactNode } from 'react'
-import { Box, Button, Card, CardContent, Typography, useTheme } from '@mui/material'
+import { Component, type ErrorInfo, type ReactNode } from 'react'
+import { Box, Button, Card, CardContent, Typography } from '@mui/material'
 import { Error as ErrorIcon } from '@mui/icons-material'
 
 interface Props {
@@ -97,9 +97,20 @@ export class ErrorBoundary extends Component<Props, State> {
                   borderRadius: '50%',
                   background: (theme) =>
                     `linear-gradient(135deg, \${theme.palette.error.light} 0%, \${theme.palette.error.main} 100%)`,
-                  boxShadow: '0 8px 24px rgba(244, 67, 54, 0.3)',
-                }}
-              >
+      boxShadow: '0 8px 24px rgba(244, 67, 54, 0.3)',
+      }} >
+    </Box>
+
+    {/* Error Message */}
+    <Typography
+      variant="h4"
+      sx={{
+        fontWeight: 800,
+        color: 'error.main',
+        mb: 2,
+        fontSize: { xs: '1.75rem', md: '2rem' },
+      }}
+    >
                 <ErrorIcon sx={{ fontSize: 50, color: 'white' }} />
               </Box>
 
@@ -162,29 +173,11 @@ export class ErrorBoundary extends Component<Props, State> {
 
               {/* Try Again Button */}
               <Button
-                variant="contained"
-                color="error"
-                size="large"
-                onClick={this.handleTryAgain}
-                sx={{
-                  px: 4,
-                  py: 1.5,
-                  fontSize: '1rem',
-                  fontWeight: 600,
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  background: (theme) =>
-                    `linear-gradient(135deg, \${theme.palette.error.main} 0%, \${theme.palette.error.dark} 100%)`,
-                  boxShadow: '0 4px 14px rgba(244, 67, 54, 0.4)',
-                  '&:hover': {
-                    background: (theme) =>
-                      `linear-gradient(135deg, \${theme.palette.error.dark} 0%, \${theme.palette.error.main} 100%)`,
-                    boxShadow: '0 6px 20px rgba(244, 67, 54, 0.5)',
-                    transform: 'translateY(-2px)',
-                  },
-                  transition: 'all 0.2s ease-in-out',
-                }}
-              >
+      variant="contained"
+      color="error"
+      size="large"
+      onClick={this.handleTryAgain}
+      sx={{
                 Try Again
               </Button>
             </CardContent>

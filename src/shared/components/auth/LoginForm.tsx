@@ -91,53 +91,49 @@ export function LoginForm({ onSuccess, onRegisterClick, onForgotPasswordClick }:
           </Alert>
         )}
 
-        <TextField
-          label="Email Address"
-          type="email"
-          required
-          fullWidth
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={isLoading}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <EmailIcon color="action" />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
+  <TextField
+    label="Email Address"
+    type="email"
+    required
+    fullWidth
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+    disabled={isLoading}
+    InputProps={{
+      startAdornment: (
+        <InputAdornment position="start">
+          <EmailIcon color="action" />
+        </InputAdornment>
+      ),
+    }}
+  />
 
-        <TextField
-          label="Password"
-          type={showPassword ? 'text' : 'password'}
-          required
-          fullWidth
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={isLoading}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LockIcon color="action" />
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => setShowPassword(!showPassword)}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
+  <TextField
+    label="Password"
+    type={showPassword ? 'text' : 'password'}
+    required
+    fullWidth
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    disabled={isLoading}
+    InputProps={{
+      startAdornment: (
+        <InputAdornment position="start">
+          <LockIcon color="action" />
+        </InputAdornment>
+      ),
+      endAdornment: (
+        <InputAdornment position="end">
+          <IconButton
+            onClick={() => setShowPassword(!showPassword)}
+            edge="end"
+          >
+            {showPassword ? <VisibilityOff /> : <Visibility />}
+          </IconButton>
+        </InputAdornment>
+      ),
+    }}
+  />
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <FormControlLabel

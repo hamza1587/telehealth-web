@@ -7,7 +7,7 @@ export function OverviewWorkspace() {
     <Stack spacing={3}>
       <Grid container spacing={3}>
         {launchTracks.map((track) => (
-          <Grid key={track.title} size={{ xs: 12, md: 6, xl: 4 }}>
+          <Grid key={track.title} size={{ ={}, ={}, ={} }}>
             <Card sx={{ borderRadius: 5, height: '100%' }}>
               <CardContent>
                 <Stack spacing={1.5}>
@@ -41,16 +41,16 @@ export function OverviewWorkspace() {
               Delivery architecture for the MVP UI
             </Typography>
             <Grid container spacing={2}>
-              <Grid size={{ xs: 12, md: 3 }}>
+              <Grid  ={}  ={} >
                 <StageCard title="Foundation" points={['Theme, navigation shell, and layout tokens', 'Reusable cards, forms, lists, and status chips', 'Patient flow connected to live API']} />
               </Grid>
-              <Grid size={{ xs: 12, md: 3 }}>
+              <Grid  ={}  ={} >
                 <StageCard title="Clinical market" points={['Doctor onboarding and verification boards', 'Search, profile cards, and scheduling', 'Live consultation room shell']} />
               </Grid>
-              <Grid size={{ xs: 12, md: 3 }}>
+              <Grid  ={}  ={} >
                 <StageCard title="Monetization" points={['Wallet states and purchase bundles', 'Per-second timer and charging visibility', 'Payment receipts and disputes']} />
               </Grid>
-              <Grid size={{ xs: 12, md: 3 }}>
+              <Grid  ={}  ={} >
                 <StageCard title="Operations" points={['Admin work queues and support inbox', 'GDPR intake and audit explorer', 'Compliance dashboards and actions']} />
               </Grid>
             </Grid>

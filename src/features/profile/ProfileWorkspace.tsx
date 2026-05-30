@@ -1,31 +1,26 @@
-import {
-  Box, Card, CardContent, Typography, Paper, Grid, Stack,
-  CircularProgress, Alert, Tabs, Tab,
-} from '@mui/material'
+import { Avatar, Box, Card, CardContent, Typography, Stack } from '@mui/material'
 import {
   Person as PersonIcon,
   Lock as LockIcon,
   Security as SecurityIcon,
-  Public as PublicIcon,
   Delete as DeleteIcon,
 } from '@mui/icons-material'
+import type { User } from '@shared/types/auth.ts'
 import { useAuth } from '@shared/auth/AuthContext.tsx'
 import { useProfileSettings } from './hooks/useProfileSettings.ts'
-import { SettingsPage } from './components/SettingsPage.tsx'
+import { SettingsPage } from '../settings/components/SettingsPage.tsx'
 
 export function ProfileWorkspace() {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   const {
     profile,
     loading,
     error,
-    fetchProfile,
     updateProfile,
     changePassword,
     setupMfa,
     confirmMfa,
     disableMfa,
-    manageDevice,
   } = useProfileSettings()
 
   return (

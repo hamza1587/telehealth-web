@@ -1,14 +1,16 @@
+import { useState } from 'react'
 import {
-  Box, Card, CardContent, Typography, TextField, Button,
-  Stack, CircularProgress, Alert, Paper, Grid,
+Box, Card, CardContent, Typography, TextField, Button,
+Stack, CircularProgress, Alert, Paper, Grid,
+Avatar, Chip, Divider,
 } from '@mui/material'
 import {
-  Science as ScienceIcon,
-  Person as PersonIcon,
-  CheckCircle as CheckIcon,
-  Cancel as CancelIcon,
-  Public as PublicIcon,
-  Save as SaveIcon,
+Science as ScienceIcon,
+Person as PersonIcon,
+CheckCircle,
+Cancel,
+Save,
+CalendarToday,
 } from '@mui/icons-material'
 import type { ResearchStudy, ResearchEnrollmentForm, ResearchEnrollmentForm as EnrollmentForm } from '@shared/types/index.ts'
 
@@ -137,7 +139,7 @@ export function ResearchStudyDetail({
             </Grid>
             <Grid item xs={12} sm={6}>
               <Stack direction="row" spacing={1} alignItems="center">
-                <PublicIcon fontSize="small" color="action" />
+                <Public fontSize="small" color="action" />
                 <Typography variant="body2" color="text.secondary">
                   {study.dataTypes.length} data categories
                 </Typography>
@@ -200,7 +202,7 @@ export function ResearchStudyDetail({
       ) : (
         <Card variant="outlined" sx={{ borderRadius: 4, mb: 2 }}>
           <CardContent sx={{ textAlign: 'center' }}>
-            <CheckCircle fontSize="large" color="success" sx={{ mb: 2 }} />
+            <CheckIcon fontSize="large" color="success" sx={{ mb: 2 }} />
             <Typography variant="h6" gutterBottom>
               You Are Enrolled
             </Typography>
@@ -224,7 +226,7 @@ export function ResearchStudyDetail({
       <Card variant="outlined" sx={{ borderRadius: 4 }}>
         <CardContent>
           <Typography variant="subtitle1" fontWeight={600}>
-            <PublicIcon sx={{ mr: 1, fontSize: 18 }} />
+            <Public sx={{ mr: 1, fontSize: 18 }} />
             Consent Form
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>

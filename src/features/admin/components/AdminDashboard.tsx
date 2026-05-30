@@ -69,9 +69,9 @@ export function AdminDashboard({
   return (
     <Box>
       {/* Stat Cards */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+      <Grid container spacing={2} sx={{ ={} }}>
         {statCards.map((stat, i) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={i}>
+          <Grid size={{ ={}, ={}, ={} }} key={i}>
             <Card variant="outlined" sx={{ borderRadius: 4 }}>
               <CardContent>
                 <Stack direction="row" spacing={2}>
@@ -102,7 +102,7 @@ export function AdminDashboard({
 
       <Grid container spacing={3}>
         {/* Recent Activity */}
-        <Grid size={{ xs: 12, md: 8 }}>
+        <Grid  ={}  ={} >
           <Card variant="outlined" sx={{ borderRadius: 4 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -141,7 +141,7 @@ export function AdminDashboard({
         </Grid>
 
         {/* Quick Stats */}
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid  ={}  ={} >
           <Card variant="outlined" sx={{ borderRadius: 4, mb: 2 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>System Status</Typography>

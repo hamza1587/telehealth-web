@@ -187,7 +187,7 @@ export function DoctorProfileDetail({
           </Card>
 
           {/* Education & Languages */}
-          <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid container spacing={2} sx={{ ={} }}>
             <Grid item xs={12} sm={6}>
               <Card variant="outlined" sx={{ borderRadius: 4 }}>
                 <CardContent>

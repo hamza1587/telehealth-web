@@ -1,9 +1,9 @@
 import { Box } from '@mui/material'
-import { Science as ScienceIcon } from '@mui/icons-material'
 import { ResearchStudiesList } from './components/ResearchStudiesList.tsx'
 import { ResearchStudyDetail } from './components/ResearchStudyDetail.tsx'
 import { useResearchStudies } from './hooks/useResearchStudies.ts'
 import { useState } from 'react'
+import type { ResearchEnrollmentForm } from '@shared/types/index.ts'
 
 export function ResearchWorkspace() {
   const {
@@ -26,31 +26,32 @@ export function ResearchWorkspace() {
         <ResearchStudiesList
           studies={studies}
           loading={loading}
-          error={error || undefined}
-          onEnroll={async (studyId, form) => {
-            const result = await enrollInStudy(studyId, form)
-            if (result) setSelectedStudy(studyId)
-            return result
-          }}
-          onWithdraw={async (studyId) => {
-            return await withdrawFromStudy(studyId)
-          }}
+  error={error ?? undefined}
+  onEnroll={async (studyId, form): Promise<boolean> => {
+    const result = await enrollInStudy(studyId, form)
+    if (result) setSelectedStudy(studyId)
+    return result
+  }}
+  onWithdraw={async (studyId): Promise<boolean> => {
+    return await withdrawFromStudy(studyId)
+  }}
         />
       ) : (
         <ResearchStudyDetail
           study={selectedStudyData}
           loading={loading}
-          error={error || undefined}
-          isEnrolled={isEnrolled}
-          onEnroll={async (form) => {
-            const result = await enrollInStudy(selectedStudy!, form)
-            if (result) fetchStudies()
-            return result
-          }}
-          onWithdraw={async () => {
-            const result = await withdrawFromStudy(selectedStudy!)
-            if (result) setSelectedStudy(null)
-          }}
+  error={error ?? undefined}
+  isEnrolled={isEnrolled}
+  onEnroll={async (form): Promise<boolean> => {
+    const result = await enrollInStudy(selectedStudy!, form)
+    if (result) fetchStudies()
+    return result
+  }}
+  onWithdraw={async (): Promise<boolean> => {
+    const result = await withdrawFromStudy(selectedStudy!)
+    if (result) setSelectedStudy(null)
+    return result
+  }}
         />
       )}
 

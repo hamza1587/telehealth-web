@@ -107,7 +107,7 @@ export function AppointmentsWorkspace() {
       </Paper>
 
       {/* Stats Row */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+      <Grid container spacing={2} sx={{ ={} }}>
         <Grid item xs={6} sm={3}>
           <Card variant="outlined" sx={{ borderRadius: 3 }}>
             <CardContent sx={{ textAlign: 'center' }}>

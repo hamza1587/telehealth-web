@@ -8,7 +8,7 @@ import {
   CircularProgress,
   Button,
 } from '@mui/material'
-import { AddIcon } from '@mui/icons-material'
+import { Add as AddIcon } from '@mui/icons-material'
 import type { SupportTicket } from '@shared/types/support.ts'
 
 interface TicketListProps {

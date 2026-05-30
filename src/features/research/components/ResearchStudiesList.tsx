@@ -1,12 +1,7 @@
-import {
-  Box, Card, CardContent, Typography, Grid, Button, Chip, Paper,
-  Stack, Avatar, List, ListItem, ListItemText, ListItemAvatar,
-  Divider, CircularProgress, Alert,
+import { Avatar, Box, Card, CardContent, Typography, Grid, Button, Chip,
+Stack, Divider, CircularProgress, Alert,
 } from '@mui/material'
-import {
-  Science, Person, CalendarToday, Public, CheckCircle,
-  Pending, Cancel as CancelIcon,
-} from '@mui/icons-material'
+import { Science, Person, CalendarToday, CheckCircle } from '@mui/icons-material'
 import type { ResearchStudy, ResearchEnrollmentForm } from '@shared/types/index.ts'
 
 interface StudiesListProps {
@@ -105,7 +100,7 @@ export function ResearchStudiesList({
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="caption" color="text.secondary">
-                    <PublicIcon sx={{ fontSize: 12, mr: 0.5, verticalAlign: 'middle' }} />
+                    <Public sx={{ fontSize: 12, mr: 0.5, verticalAlign: 'middle' }} />
                     {study.dataTypes.length} data types
                   </Typography>
                 </Grid>
@@ -147,7 +142,7 @@ export function ResearchStudiesList({
                     color="error"
                     size="small"
                     onClick={() => onWithdraw(study.id)}
-                    startIcon={<CancelIcon fontSize="small" />}
+                    startIcon={        <Cancel fontSize="small" />}
                     sx={{ borderRadius: 2 }}
                   >
                     Withdraw

@@ -7,7 +7,8 @@ import {
   Alert,
   Button,
 } from '@mui/material'
-import { DescriptionIcon, DownloadIcon } from '@mui/icons-material'
+import Description from '@mui/icons-material/Description'
+import DownloadIcon from '@mui/icons-material/Download'
 import type { Prescription } from '@shared/types/prescription.ts'
 
 interface PrescriptionViewProps {
@@ -47,10 +48,10 @@ export function PrescriptionView({ prescription, loading, error }: PrescriptionV
     <Card variant="outlined">
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h6">
-            <DescriptionIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
-            Prescription
-          </Typography>
+        <Typography variant="h6">
+          <Description sx={{ mr: 1, verticalAlign: 'middle' }} />
+          Prescription
+        </Typography>
           <Chip
             label={prescription.status}
             color={prescription.status === 'final' ? 'success' : 'warning'}
@@ -96,11 +97,7 @@ export function PrescriptionView({ prescription, loading, error }: PrescriptionV
         </Box>
 
         {prescription.pdfUrl && (
-          <Button
-            variant="contained"
-            startIcon={<DownloadIcon />}
-            onClick={() => window.open(prescription.pdfUrl, '_blank')}
-          >
+          <Button variant="contained" startIcon={<DownloadIcon />} onClick={() => window.open(prescription.pdfUrl as string, '_blank')}>
             Download PDF
           </Button>
         )}

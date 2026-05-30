@@ -7,6 +7,7 @@ import { BulletRow } from '@shared/components/common/BulletRow.tsx'
 import { Field } from '@shared/components/form/Field.tsx'
 import { SelectField } from '@shared/components/form/SelectField.tsx'
 import { doctorConsultationModeOptions, doctorVerificationOptions } from '@features/doctor/config.ts'
+import { DoctorAvailabilityCalendar } from '@features/doctor/DoctorAvailabilityCalendar.tsx'
 import { useDoctorWorkspace } from '@features/doctor/hooks/useDoctorWorkspace.ts'
 
 export function DoctorWorkspace({
@@ -167,6 +168,12 @@ export function DoctorWorkspace({
             <MetricRow label="Marketplace" value={doctor?.marketplaceStatus ?? 'Hidden'} />
             <MetricRow label="Availability windows" value={String(doctor?.availabilityWindows.length ?? 0)} />
           </InfoCard>
+          <Card sx={{ borderRadius: 5 }}>
+            <CardContent>
+              <DoctorAvailabilityCalendar />
+            </CardContent>
+          </Card>
+
           <InfoCard title="Saved availability" eyebrow="Current windows">
             {doctor?.availabilityWindows.length ? (
               <List disablePadding>

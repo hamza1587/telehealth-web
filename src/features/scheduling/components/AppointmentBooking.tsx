@@ -1,19 +1,17 @@
 import { useState } from 'react'
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-  Alert,
-  CircularProgress,
+import { 
+  Button, 
+  Card, 
+  CardContent, 
+  FormControl, 
+  InputLabel, 
+  MenuItem, 
+  Select, 
+  TextField, 
+  Typography, 
+  Alert, 
+  CircularProgress, 
 } from '@mui/material'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import type { AppointmentForm, TimeSlot } from '@shared/types/appointment.ts'
 
 interface AppointmentBookingProps {
@@ -24,12 +22,12 @@ interface AppointmentBookingProps {
   onBook: (form: AppointmentForm) => Promise<void>
 }
 
-export function AppointmentBooking({
-  doctorId,
-  doctorName,
-  pricePerSecond,
-  currency,
-  onBook,
+export function AppointmentBooking({ 
+  doctorId, 
+  doctorName, 
+  pricePerSecond, 
+  currency, 
+  onBook, 
 }: AppointmentBookingProps) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
@@ -47,7 +45,7 @@ export function AppointmentBooking({
       slots.push({
         start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, 0).toISOString(),
         end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour + 1, 0).toISOString(),
-        available: Math.random() > 0.3, // Random availability for demo
+        available: Math.random() > 0.3,
       })
     }
     return slots
@@ -100,15 +98,15 @@ export function AppointmentBooking({
           </Alert>
         )}
 
-        <Box sx={{ mb: 2 }}>
-          <DatePicker
-            label="Select Date"
-            value={selectedDate}
-            onChange={setSelectedDate}
-            minDate={new Date()}
-            sx={{ width: '100%' }}
-          />
-        </Box>
+        <TextField
+          type="date"
+          label="Select Date"
+          value={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}
+          onChange={(e) => setSelectedDate(e.target.value ? new Date(e.target.value) : null)}
+          inputProps={{ min: new Date().toISOString().split('T')[0] }}
+          fullWidth
+          sx={{ mb: 2 }}
+        />
 
         {selectedDate && (
           <FormControl fullWidth sx={{ mb: 2 }}>

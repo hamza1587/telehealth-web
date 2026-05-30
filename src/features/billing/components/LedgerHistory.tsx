@@ -1,5 +1,7 @@
 import { Box, Card, CardContent, Typography, Chip, Alert } from '@mui/material'
-import { ArrowUpwardIcon, ArrowDownwardIcon, RefreshIcon } from '@mui/icons-material'
+import ArrowUpward from '@mui/icons-material/ArrowUpward'
+import ArrowDownward from '@mui/icons-material/ArrowDownward'
+import Refresh from '@mui/icons-material/Refresh'
 import type { WalletLedgerEntry } from '@shared/types/billing.ts'
 
 interface LedgerHistoryProps {
@@ -11,12 +13,12 @@ interface LedgerHistoryProps {
 export function LedgerHistory({ entries, loading, error }: LedgerHistoryProps) {
   const getEntryIcon = (type: WalletLedgerEntry['type']) => {
     switch (type) {
-      case 'credit':
-        return <ArrowUpwardIcon fontSize="small" />
-      case 'debit':
-        return <ArrowDownwardIcon fontSize="small" />
-      case 'refund':
-        return <RefreshIcon fontSize="small" />
+  case 'credit':
+  return <ArrowUpward fontSize="small" />
+  case 'debit':
+  return <ArrowDownward fontSize="small" />
+  case 'refund':
+  return <Refresh fontSize="small" />
       default:
         return null
     }
@@ -87,12 +89,12 @@ export function LedgerHistory({ entries, loading, error }: LedgerHistoryProps) {
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Chip
-                  icon={getEntryIcon(entry.type)}
-                  label={entry.type}
-                  color={getEntryColor(entry.type)}
-                  size="small"
-                />
+              <Chip 
+                {...(getEntryIcon(entry.type) ? { icon: getEntryIcon(entry.type) } : {})}
+                label={entry.type}
+                color={getEntryColor(entry.type)}
+                size="small"
+              />
                 <Typography variant="body2">{entry.description}</Typography>
               </Box>
 

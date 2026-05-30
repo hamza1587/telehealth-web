@@ -14,7 +14,8 @@ import {
   Select,
   MenuItem,
 } from '@mui/material'
-import { AddIcon, DeleteIcon } from '@mui/icons-material'
+import AddIcon from '@mui/icons-material/Add'
+import Delete from '@mui/icons-material/Delete'
 import type { Prescription, PrescriptionForm, MedicationItem } from '@shared/types/prescription.ts'
 
 interface PrescriptionFormProps {
@@ -113,9 +114,9 @@ export function PrescriptionForm({
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
               <Typography variant="subtitle2">Medication {index + 1}</Typography>
               {medications.length > 1 && (
-                <IconButton size="small" onClick={() => removeMedication(index)}>
-                  <DeleteIcon />
-                </IconButton>
+          <IconButton size="small" onClick={() => removeMedication(index)}>
+            <Delete />
+          </IconButton>
               )}
             </Box>
 

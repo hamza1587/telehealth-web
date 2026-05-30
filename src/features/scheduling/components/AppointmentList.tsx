@@ -1,5 +1,7 @@
 import { Box, Card, CardContent, Typography, Chip, Button, Alert, CircularProgress } from '@mui/material'
-import { EventIcon, VideoCallIcon, CancelIcon } from '@mui/icons-material'
+import EventIcon from '@mui/icons-material/Event'
+import VideoCallIcon from '@mui/icons-material/VideoCall'
+import CancelIcon from '@mui/icons-material/Cancel'
 import type { Appointment } from '@shared/types/appointment.ts'
 
 interface AppointmentListProps {

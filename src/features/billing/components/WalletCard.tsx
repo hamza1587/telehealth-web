@@ -1,5 +1,6 @@
 import { Box, Card, CardContent, Typography, Button, Alert, CircularProgress } from '@mui/material'
-import { AccountBalanceWalletIcon, AddIcon } from '@mui/icons-material'
+import AccountBalanceWallet from '@mui/icons-material/AccountBalanceWallet'
+import AddIcon from '@mui/icons-material/Add'
 import type { Wallet } from '@shared/types/billing.ts'
 
 interface WalletCardProps {
@@ -42,7 +43,7 @@ export function WalletCard({ wallet, loading, error, onPurchaseCredits }: Wallet
     <Card variant="outlined">
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <AccountBalanceWalletIcon sx={{ mr: 1, fontSize: 32 }} />
+          <AccountBalanceWallet sx={{ mr: 1, fontSize: 32 }} />
           <Typography variant="h6">Credit Wallet</Typography>
         </Box>
 

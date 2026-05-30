@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -11,6 +11,51 @@ export const ConsentModal: React.FC<ConsentModalProps> = ({
   onConfirm,
   onCancel
 }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const confirmButtonRef = useRef<HTMLButtonElement>(null);
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onCancel();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    document.body.style.overflow = 'hidden';
+
+    // Focus first button on open
+    confirmButtonRef.current?.focus();
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = '';
+    };
+  }, [onCancel]);
+
+  const handleTab = (e: React.KeyboardEvent) => {
+    if (e.key !== 'Tab' || !modalRef.current) return;
+
+    const focusableElements = modalRef.current.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements[0] as HTMLElement;
+    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+    if (e.shiftKey) {
+      if (document.activeElement === firstElement) {
+        e.preventDefault();
+        lastElement.focus();
+      }
+    } else {
+      if (document.activeElement === lastElement) {
+        e.preventDefault();
+        firstElement.focus();
+      }
+    }
+  };
+
   return (
     <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
@@ -18,7 +63,11 @@ export const ConsentModal: React.FC<ConsentModalProps> = ({
       aria-modal="true"
       aria-labelledby="consent-title"
     >
-      <Card className="w-full max-w-md">
+      <Card
+        ref={modalRef}
+        className="w-full max-w-md"
+        onKeyDown={handleTab}
+      >
         <CardHeader>
           <CardTitle id="consent-title">Recording Consent</CardTitle>
         </CardHeader>
@@ -40,6 +89,7 @@ export const ConsentModal: React.FC<ConsentModalProps> = ({
               variant="outline"
               className="flex-1"
               onClick={onCancel}
+              ref={cancelButtonRef}
               aria-label="Decline recording"
             >
               Decline
@@ -47,6 +97,7 @@ export const ConsentModal: React.FC<ConsentModalProps> = ({
             <Button
               className="flex-1"
               onClick={onConfirm}
+              ref={confirmButtonRef}
               aria-label="Accept recording consent"
             >
               Accept & Start Recording

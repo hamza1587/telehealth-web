@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -76,23 +76,32 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({ onJoinCall, isDoctor =
     }
   };
 
-  const toggleCamera = () => {
+  const toggleCamera = useCallback(() => {
     setCameraEnabled(!cameraEnabled);
     if (previewStream) {
       previewStream.getVideoTracks().forEach(track => {
         track.enabled = !cameraEnabled;
       });
     }
-  };
+  }, [cameraEnabled, previewStream]);
 
-  const toggleMicrophone = () => {
+  const toggleMicrophone = useCallback(() => {
     setMicEnabled(!micEnabled);
     if (previewStream) {
       previewStream.getAudioTracks().forEach(track => {
         track.enabled = !micEnabled;
       });
     }
-  };
+  }, [micEnabled, previewStream]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (e.target instanceof HTMLButtonElement) {
+        e.target.click();
+      }
+    }
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
@@ -114,9 +123,10 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({ onJoinCall, isDoctor =
                   if (video) video.srcObject = previewStream;
                 }}
                 className="w-full h-full object-cover"
+                aria-label="Camera preview"
               />
             ) : (
-              <div className="flex items-center justify-center h-full text-white">
+              <div className="flex items-center justify-center h-full text-white" aria-hidden="true">
                 <VideoOff className="w-12 h-12" />
               </div>
             )}
@@ -126,12 +136,13 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({ onJoinCall, isDoctor =
           </div>
 
           {/* Device Controls */}
-          <div className="flex justify-center gap-4">
+          <div className="flex justify-center gap-4" role="group" aria-label="Device controls">
             <Button
               variant={micEnabled ? "default" : "destructive"}
               size="icon"
               onClick={toggleMicrophone}
               aria-label={micEnabled ? "Mute microphone" : "Unmute microphone"}
+              onKeyDown={handleKeyDown}
             >
               {micEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
             </Button>
@@ -140,23 +151,29 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({ onJoinCall, isDoctor =
               size="icon"
               onClick={toggleCamera}
               aria-label={cameraEnabled ? "Turn off camera" : "Turn on camera"}
+              onKeyDown={handleKeyDown}
             >
               {cameraEnabled ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
             </Button>
-            <Button variant="outline" size="icon" aria-label="Settings">
-              <Settings className="w-4 h-4" />
+            <Button 
+              variant="outline" 
+              size="icon" 
+              aria-label="Device settings"
+              disabled
+            >
+              <Settings className="w-4 h-4" aria-hidden="true" />
             </Button>
           </div>
 
           {/* Device Selectors */}
-          <div className="space-y-4">
+          <div className="space-y-4" role="group" aria-label="Device selection">
             <div>
-              <label className="text-sm font-medium">Camera</label>
+              <label htmlFor="camera-select" className="text-sm font-medium">Camera</label>
               <select
+                id="camera-select"
                 value={selectedCamera}
                 onChange={e => setSelectedCamera(e.target.value)}
                 className="w-full mt-1 p-2 border rounded"
-                aria-label="Select camera"
               >
                 {cameras.map(camera => (
                   <option key={camera.deviceId} value={camera.deviceId}>
@@ -166,12 +183,12 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({ onJoinCall, isDoctor =
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium">Microphone</label>
+              <label htmlFor="mic-select" className="text-sm font-medium">Microphone</label>
               <select
+                id="mic-select"
                 value={selectedMicrophone}
                 onChange={e => setSelectedMicrophone(e.target.value)}
                 className="w-full mt-1 p-2 border rounded"
-                aria-label="Select microphone"
               >
                 {microphones.map(mic => (
                   <option key={mic.deviceId} value={mic.deviceId}>
@@ -181,12 +198,12 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({ onJoinCall, isDoctor =
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium">Speaker</label>
+              <label htmlFor="speaker-select" className="text-sm font-medium">Speaker</label>
               <select
+                id="speaker-select"
                 value={selectedSpeaker}
                 onChange={e => setSelectedSpeaker(e.target.value)}
                 className="w-full mt-1 p-2 border rounded"
-                aria-label="Select speaker"
               >
                 {speakers.map(speaker => (
                   <option key={speaker.deviceId} value={speaker.deviceId}>
@@ -208,10 +225,10 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({ onJoinCall, isDoctor =
           </Button>
 
           {/* Status */}
-          <div className="text-center text-sm text-muted-foreground">
+          <div className="text-center text-sm text-muted-foreground" aria-live="polite">
             <p>Ready to join? Click the button above when you're ready.</p>
-            <p className="mt-2">
-              <Badge variant="outline">Waiting for other participant</Badge>
+            <p className="mt-2" role="status">
+              <Badge variant="outline" aria-label="Call status: Waiting for other participant">Waiting for other participant</Badge>
             </p>
           </div>
         </CardContent>

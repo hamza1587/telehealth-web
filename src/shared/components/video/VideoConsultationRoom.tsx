@@ -322,14 +322,21 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
 
   switch (callState) {
     case 'waiting':
-      return <WaitingRoom onJoinCall={handleJoinCall} isDoctor={isDoctor} />;
+      return (
+        <div>
+          <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded">
+            Skip to main content
+          </a>
+          <WaitingRoom onJoinCall={handleJoinCall} isDoctor={isDoctor} />
+        </div>
+      );
 
     case 'connecting':
       return (
         <div className="flex items-center justify-center min-h-screen bg-gray-50" role="status" aria-live="polite">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4" aria-hidden="true"></div>
-            <p className="text-lg font-medium">Connecting to call...</p>
+            <h2 className="text-lg font-medium">Connecting to call...</h2>
             <p className="text-sm text-gray-500 mt-2">Please wait while we establish the connection</p>
             {retryCount > 0 && (
               <p className="text-sm text-orange-500 mt-2">Retry attempt {retryCount} of {MAX_RETRY_ATTEMPTS}</p>
@@ -342,8 +349,8 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
       return (
         <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4" role="alert">
           <div className="text-center max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
-            <div className="text-red-500 mb-4">
-              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <div className="text-red-500 mb-4" aria-hidden="true">
+              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
@@ -383,6 +390,10 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
     case 'disconnected':
       return (
         <div className="flex flex-col h-screen bg-gray-900 relative" role="main" aria-label="Video consultation room">
+          <a href="#call-controls" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded">
+            Skip to call controls
+          </a>
+
           {showConsentModal && (
             <ConsentModal
               onConfirm={handleConsentConfirm}
@@ -393,11 +404,11 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
           <RecordingIndicator isRecording={isRecording} duration={recordingDuration} />
 
           {error && (
-            <div className="bg-yellow-500 text-white px-4 py-2 flex items-center justify-between" role="alert">
+            <div className="bg-yellow-500 text-white px-4 py-2 flex items-center justify-between" role="alert" aria-live="assertive">
               <span className="text-sm">{error}</span>
               <button
                 onClick={dismissError}
-                className="ml-4 text-white hover:text-yellow-100 focus:outline-none"
+                className="ml-4 text-white hover:text-yellow-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-yellow-500"
                 aria-label="Dismiss error"
               >
                 ✕
@@ -405,9 +416,9 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
             </div>
           )}
 
-          <div className="flex-1 flex overflow-hidden">
+          <div id="main-content" className="flex-1 flex overflow-hidden">
             <div className="flex-1 flex flex-col">
-              <div className="flex-1 p-2 md:p-4">
+              <div className="flex-1 p-2 md:p-4" role="region" aria-label="Video grid">
                 <VideoGrid
                   localParticipant={localParticipant}
                   remoteParticipants={remoteParticipants}
@@ -418,7 +429,7 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
                 />
               </div>
 
-              <div className="p-2 md:p-4">
+              <div id="call-controls" className="p-2 md:p-4" role="region" aria-label="Call controls">
                 <CallControls
                   isMuted={isMuted}
                   isCameraOff={isCameraOff}
@@ -436,9 +447,9 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
             </div>
 
             {(showChat || showParticipants) && (
-              <div className="w-full md:w-80 border-l border-gray-700 bg-white fixed inset-0 md:relative z-10 md:z-auto">
+              <div className="w-full md:w-80 border-l border-gray-700 bg-white fixed inset-0 md:relative z-10 md:z-auto" role="complementary" aria-label="Side panel">
                 <button
-                  className="md:hidden absolute top-2 right-2 z-20 p-2 bg-gray-200 rounded-full"
+                  className="md:hidden absolute top-2 right-2 z-20 p-2 bg-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                   onClick={() => { setShowChat(false); setShowParticipants(false); }}
                   aria-label="Close sidebar"
                 >
@@ -463,7 +474,7 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
           </div>
 
           {callState === 'disconnected' && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20" role="alert">
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20" role="alert" aria-live="assertive">
               <div className="text-center text-white p-6">
                 <h2 className="text-2xl font-bold mb-2">Call Ended</h2>
                 <p>You have been disconnected from the call.</p>

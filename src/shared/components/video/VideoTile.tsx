@@ -31,7 +31,7 @@ export const VideoTile: React.FC<VideoTileProps> = ({
   };
 
   return (
-    <div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden">
+    <div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden" role="group" aria-label={`Video tile for ${name}`}>
       {/* Video Feed */}
       {stream && !isCameraOff ? (
         <video
@@ -43,11 +43,12 @@ export const VideoTile: React.FC<VideoTileProps> = ({
           }}
           className="w-full h-full object-cover"
           data-testid="video-element"
+          aria-label={`Video feed for ${name}`}
         />
       ) : (
         <div className="flex items-center justify-center h-full text-white">
           <div className="text-center">
-            <VideoOff className="w-12 h-12 mx-auto mb-2" />
+            <VideoOff className="w-12 h-12 mx-auto mb-2" aria-hidden="true" />
             <p className="text-sm">{name}</p>
           </div>
         </div>
@@ -62,12 +63,13 @@ export const VideoTile: React.FC<VideoTileProps> = ({
       </Badge>
 
       {/* Status Indicators */}
-      <div className="absolute top-2 right-2 flex gap-2">
+      <div className="absolute top-2 right-2 flex gap-2" role="group" aria-label="Call status indicators">
         {/* Connection Quality */}
         <div 
           className={`w-3 h-3 rounded-full ${getQualityColor()}`}
           title={`Connection: ${connectionQuality}`}
           aria-label={`Connection quality: ${connectionQuality}`}
+          aria-hidden="true"
         />
         
         {/* Mic Status */}

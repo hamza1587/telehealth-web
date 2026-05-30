@@ -74,12 +74,12 @@ export const API_ENDPOINTS = {
       refund: (id: string) => `/billing/${id}/refund`,
       feeStructure: '/billing/admin/fee-structure',
     },
-    support: {
-      tickets: '/support/agent/tickets',
-      assign: (id: string) => `/support/agent/tickets/${id}/assign`,
-      resolve: (id: string) => `/support/agent/tickets/${id}/resolve',
-      escalate: (id: string) => `/support/agent/tickets/${id}/escalate`,
-    },
+      support: {
+        tickets: '/support/agent/tickets',
+        assign: (id: string) => `/support/agent/tickets/${id}/assign`,
+        resolve: (id: string) => `/support/agent/tickets/${id}/resolve`,
+        escalate: (id: string) => `/support/agent/tickets/${id}/escalate`,
+      },
   },
 }
 

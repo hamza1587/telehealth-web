@@ -355,7 +355,7 @@ export function SettingsPage({
                     </Stack>
                   </Box>
                 ) : (
-                  <Box mt={2">
+                  <Box mt={2}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       MFA is currently enabled. Enter your current password to disable it.
                     </Typography>

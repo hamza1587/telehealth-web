@@ -1,5 +1,1 @@
-export { ConsultationWorkspace } from './ConsultationWorkspace.tsx'
-export { useConsultation } from './hooks/useConsultation.ts'
-export { ConsultationRoom } from './components/ConsultationRoom.tsx'
-export { WaitingRoom } from './components/WaitingRoom.tsx'
-export { ConsultationSessionList } from './components/ConsultationSessionList.tsx'
+export { ConsultationWorkspace } from './ConsultationWorkspace';

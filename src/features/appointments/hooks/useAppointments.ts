@@ -81,24 +81,30 @@ export function useAppointments(patientId: string | null) {
     }
   }
 
-  const bookAppointment = async (doctorId: string, start: string, end: string, notes: string) => {
+  const bookAppointment = async (doctorId: string, scheduledStart: Date, scheduledEnd: Date, notes: string) => {
     if (!patientId) return null
     setLoading(true)
     setError(null)
     try {
+      // Convert dates to ISO strings for the API
+      const startIso = scheduledStart.toISOString()
+      const endIso = scheduledEnd.toISOString()
+
       const res = await apiClient.post('/platform/appointments/book', {
-        patientId,
-        doctorId,
-        scheduledStart: start,
-        scheduledEnd: end,
+        doctorProfileId: doctorId,
+        specialtyCode: "GP",        // TODO: make this dynamic based on selected doctor
+        consultationMode: "Video",    // TODO: make this dynamic based on UI selection
+        scheduledStartsAt: startIso,
+        scheduledEndsAt: endIso,
         notes,
       })
-      return res.appointment
+      return res.Appointment
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to book appointment')
       return null
     } finally {
       setLoading(false)
+      await fetchAppointments()  // Refresh appointments immediately
     }
   }
 

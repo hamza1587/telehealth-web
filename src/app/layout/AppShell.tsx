@@ -9,14 +9,13 @@ import { OverviewWorkspace } from '@features/overview/components/OverviewWorkspa
 import { PatientWorkspace } from '@features/patient/components/PatientWorkspace.tsx'
 import { DoctorWorkspace } from '@features/doctor/components/DoctorWorkspace.tsx'
 import { DiscoveryWorkspace } from '@features/discovery/DiscoveryWorkspace.tsx'
-import { ConsultationWorkspace } from '@features/consultation/components/ConsultationWorkspace.tsx'
+import { ConsultationWorkspace } from '@features/consultation/ConsultationWorkspace.tsx'
 import { BillingWorkspace } from '@features/billing/components/BillingWorkspace.tsx'
 import { ClinicalWorkspace } from '@features/clinical/components/ClinicalWorkspace.tsx'
 import { OperationsWorkspace } from '@features/operations/components/OperationsWorkspace.tsx'
 import { AppointmentsWorkspace } from '@features/appointments/AppointmentsWorkspace.tsx'
 import { NotificationsWorkspace } from '@features/notifications/NotificationsWorkspace.tsx'
 import { ProfileWorkspace } from '@features/profile/ProfileWorkspace.tsx'
-import { SettingsPage } from '@features/settings/components/SettingsPage.tsx'
 import { GDPRWorkspace } from '@features/gdpr/GDPRWorkspace.tsx'
 import { ResearchWorkspace } from '@features/research/ResearchWorkspace.tsx'
 import { AdminWorkspace } from '@features/admin/AdminWorkspace.tsx'
@@ -102,7 +101,6 @@ export function AppShell() {
                   {selectedWorkspace === 'appointments' && <AppointmentsWorkspace />}
                   {selectedWorkspace === 'billing' && <BillingWorkspace />}
                   {selectedWorkspace === 'clinical' && <ClinicalWorkspace />}
-                  {selectedWorkspace === 'notifications' && <NotificationsWorkspace />}
                   {selectedWorkspace === 'operations' && <OperationsWorkspace />}
                   {selectedWorkspace === 'settings' && <ProfileWorkspace />}
                   {selectedWorkspace === 'gdpr' && <GDPRWorkspace />}

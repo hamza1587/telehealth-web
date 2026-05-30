@@ -8,6 +8,7 @@ export type WorkspaceKey =
   | 'clinical'
   | 'operations'
   | 'appointments'
+  | 'notifications'
   | 'profile'
   | 'settings'
   | 'admin'

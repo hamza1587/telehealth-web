@@ -1,10 +1,10 @@
 import {
-  Box, Card, CardContent, Typography, Grid, Paper, Stack,
+  Box, Card, CardContent, Typography, Grid, Stack,
   CircularProgress, Alert, Divider, List, ListItem, ListItemText,
-  ListItemAvatar, Avatar,
+  ListItemAvatar, Avatar, Chip,
 } from '@mui/material'
 import {
-  Assignment, TrendingUp, People, Notifications,
+  Assignment, TrendingUp, People,
   CheckCircle, Pending, Error as ErrorIcon,
   MonetizationOn, AccessTime,
 } from '@mui/icons-material'
@@ -71,10 +71,10 @@ export function AdminDashboard({
       {/* Stat Cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {statCards.map((stat, i) => (
-          <Grid item xs={12} sm={6} md={3} key={i}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={i}>
             <Card variant="outlined" sx={{ borderRadius: 4 }}>
               <CardContent>
-                <Stack direction="row" alignItems="center" spacing={2}>
+                <Stack direction="row" spacing={2}>
                   <Avatar
                     sx={{
                       bgcolor: `${stat.color}15`,
@@ -102,7 +102,7 @@ export function AdminDashboard({
 
       <Grid container spacing={3}>
         {/* Recent Activity */}
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Card variant="outlined" sx={{ borderRadius: 4 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -122,7 +122,7 @@ export function AdminDashboard({
                       <ListItemText
                         primary={activity.action}
                         secondary={
-                          <Stack direction="row" spacing={1} alignItems="center">
+                          <Stack direction="row" spacing={1}>
                             <Typography variant="caption">{activity.entity}</Typography>
                             <Typography variant="caption" color="text.secondary">·</Typography>
                             <Typography variant="caption" color="text.secondary">
@@ -141,11 +141,11 @@ export function AdminDashboard({
         </Grid>
 
         {/* Quick Stats */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card variant="outlined" sx={{ borderRadius: 4, mb: 2 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>System Status</Typography>
-              <Stack spacing={2} mt={1}>
+              <Stack spacing={2}>
                 <Stack direction="row" justifyContent="space-between">
                   <Typography variant="body2" color="text.secondary">API Gateway</Typography>
                   <Chip label="Operational" size="small" color="success" variant="outlined" />
@@ -177,7 +177,7 @@ export function AdminDashboard({
           <Card variant="outlined" sx={{ borderRadius: 4 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>Quick Links</Typography>
-              <Stack spacing={1} mt={1}>
+              <Stack spacing={1}>
                 {[
                   'Patient Accounts',
                   'Doctor Management',

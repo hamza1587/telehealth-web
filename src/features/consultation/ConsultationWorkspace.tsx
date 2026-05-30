@@ -1,24 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { VideoConsultationRoom } from '@/components/video/VideoConsultationRoom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Video, Calendar, Clock } from 'lucide-react';
+import React, { useState, useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@mui/material'
+import { VideoConsultationRoom } from '@shared/components/video/VideoConsultationRoom'
 
 interface ConsultationSession {
-  id: string;
-  patientName: string;
-  doctorName: string;
-  scheduledTime: Date;
-  status: 'scheduled' | 'in-progress' | 'completed';
+  id: string
+  patientName: string
+  doctorName: string
+  scheduledTime: Date
+  status: 'scheduled' | 'in-progress' | 'completed'
 }
 
 export const ConsultationWorkspace: React.FC = () => {
-  const [activeSession, setActiveSession] = useState<ConsultationSession | null>(null);
-  const [sessions, setSessions] = useState<ConsultationSession[]>([]);
+  const [activeSession, setActiveSession] = useState<ConsultationSession | null>(null)
+  const [sessions, setSessions] = useState<ConsultationSession[]>([])
 
   useEffect(() => {
-    // Mock consultation sessions
     const mockSessions: ConsultationSession[] = [
       {
         id: '1',
@@ -34,76 +30,70 @@ export const ConsultationWorkspace: React.FC = () => {
         scheduledTime: new Date(Date.now() + 3600000),
         status: 'scheduled'
       }
-    ];
-    setSessions(mockSessions);
-  }, []);
+    ]
+    setSessions(mockSessions)
+  }, [])
 
   const startConsultation = (session: ConsultationSession) => {
-    setActiveSession({
-      ...session,
-      status: 'in-progress'
-    });
-  };
+    setActiveSession({ ...session, status: 'in-progress' })
+  }
 
   const endConsultation = () => {
     if (activeSession) {
-      setSessions(prev => 
-        prev.map(s => 
-          s.id === activeSession.id 
-            ? { ...s, status: 'completed' }
-            : s
+      setSessions(prev =>
+        prev.map(s =>
+          s.id === activeSession.id ? { ...s, status: 'completed' } : s
         )
-      );
-      setActiveSession(null);
+      )
+      setActiveSession(null)
     }
-  };
+  }
 
   if (activeSession) {
     return (
       <VideoConsultationRoom
         sessionId={activeSession.id}
-        token="mock-token" // In real app, this would come from API
+        token="mock-token"
         serverUrl="wss://your-livekit-server.com"
         isDoctor={true}
         userId="current-user-id"
         userName="Current User"
       />
-    );
+    )
   }
 
   return (
     <div className="container mx-auto p-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Video Consultations</h1>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-gray-500 mt-2">
           Manage and join video consultation sessions
         </p>
       </div>
 
       <div className="grid gap-6">
-        {/* Quick Actions */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Video className="w-5 h-5" />
-              Quick Start
-            </CardTitle>
+            <CardTitle>Quick Start</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex gap-4">
-              <Button className="flex-1">
-                <Video className="w-4 h-4 mr-2" />
+              <button
+                type="button"
+                className="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
                 Start New Consultation
-              </Button>
-              <Button variant="outline" className="flex-1">
-                <Calendar className="w-4 h-4 mr-2" />
+              </button>
+              <button
+                type="button"
+                className="flex-1 px-4 py-2 border rounded hover:bg-gray-50"
+              >
                 Schedule Consultation
-              </Button>
+              </button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Scheduled Consultations */}
         <Card>
           <CardHeader>
             <CardTitle>Scheduled Consultations</CardTitle>
@@ -117,34 +107,32 @@ export const ConsultationWorkspace: React.FC = () => {
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                      <Video className="w-6 h-6 text-blue-600" />
+                      <span className="text-blue-600">📹</span>
                     </div>
                     <div>
                       <h3 className="font-medium">{session.patientName}</h3>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-gray-500">
                         with {session.doctorName}
                       </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Clock className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">
-                          {session.scheduledTime.toLocaleTimeString()}
-                        </span>
-                      </div>
+                      <p className="text-sm text-gray-500">
+                        {session.scheduledTime.toLocaleTimeString()}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline">Scheduled</Badge>
-                    <Button 
-                      size="sm"
+                    <span className="px-2 py-1 border rounded text-sm">Scheduled</span>
+                    <button
+                      type="button"
                       onClick={() => startConsultation(session)}
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                     >
                       Join Now
-                    </Button>
+                    </button>
                   </div>
                 </div>
               ))}
               {sessions.filter(s => s.status === 'scheduled').length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="text-center py-8 text-gray-500">
                   <p>No scheduled consultations</p>
                 </div>
               )}
@@ -152,7 +140,6 @@ export const ConsultationWorkspace: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Recent Consultations */}
         <Card>
           <CardHeader>
             <CardTitle>Recent Consultations</CardTitle>
@@ -166,23 +153,20 @@ export const ConsultationWorkspace: React.FC = () => {
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                      <Video className="w-6 h-6 text-green-600" />
+                      <span className="text-green-600">✓</span>
                     </div>
                     <div>
                       <h3 className="font-medium">{session.patientName}</h3>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-gray-500">
                         with {session.doctorName}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Completed at {session.scheduledTime.toLocaleTimeString()}
                       </p>
                     </div>
                   </div>
-                  <Badge variant="secondary">Completed</Badge>
+                  <span className="px-2 py-1 bg-gray-200 rounded text-sm">Completed</span>
                 </div>
               ))}
               {sessions.filter(s => s.status === 'completed').length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="text-center py-8 text-gray-500">
                   <p>No recent consultations</p>
                 </div>
               )}
@@ -191,5 +175,5 @@ export const ConsultationWorkspace: React.FC = () => {
         </Card>
       </div>
     </div>
-  );
-};
+  )
+}

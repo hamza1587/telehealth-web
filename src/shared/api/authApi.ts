@@ -1,5 +1,4 @@
-import { apiClient } from './apiClient.ts'
-import { API_ENDPOINTS } from '@shared/config/api.ts'
+import { apiClient } from '@shared/api/apiClient'
 import type {
   LoginRequest,
   LoginResponse,
@@ -15,57 +14,51 @@ import type {
 } from '@shared/types/auth.ts'
 
 export const authApi = {
-  // Authentication
   login: (data: LoginRequest) =>
-    apiClient.post<LoginResponse>(API_ENDPOINTS.auth.login, data),
+    apiClient.post<LoginResponse>('/platform/auth/login', data),
 
   verifyMfa: (data: MfaVerificationRequest) =>
-    apiClient.post<LoginResponse>(API_ENDPOINTS.auth.mfaVerify, data),
+    apiClient.post<LoginResponse>('/platform/auth/mfa/verify', data),
 
   register: (data: RegisterRequest) =>
-    apiClient.post<RegisterResponse>(API_ENDPOINTS.auth.register, data),
+    apiClient.post<RegisterResponse>('/platform/auth/register', data),
 
   logout: () =>
-    apiClient.post<void>(API_ENDPOINTS.auth.logout, {}),
+    apiClient.post<void>('/platform/auth/logout', {}),
 
   refreshToken: (data: RefreshTokenRequest) =>
-    apiClient.post<LoginResponse>(API_ENDPOINTS.auth.refresh, data),
+    apiClient.post<LoginResponse>('/platform/auth/refresh-token', data),
 
-  // Current user
   getCurrentUser: () =>
-    apiClient.get<User>(API_ENDPOINTS.auth.me),
+    apiClient.get<User>('/platform/auth/me'),
 
-  // Password management
   changePassword: (data: ChangePasswordRequest) =>
-    apiClient.post<void>(API_ENDPOINTS.auth.changePassword, data),
+    apiClient.post<void>('/platform/auth/change-password', data),
 
   forgotPassword: (data: ForgotPasswordRequest) =>
-    apiClient.post<void>(API_ENDPOINTS.auth.forgotPassword, data),
+    apiClient.post<void>('/platform/auth/forgot-password', data),
 
   resetPassword: (data: ResetPasswordRequest) =>
-    apiClient.post<void>(API_ENDPOINTS.auth.resetPassword, data),
+    apiClient.post<void>('/platform/auth/reset-password', data),
 
-  // Email verification
   verifyEmail: (token: string) =>
-    apiClient.post<void>(API_ENDPOINTS.auth.verifyEmail, { token }),
+    apiClient.post<void>('/platform/auth/verify-email', { token }),
 
   resendVerification: (email: string) =>
-    apiClient.post<void>(API_ENDPOINTS.auth.resendVerification, { email }),
+    apiClient.post<void>('/platform/auth/resend-verification', { email }),
 
-  // Phone verification
   verifyPhone: (code: string) =>
-    apiClient.post<void>(API_ENDPOINTS.auth.verifyPhone, { code }),
+    apiClient.post<void>('/platform/auth/verify-phone', { code }),
 
-  // MFA management
   setupMfa: () =>
-    apiClient.post<MfaSetupResponse>(API_ENDPOINTS.auth.mfaSetup, {}),
+    apiClient.post<MfaSetupResponse>('/platform/auth/mfa/setup', {}),
 
   confirmMfaSetup: (code: string) =>
-    apiClient.post<void>(API_ENDPOINTS.auth.mfaConfirm, { code }),
+    apiClient.post<void>('/platform/auth/mfa/confirm', { code }),
 
   disableMfa: (password: string) =>
-    apiClient.post<void>(API_ENDPOINTS.auth.mfaDisable, { password }),
+    apiClient.post<void>('/platform/auth/mfa/disable', { password }),
 
   generateRecoveryCodes: () =>
-    apiClient.post<{ recoveryCodes: string[] }>(API_ENDPOINTS.auth.mfaRecoveryCodes, {}),
+    apiClient.post<{ recoveryCodes: string[] }>('/platform/auth/mfa/recovery-codes', {}),
 }

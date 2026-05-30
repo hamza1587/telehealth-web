@@ -1,30 +1,17 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { 
-  Mic, 
-  MicOff, 
-  Video, 
-  VideoOff, 
-  MessageSquare, 
-  ScreenShare, 
-  ScreenShareOff,
-  PhoneOff,
-  Circle,
-  Users
-} from 'lucide-react';
+import React from 'react'
 
 interface CallControlsProps {
-  isMuted: boolean;
-  isCameraOff: boolean;
-  isScreenSharing: boolean;
-  isRecording: boolean;
-  onToggleMic: () => void;
-  onToggleCamera: () => void;
-  onToggleScreenShare: () => void;
-  onToggleRecording: () => void;
-  onEndCall: () => void;
-  onToggleChat?: () => void;
-  onToggleParticipants?: () => void;
+  isMuted: boolean
+  isCameraOff: boolean
+  isScreenSharing: boolean
+  isRecording: boolean
+  onToggleMic: () => void
+  onToggleCamera: () => void
+  onToggleScreenShare: () => void
+  onToggleRecording: () => void
+  onEndCall: () => void
+  onToggleChat?: () => void
+  onToggleParticipants?: () => void
 }
 
 export const CallControls: React.FC<CallControlsProps> = ({
@@ -40,90 +27,76 @@ export const CallControls: React.FC<CallControlsProps> = ({
   onToggleChat,
   onToggleParticipants
 }) => {
+  const baseBtn = 'px-4 py-2 rounded font-medium focus:outline-none focus:ring-2 focus:ring-offset-2'
+
   return (
-    <div className="flex justify-center gap-2 p-4 bg-gray-100 rounded-lg">
-      {/* Microphone */}
-      <Button
-        variant={isMuted ? "destructive" : "default"}
-        size="icon"
+    <div className="flex justify-center gap-2 p-4 bg-gray-100 rounded-lg" role="toolbar" aria-label="Call controls">
+      <button
+        type="button"
         onClick={onToggleMic}
-        aria-label={isMuted ? "Unmute microphone" : "Mute microphone"}
-        data-testid="mic-toggle"
+        aria-label={isMuted ? 'Unmute microphone' : 'Mute microphone'}
+        className={`${baseBtn} ${isMuted ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-800'}`}
       >
-        {isMuted ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-      </Button>
+        {isMuted ? 'Unmute' : 'Mute'}
+      </button>
 
-      {/* Camera */}
-      <Button
-        variant={isCameraOff ? "destructive" : "default"}
-        size="icon"
+      <button
+        type="button"
         onClick={onToggleCamera}
-        aria-label={isCameraOff ? "Turn on camera" : "Turn off camera"}
-        data-testid="camera-toggle"
+        aria-label={isCameraOff ? 'Turn on camera' : 'Turn off camera'}
+        className={`${baseBtn} ${isCameraOff ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-800'}`}
       >
-        {isCameraOff ? <VideoOff className="w-4 h-4" /> : <Video className="w-4 h-4" />}
-      </Button>
+        {isCameraOff ? 'Camera On' : 'Camera Off'}
+      </button>
 
-      {/* Screen Share */}
-      <Button
-        variant={isScreenSharing ? "secondary" : "outline"}
-        size="icon"
+      <button
+        type="button"
         onClick={onToggleScreenShare}
-        aria-label={isScreenSharing ? "Stop screen sharing" : "Share screen"}
-        data-testid="screen-share-toggle"
+        aria-label={isScreenSharing ? 'Stop screen sharing' : 'Share screen'}
+        className={`${baseBtn} ${isScreenSharing ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
       >
-        {isScreenSharing ? <ScreenShareOff className="w-4 h-4" /> : <ScreenShare className="w-4 h-4" />}
-      </Button>
+        {isScreenSharing ? 'Stop Share' : 'Share Screen'}
+      </button>
 
-      {/* Recording */}
-      <Button
-        variant={isRecording ? "destructive" : "outline"}
-        size="icon"
+      <button
+        type="button"
         onClick={onToggleRecording}
-        aria-label={isRecording ? "Stop recording" : "Start recording"}
-        data-testid="recording-toggle"
-        className={isRecording ? "animate-pulse" : ""}
+        aria-label={isRecording ? 'Stop recording' : 'Start recording'}
+        className={`${baseBtn} ${isRecording ? 'bg-red-600 text-white animate-pulse' : 'bg-gray-200 text-gray-800'}`}
       >
-        <Circle className={`w-4 h-4 ${isRecording ? "fill-red-500 text-red-500" : ""}`} />
-      </Button>
+        {isRecording ? 'Stop Rec' : 'Record'}
+      </button>
 
-      {/* Chat */}
       {onToggleChat && (
-        <Button
-          variant="outline"
-          size="icon"
+        <button
+          type="button"
           onClick={onToggleChat}
           aria-label="Toggle chat"
-          data-testid="chat-toggle"
+          className={`${baseBtn} bg-gray-200 text-gray-800`}
         >
-          <MessageSquare className="w-4 h-4" />
-        </Button>
+          Chat
+        </button>
       )}
 
-      {/* Participants */}
       {onToggleParticipants && (
-        <Button
-          variant="outline"
-          size="icon"
+        <button
+          type="button"
           onClick={onToggleParticipants}
           aria-label="Toggle participants"
-          data-testid="participants-toggle"
+          className={`${baseBtn} bg-gray-200 text-gray-800`}
         >
-          <Users className="w-4 h-4" />
-        </Button>
+          People
+        </button>
       )}
 
-      {/* End Call */}
-      <Button
-        variant="destructive"
-        size="icon"
+      <button
+        type="button"
         onClick={onEndCall}
         aria-label="End call"
-        data-testid="end-call"
-        className="ml-4"
+        className={`${baseBtn} bg-red-600 text-white ml-4`}
       >
-        <PhoneOff className="w-4 h-4" />
-      </Button>
+        End Call
+      </button>
     </div>
-  );
-};
+  )
+}

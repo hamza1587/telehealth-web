@@ -1,118 +1,104 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Video, Mic, MicOff, VideoOff, Settings } from 'lucide-react';
 
 interface Device {
-  deviceId: string;
-  label: string;
-  kind: 'audioinput' | 'videoinput' | 'audiooutput';
+  deviceId: string
+  label: string
+  kind: 'audioinput' | 'videoinput' | 'audiooutput'
 }
 
 interface WaitingRoomProps {
-  onJoinCall: () => void;
-  isDoctor?: boolean;
+  onJoinCall: () => void
+  isDoctor?: boolean
 }
 
 export const WaitingRoom: React.FC<WaitingRoomProps> = ({ onJoinCall, isDoctor = false }) => {
-  const [cameras, setCameras] = useState<Device[]>([]);
-  const [microphones, setMicrophones] = useState<Device[]>([]);
-  const [speakers, setSpeakers] = useState<Device[]>([]);
-  const [selectedCamera, setSelectedCamera] = useState<string>('');
-  const [selectedMicrophone, setSelectedMicrophone] = useState<string>('');
-  const [selectedSpeaker, setSelectedSpeaker] = useState<string>('');
-  const [cameraEnabled, setCameraEnabled] = useState(true);
-  const [micEnabled, setMicEnabled] = useState(true);
-  const [previewStream, setPreviewStream] = useState<MediaStream | null>(null);
+  const [cameras, setCameras] = useState<Device[]>([])
+  const [microphones, setMicrophones] = useState<Device[]>([])
+  const [speakers, setSpeakers] = useState<Device[]>([])
+  const [selectedCamera, setSelectedCamera] = useState('')
+  const [selectedMicrophone, setSelectedMicrophone] = useState('')
+  const [selectedSpeaker, setSelectedSpeaker] = useState('')
+  const [cameraEnabled, setCameraEnabled] = useState(true)
+  const [micEnabled, setMicEnabled] = useState(true)
+  const [previewStream, setPreviewStream] = useState<MediaStream | null>(null)
 
   useEffect(() => {
-    enumerateDevices();
-    startPreview();
+    enumerateDevices()
+    startPreview()
     return () => {
       if (previewStream) {
-        previewStream.getTracks().forEach(track => track.stop());
+        previewStream.getTracks().forEach(track => track.stop())
       }
-    };
-  }, []);
+    }
+  }, [])
 
   const enumerateDevices = async () => {
     try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
+      const devices = await navigator.mediaDevices.enumerateDevices()
       const videoDevices = devices.filter(d => d.kind === 'videoinput').map(d => ({
         deviceId: d.deviceId,
         label: d.label || `Camera ${d.deviceId.slice(0, 8)}`,
-        kind: d.kind as 'videoinput'
-      }));
+        kind: 'videoinput' as const
+      }))
       const audioDevices = devices.filter(d => d.kind === 'audioinput').map(d => ({
         deviceId: d.deviceId,
         label: d.label || `Microphone ${d.deviceId.slice(0, 8)}`,
-        kind: d.kind as 'audioinput'
-      }));
+        kind: 'audioinput' as const
+      }))
       const speakerDevices = devices.filter(d => d.kind === 'audiooutput').map(d => ({
         deviceId: d.deviceId,
         label: d.label || `Speaker ${d.deviceId.slice(0, 8)}`,
-        kind: d.kind as 'audiooutput'
-      }));
+        kind: 'audiooutput' as const
+      }))
 
-      setCameras(videoDevices);
-      setMicrophones(audioDevices);
-      setSpeakers(speakerDevices);
+      setCameras(videoDevices)
+      setMicrophones(audioDevices)
+      setSpeakers(speakerDevices)
 
-      if (videoDevices.length > 0) setSelectedCamera(videoDevices[0].deviceId);
-      if (audioDevices.length > 0) setSelectedMicrophone(audioDevices[0].deviceId);
-      if (speakerDevices.length > 0) setSelectedSpeaker(speakerDevices[0].deviceId);
+      if (videoDevices.length > 0) setSelectedCamera(videoDevices[0].deviceId)
+      if (audioDevices.length > 0) setSelectedMicrophone(audioDevices[0].deviceId)
+      if (speakerDevices.length > 0) setSelectedSpeaker(speakerDevices[0].deviceId)
     } catch (error) {
-      console.error('Error enumerating devices:', error);
+      console.error('Error enumerating devices:', error)
     }
-  };
+  }
 
   const startPreview = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      setPreviewStream(stream);
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      setPreviewStream(stream)
     } catch (error) {
-      console.error('Error starting preview:', error);
+      console.error('Error starting preview:', error)
     }
-  };
+  }
 
   const toggleCamera = useCallback(() => {
-    setCameraEnabled(!cameraEnabled);
+    setCameraEnabled(prev => !prev)
     if (previewStream) {
       previewStream.getVideoTracks().forEach(track => {
-        track.enabled = !cameraEnabled;
-      });
+        track.enabled = !cameraEnabled
+      })
     }
-  }, [cameraEnabled, previewStream]);
+  }, [cameraEnabled, previewStream])
 
   const toggleMicrophone = useCallback(() => {
-    setMicEnabled(!micEnabled);
+    setMicEnabled(prev => !prev)
     if (previewStream) {
       previewStream.getAudioTracks().forEach(track => {
-        track.enabled = !micEnabled;
-      });
+        track.enabled = !micEnabled
+      })
     }
-  }, [micEnabled, previewStream]);
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      if (e.target instanceof HTMLButtonElement) {
-        e.target.click();
-      }
-    }
-  }, []);
+  }, [micEnabled, previewStream])
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-center">
+      <div className="w-full max-w-md border rounded-lg bg-white shadow-sm">
+        <div className="p-6 border-b">
+          <h1 className="text-xl font-semibold text-center">
             {isDoctor ? 'Doctor Waiting Room' : 'Patient Waiting Room'}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Video Preview */}
+          </h1>
+        </div>
+        <div className="p-6 space-y-6">
           <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
             {previewStream && cameraEnabled ? (
               <video
@@ -120,52 +106,40 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({ onJoinCall, isDoctor =
                 muted
                 playsInline
                 ref={video => {
-                  if (video) video.srcObject = previewStream;
+                  if (video) video.srcObject = previewStream
                 }}
                 className="w-full h-full object-cover"
                 aria-label="Camera preview"
               />
             ) : (
-              <div className="flex items-center justify-center h-full text-white" aria-hidden="true">
-                <VideoOff className="w-12 h-12" />
+              <div className="flex items-center justify-center h-full text-white">
+                <span aria-hidden="true">Camera Off</span>
               </div>
             )}
-            <Badge className="absolute top-2 left-2" variant={cameraEnabled ? "default" : "secondary"}>
-              {cameraEnabled ? "Camera On" : "Camera Off"}
-            </Badge>
+            <span className="absolute top-2 left-2 px-2 py-1 text-xs rounded bg-black/70 text-white">
+              {cameraEnabled ? 'Camera On' : 'Camera Off'}
+            </span>
           </div>
 
-          {/* Device Controls */}
           <div className="flex justify-center gap-4" role="group" aria-label="Device controls">
-            <Button
-              variant={micEnabled ? "default" : "destructive"}
-              size="icon"
+            <button
+              type="button"
               onClick={toggleMicrophone}
-              aria-label={micEnabled ? "Mute microphone" : "Unmute microphone"}
-              onKeyDown={handleKeyDown}
+              aria-label={micEnabled ? 'Mute microphone' : 'Unmute microphone'}
+              className={`px-4 py-2 rounded ${micEnabled ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'}`}
             >
-              {micEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
-            </Button>
-            <Button
-              variant={cameraEnabled ? "default" : "destructive"}
-              size="icon"
+              {micEnabled ? 'Mic On' : 'Mic Off'}
+            </button>
+            <button
+              type="button"
               onClick={toggleCamera}
-              aria-label={cameraEnabled ? "Turn off camera" : "Turn on camera"}
-              onKeyDown={handleKeyDown}
+              aria-label={cameraEnabled ? 'Turn off camera' : 'Turn on camera'}
+              className={`px-4 py-2 rounded ${cameraEnabled ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'}`}
             >
-              {cameraEnabled ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
-            </Button>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              aria-label="Device settings"
-              disabled
-            >
-              <Settings className="w-4 h-4" aria-hidden="true" />
-            </Button>
+              {cameraEnabled ? 'Camera On' : 'Camera Off'}
+            </button>
           </div>
 
-          {/* Device Selectors */}
           <div className="space-y-4" role="group" aria-label="Device selection">
             <div>
               <label htmlFor="camera-select" className="text-sm font-medium">Camera</label>
@@ -176,9 +150,7 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({ onJoinCall, isDoctor =
                 className="w-full mt-1 p-2 border rounded"
               >
                 {cameras.map(camera => (
-                  <option key={camera.deviceId} value={camera.deviceId}>
-                    {camera.label}
-                  </option>
+                  <option key={camera.deviceId} value={camera.deviceId}>{camera.label}</option>
                 ))}
               </select>
             </div>
@@ -191,9 +163,7 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({ onJoinCall, isDoctor =
                 className="w-full mt-1 p-2 border rounded"
               >
                 {microphones.map(mic => (
-                  <option key={mic.deviceId} value={mic.deviceId}>
-                    {mic.label}
-                  </option>
+                  <option key={mic.deviceId} value={mic.deviceId}>{mic.label}</option>
                 ))}
               </select>
             </div>
@@ -206,33 +176,28 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({ onJoinCall, isDoctor =
                 className="w-full mt-1 p-2 border rounded"
               >
                 {speakers.map(speaker => (
-                  <option key={speaker.deviceId} value={speaker.deviceId}>
-                    {speaker.label}
-                  </option>
+                  <option key={speaker.deviceId} value={speaker.deviceId}>{speaker.label}</option>
                 ))}
               </select>
             </div>
           </div>
 
-          {/* Join Button */}
-          <Button 
-            className="w-full" 
-            size="lg"
+          <button
+            type="button"
             onClick={onJoinCall}
-            aria-label="Join consultation"
+            className="w-full py-3 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Join Consultation
-          </Button>
+          </button>
 
-          {/* Status */}
-          <div className="text-center text-sm text-muted-foreground" aria-live="polite">
+          <div className="text-center text-sm text-gray-500" aria-live="polite">
             <p>Ready to join? Click the button above when you're ready.</p>
-            <p className="mt-2" role="status">
-              <Badge variant="outline" aria-label="Call status: Waiting for other participant">Waiting for other participant</Badge>
+            <p className="mt-2">
+              <span className="px-2 py-1 border rounded" role="status">Waiting for other participant</span>
             </p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
-  );
-};
+  )
+}

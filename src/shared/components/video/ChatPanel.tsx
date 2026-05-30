@@ -1,66 +1,53 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
-import { Send, Paperclip } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react'
 
 interface ChatMessage {
-  id: string;
-  sender: string;
-  content: string;
-  timestamp: Date;
-  isOwn: boolean;
+  id: string
+  sender: string
+  content: string
+  timestamp: Date
+  isOwn: boolean
 }
 
 interface ChatPanelProps {
-  messages: ChatMessage[];
-  onSendMessage: (content: string) => void;
-  currentUserId: string;
+  messages: ChatMessage[]
+  onSendMessage: (content: string) => void
+  currentUserId: string
 }
 
 export const ChatPanel: React.FC<ChatPanelProps> = ({
   messages,
   onSendMessage,
-  currentUserId
+  currentUserId: _currentUserId
 }) => {
-  const [newMessage, setNewMessage] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [newMessage, setNewMessage] = useState('')
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
 
   const handleSend = () => {
     if (newMessage.trim()) {
-      onSendMessage(newMessage.trim());
-      setNewMessage('');
+      onSendMessage(newMessage.trim())
+      setNewMessage('')
     }
-  };
+  }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+      e.preventDefault()
+      handleSend()
     }
-  };
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
+  }
 
   return (
     <div className="flex flex-col h-full border rounded-lg bg-white">
-      {/* Header */}
       <div className="p-3 border-b">
         <h3 className="font-semibold">Chat</h3>
-        <Badge variant="secondary" className="mt-1">
-          {messages.length} messages
-        </Badge>
+        <span className="text-xs text-gray-500" aria-live="polite">{messages.length} messages</span>
       </div>
 
-      {/* Messages */}
-      <ScrollArea className="flex-1 p-3">
+      <div className="flex-1 overflow-y-auto p-3">
         <div className="space-y-4">
           {messages.map(message => (
             <div
@@ -69,55 +56,52 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
             >
               <div
                 className={`max-w-[80%] p-3 rounded-lg ${
-                  message.isOwn
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 text-gray-900'
+                  message.isOwn ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'
                 }`}
               >
                 {!message.isOwn && (
-                  <p className="text-xs font-medium mb-1 opacity-70">
-                    {message.sender}
-                  </p>
+                  <p className="text-xs font-medium mb-1 opacity-70">{message.sender}</p>
                 )}
                 <p className="text-sm">{message.content}</p>
-                <p
-                  className={`text-xs mt-1 ${
-                    message.isOwn ? 'text-blue-100' : 'text-gray-500'
-                  }`}
-                >
-                  {formatTime(message.timestamp)}
+                <p className={`text-xs mt-1 ${message.isOwn ? 'text-blue-100' : 'text-gray-500'}`}>
+                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
             </div>
           ))}
           <div ref={messagesEndRef} />
         </div>
-      </ScrollArea>
+      </div>
 
-      {/* Input */}
       <div className="p-3 border-t">
         <div className="flex gap-2">
-          <Button variant="outline" size="icon" aria-label="Attach file">
-            <Paperclip className="w-4 h-4" />
-          </Button>
-          <Input
+          <button
+            type="button"
+            className="px-3 py-2 border rounded hover:bg-gray-50"
+            aria-label="Attach file"
+          >
+            Attach
+          </button>
+          <input
+            type="text"
             value={newMessage}
             onChange={e => setNewMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyDown}
             placeholder="Type a message..."
-            className="flex-1"
+            className="flex-1 px-3 py-2 border rounded"
             aria-label="Chat message input"
           />
-          <Button
-            size="icon"
+          <button
+            type="button"
             onClick={handleSend}
             disabled={!newMessage.trim()}
+            className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
             aria-label="Send message"
           >
-            <Send className="w-4 h-4" />
-          </Button>
+            Send
+          </button>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

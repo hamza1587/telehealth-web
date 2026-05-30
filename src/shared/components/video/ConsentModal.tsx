@@ -1,60 +1,58 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useEffect, useRef } from 'react'
+import { Button, Card, CardContent, CardHeader, Typography } from '@mui/material'
 
 interface ConsentModalProps {
-  onConfirm: () => void;
-  onCancel: () => void;
+  onConfirm: () => void
+  onCancel: () => void
 }
 
 export const ConsentModal: React.FC<ConsentModalProps> = ({
   onConfirm,
   onCancel
 }) => {
-  const modalRef = useRef<HTMLDivElement>(null);
-  const confirmButtonRef = useRef<HTMLButtonElement>(null);
-  const cancelButtonRef = useRef<HTMLButtonElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null)
+  const confirmButtonRef = useRef<HTMLButtonElement>(null)
+  const cancelButtonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onCancel();
+        onCancel()
       }
-    };
+    }
 
-    document.addEventListener('keydown', handleEscape);
-    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', handleEscape)
+    document.body.style.overflow = 'hidden'
 
-    // Focus first button on open
-    confirmButtonRef.current?.focus();
+    confirmButtonRef.current?.focus()
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = '';
-    };
-  }, [onCancel]);
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = ''
+    }
+  }, [onCancel])
 
   const handleTab = (e: React.KeyboardEvent) => {
-    if (e.key !== 'Tab' || !modalRef.current) return;
+    if (e.key !== 'Tab' || !modalRef.current) return
 
     const focusableElements = modalRef.current.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+    )
+    const firstElement = focusableElements[0] as HTMLElement
+    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
 
     if (e.shiftKey) {
       if (document.activeElement === firstElement) {
-        e.preventDefault();
-        lastElement.focus();
+        e.preventDefault()
+        lastElement.focus()
       }
     } else {
       if (document.activeElement === lastElement) {
-        e.preventDefault();
-        firstElement.focus();
+        e.preventDefault()
+        firstElement.focus()
       }
     }
-  };
+  }
 
   return (
     <div
@@ -69,7 +67,7 @@ export const ConsentModal: React.FC<ConsentModalProps> = ({
         onKeyDown={handleTab}
       >
         <CardHeader>
-          <CardTitle id="consent-title">Recording Consent</CardTitle>
+          <Typography variant="h6" id="consent-title">Recording Consent</Typography>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-gray-600">
@@ -86,7 +84,7 @@ export const ConsentModal: React.FC<ConsentModalProps> = ({
           </p>
           <div className="flex gap-3 pt-4">
             <Button
-              variant="outline"
+              variant="outlined"
               className="flex-1"
               onClick={onCancel}
               ref={cancelButtonRef}
@@ -106,5 +104,5 @@ export const ConsentModal: React.FC<ConsentModalProps> = ({
         </CardContent>
       </Card>
     </div>
-  );
-};
+  )
+}

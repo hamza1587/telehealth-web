@@ -1,5 +1,7 @@
 import { Box, Card, CardContent, Typography, Button, Alert, CircularProgress } from '@mui/material'
-import { EventIcon, AccessTimeIcon, VideoCallIcon } from '@mui/icons-material'
+import Event from '@mui/icons-material/Event'
+import AccessTime from '@mui/icons-material/AccessTime'
+import VideoCall from '@mui/icons-material/VideoCall'
 import type { Appointment } from '@shared/types/appointment.ts'
 
 interface WaitingRoomProps {
@@ -46,13 +48,13 @@ export function WaitingRoom({ appointment, onJoin, loading, error }: WaitingRoom
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <EventIcon fontSize="small" />
+                <Event fontSize="small" />
               <Typography>
                 {start.date} from {start.time} to {end.time}
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <AccessTimeIcon fontSize="small" />
+                <AccessTime fontSize="small" />
               <Typography>
                 Rate: {appointment.pricePerSecond * 60} {appointment.currency}/min
               </Typography>
@@ -64,7 +66,7 @@ export function WaitingRoom({ appointment, onJoin, loading, error }: WaitingRoom
           <Button
             variant="contained"
             size="large"
-            startIcon={<VideoCallIcon />}
+                startIcon={<VideoCall />}
             onClick={onJoin}
             disabled={loading}
           >

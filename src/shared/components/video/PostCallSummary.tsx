@@ -1,52 +1,41 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Clock, Users, Video, Download, Calendar } from 'lucide-react';
+import React from 'react'
 
 interface PostCallSummaryProps {
-  callDuration: number;
-  participantCount: number;
-  wasRecorded: boolean;
-  recordingUrl?: string;
-  onDownloadRecording?: () => void;
-  onScheduleFollowUp?: () => void;
-  onEnd: () => void;
+  callDuration: number
+  participantCount: number
+  wasRecorded: boolean
+  onEnd: () => void
 }
 
 export const PostCallSummary: React.FC<PostCallSummaryProps> = ({
   callDuration,
   participantCount,
   wasRecorded,
-  recordingUrl,
-  onDownloadRecording,
-  onScheduleFollowUp,
   onEnd
 }) => {
   const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins} min ${secs} sec`;
-  };
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins} min ${secs} sec`
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-center">Call Ended</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Summary Stats */}
+      <div className="w-full max-w-md border rounded-lg bg-white shadow-sm">
+        <div className="p-6 border-b">
+          <h1 className="text-xl font-semibold text-center">Call Ended</h1>
+        </div>
+        <div className="p-6 space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <Clock className="w-5 h-5 text-gray-500" />
+              <span className="text-gray-500">⏱</span>
               <div>
                 <p className="text-sm font-medium">Duration</p>
                 <p className="text-lg font-semibold">{formatDuration(callDuration)}</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <Users className="w-5 h-5 text-gray-500" />
+              <span className="text-gray-500">👥</span>
               <div>
                 <p className="text-sm font-medium">Participants</p>
                 <p className="text-lg font-semibold">{participantCount}</p>
@@ -54,11 +43,10 @@ export const PostCallSummary: React.FC<PostCallSummaryProps> = ({
             </div>
           </div>
 
-          {/* Recording Status */}
           {wasRecorded && (
             <div className="p-3 bg-blue-50 rounded-lg">
               <div className="flex items-center gap-2">
-                <Video className="w-5 h-5 text-blue-500" />
+                <span className="text-blue-500">📹</span>
                 <span className="font-medium">Recording Available</span>
               </div>
               <p className="text-sm text-gray-600 mt-1">
@@ -67,42 +55,21 @@ export const PostCallSummary: React.FC<PostCallSummaryProps> = ({
             </div>
           )}
 
-          {/* Actions */}
           <div className="space-y-3">
-            {wasRecorded && onDownloadRecording && (
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={onDownloadRecording}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download Recording
-              </Button>
-            )}
-            {onScheduleFollowUp && (
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={onScheduleFollowUp}
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                Schedule Follow-up
-              </Button>
-            )}
-            <Button
-              className="w-full"
+            <button
+              type="button"
               onClick={onEnd}
+              className="w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               Return to Dashboard
-            </Button>
+            </button>
           </div>
 
-          {/* Footer */}
           <div className="text-center text-sm text-gray-500">
             <p>Thank you for using the consultation platform.</p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
-  );
-};
+  )
+}

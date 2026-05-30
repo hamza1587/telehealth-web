@@ -1,51 +1,51 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { WaitingRoom } from './WaitingRoom';
-import { VideoGrid } from './VideoGrid';
-import { CallControls } from './CallControls';
-import { ChatPanel } from './ChatPanel';
-import { ParticipantList } from './ParticipantList';
-import { RecordingIndicator } from './RecordingIndicator';
-import { PostCallSummary } from './PostCallSummary';
-import { ConsentModal } from './ConsentModal';
-import { webrtcService } from '@/services/webrtc';
-import { sendChatMessage, getChatHistory } from '@/api/chatApi';
-import { Participant, ConnectionState } from 'livekit-client';
+import React, { useState, useEffect, useCallback, useRef } from 'react'
+import { WaitingRoom } from './WaitingRoom'
+import { VideoGrid } from './VideoGrid'
+import { CallControls } from './CallControls'
+import { ChatPanel } from './ChatPanel'
+import { ParticipantList } from './ParticipantList'
+import { RecordingIndicator } from './RecordingIndicator'
+import { PostCallSummary } from './PostCallSummary'
+import { ConsentModal } from './ConsentModal'
+import { webrtcService } from '@shared/services/webrtc'
+import { sendChatMessage, getChatHistory } from '@shared/api/chatApi'
+import { Participant, ConnectionState } from 'livekit-client'
 
 interface ChatMessage {
-  id: string;
-  sender: string;
-  content: string;
-  timestamp: Date;
-  isOwn: boolean;
+  id: string
+  sender: string
+  content: string
+  timestamp: Date
+  isOwn: boolean
 }
 
 interface VideoConsultationRoomProps {
-  sessionId: string;
-  token: string;
-  serverUrl: string;
-  isDoctor?: boolean;
-  userId: string;
-  userName: string;
-  recordingConsent?: boolean;
+  sessionId: string
+  token: string
+  serverUrl: string
+  isDoctor?: boolean
+  userId: string
+  userName: string
+  recordingConsent?: boolean
 }
 
-type CallState = 'waiting' | 'connecting' | 'inCall' | 'disconnected' | 'error' | 'postCall';
+type CallState = 'waiting' | 'connecting' | 'inCall' | 'disconnected' | 'error' | 'postCall'
 
-const MAX_RETRY_ATTEMPTS = 3;
-const AUTO_DISCONNECT_MS = 30 * 60 * 1000;
+const MAX_RETRY_ATTEMPTS = 3
+const AUTO_DISCONNECT_MS = 30 * 60 * 1000
 
 function detectBrowser(): string | null {
-  const ua = navigator.userAgent;
-  if (ua.includes('Chrome') && !ua.includes('Edg')) return 'chrome';
-  if (ua.includes('Firefox')) return 'firefox';
-  if (ua.includes('Safari') && !ua.includes('Chrome')) return 'safari';
-  if (ua.includes('Edg')) return 'edge';
-  return null;
+  const ua = navigator.userAgent
+  if (ua.includes('Chrome') && !ua.includes('Edg')) return 'chrome'
+  if (ua.includes('Firefox')) return 'firefox'
+  if (ua.includes('Safari') && !ua.includes('Chrome')) return 'safari'
+  if (ua.includes('Edg')) return 'edge'
+  return null
 }
 
 function isBrowserSupported(): boolean {
-  const browser = detectBrowser();
-  return browser !== null && typeof RTCPeerConnection !== 'undefined';
+  const browser = detectBrowser()
+  return browser !== null && typeof RTCPeerConnection !== 'undefined'
 }
 
 export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
@@ -57,214 +57,191 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
   userName,
   recordingConsent = false
 }) => {
-  const [callState, setCallState] = useState<CallState>('waiting');
-  const [localParticipant, setLocalParticipant] = useState<Participant | null>(null);
-  const [remoteParticipants, setRemoteParticipants] = useState<Participant[]>([]);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isCameraOff, setIsCameraOff] = useState(false);
-  const [isScreenSharing, setIsScreenSharing] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingDuration, setRecordingDuration] = useState(0);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  const [showChat, setShowChat] = useState(false);
-  const [showParticipants, setShowParticipants] = useState(false);
-  const [callDuration, setCallDuration] = useState(0);
-  const [error, setError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
-  const [unsupportedBrowser, setUnsupportedBrowser] = useState(false);
-  const [showConsentModal, setShowConsentModal] = useState(false);
-  const [hasRecordingConsent, setHasRecordingConsent] = useState(recordingConsent);
-  const autoDisconnectTimer = useRef<NodeJS.Timeout | null>(null);
-  const [networkQuality, setNetworkQuality] = useState<'good' | 'medium' | 'poor'>('good');
+  const [callState, setCallState] = useState<CallState>('waiting')
+  const [localParticipant, setLocalParticipant] = useState<Participant | null>(null)
+  const [remoteParticipants, setRemoteParticipants] = useState<Participant[]>([])
+  const [isMuted, setIsMuted] = useState(false)
+  const [isCameraOff, setIsCameraOff] = useState(false)
+  const [isScreenSharing, setIsScreenSharing] = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
+  const [recordingDuration, setRecordingDuration] = useState(0)
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
+  const [showChat, setShowChat] = useState(false)
+  const [showParticipants, setShowParticipants] = useState(false)
+  const [callDuration, setCallDuration] = useState(0)
+  const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
+  const [unsupportedBrowser, setUnsupportedBrowser] = useState(false)
+  const [showConsentModal, setShowConsentModal] = useState(false)
+  const [hasRecordingConsent, setHasRecordingConsent] = useState(recordingConsent)
+  const autoDisconnectTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     if (!isBrowserSupported()) {
-      setUnsupportedBrowser(true);
+      setUnsupportedBrowser(true)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>
     if (callState === 'inCall') {
       interval = setInterval(() => {
-        setCallDuration(prev => prev + 1);
-      }, 1000);
+        setCallDuration(prev => prev + 1)
+      }, 1000)
     }
-    return () => clearInterval(interval);
-  }, [callState]);
+    return () => clearInterval(interval)
+  }, [callState])
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>
     if (isRecording) {
       interval = setInterval(() => {
-        setRecordingDuration(prev => prev + 1);
-      }, 1000);
+        setRecordingDuration(prev => prev + 1)
+      }, 1000)
     }
-    return () => clearInterval(interval);
-  }, [isRecording]);
+    return () => clearInterval(interval)
+  }, [isRecording])
 
   useEffect(() => {
     if (callState === 'inCall') {
       autoDisconnectTimer.current = setTimeout(() => {
-        handleEndCall();
-      }, AUTO_DISCONNECT_MS);
+        handleEndCall()
+      }, AUTO_DISCONNECT_MS)
     }
     return () => {
       if (autoDisconnectTimer.current) {
-        clearTimeout(autoDisconnectTimer.current);
+        clearTimeout(autoDisconnectTimer.current)
       }
-    };
-  }, [callState]);
-
-  const monitorNetworkQuality = useCallback(() => {
-    const connection = (navigator as any).connection;
-    if (connection) {
-      const updateQuality = () => {
-        const downlink = connection.downlink;
-        if (downlink >= 2) setNetworkQuality('good');
-        else if (downlink >= 0.5) setNetworkQuality('medium');
-        else setNetworkQuality('poor');
-      };
-      connection.addEventListener('change', updateQuality);
-      updateQuality();
-      return () => connection.removeEventListener('change', updateQuality);
     }
-  }, []);
-
-  useEffect(() => {
-    if (callState === 'inCall') {
-      const cleanup = monitorNetworkQuality();
-      return cleanup;
-    }
-  }, [callState, monitorNetworkQuality]);
+  }, [callState])
 
   const handleJoinCall = useCallback(async () => {
     try {
-      setCallState('connecting');
-      setError(null);
+      setCallState('connecting')
+      setError(null)
 
-      const room = await webrtcService.connect(token, serverUrl);
-      setLocalParticipant(room.localParticipant);
+      const room = await webrtcService.connect(token, serverUrl)
+      setLocalParticipant(room.localParticipant)
 
-      webbrtcService.onParticipantConnected((participant) => {
-        setRemoteParticipants(prev => [...prev, participant]);
-      });
+      webrtcService.onParticipantConnected((participant: Participant) => {
+        setRemoteParticipants(prev => [...prev, participant])
+      })
 
-      webbrtcService.onParticipantDisconnected((participant) => {
-        setRemoteParticipants(prev => prev.filter(p => p.identity !== participant.identity));
-      });
+      webrtcService.onParticipantDisconnected((participant: Participant) => {
+        setRemoteParticipants(prev => prev.filter(p => p.identity !== participant.identity))
+      })
 
-      webbrtcService.onConnectionStateChanged((state) => {
+      webrtcService.onConnectionStateChanged((state: ConnectionState) => {
         if (state === ConnectionState.Disconnected) {
-          setCallState('disconnected');
+          setCallState('disconnected')
         }
-      });
+      })
 
-      setCallState('inCall');
-      setRetryCount(0);
+      setCallState('inCall')
+      setRetryCount(0)
 
       try {
-        const history = await getChatHistory(sessionId);
+        const history = await getChatHistory(sessionId)
         const formattedHistory = history.map(msg => ({
           id: msg.id,
           sender: msg.senderName,
           content: msg.content,
           timestamp: new Date(msg.timestamp),
           isOwn: msg.senderId === userId
-        }));
-        setChatMessages(formattedHistory);
+        }))
+        setChatMessages(formattedHistory)
       } catch (err) {
-        console.error('Failed to load chat history:', err);
+        console.error('Failed to load chat history:', err)
       }
     } catch (err) {
-      console.error('Error joining call:', err);
-      const msg = err instanceof Error ? err.message : 'Unknown error';
-      setError(`Failed to connect: ${msg}`);
-      setCallState('error');
+      console.error('Error joining call:', err)
+      const msg = err instanceof Error ? err.message : 'Unknown error'
+      setError(`Failed to connect: ${msg}`)
+      setCallState('error')
     }
-  }, [token, serverUrl, sessionId, userId]);
+  }, [token, serverUrl, sessionId, userId])
 
   const handleRetry = useCallback(async () => {
     if (retryCount >= MAX_RETRY_ATTEMPTS) {
-      setError(`Failed after ${MAX_RETRY_ATTEMPTS} attempts. Please check your connection.`);
-      return;
+      setError(`Failed after ${MAX_RETRY_ATTEMPTS} attempts. Please check your connection.`)
+      return
     }
-    setRetryCount(prev => prev + 1);
-    await webrtcService.disconnect();
-    await handleJoinCall();
-  }, [retryCount, handleJoinCall]);
+    setRetryCount(prev => prev + 1)
+    await webrtcService.disconnect()
+    await handleJoinCall()
+  }, [retryCount, handleJoinCall])
 
   const handleEndCall = useCallback(async () => {
     try {
       if (autoDisconnectTimer.current) {
-        clearTimeout(autoDisconnectTimer.current);
+        clearTimeout(autoDisconnectTimer.current)
       }
-      await webrtcService.disconnect();
-      setCallState('postCall');
+      await webrtcService.disconnect()
+      setCallState('postCall')
     } catch (err) {
-      console.error('Error ending call:', err);
+      console.error('Error ending call:', err)
     }
-  }, []);
+  }, [])
 
   const handleToggleMic = useCallback(async () => {
     try {
       if (isMuted) {
-        await webrtcService.enableMicrophone();
+        await webrtcService.enableMicrophone()
       } else {
-        await webrtcService.disableMicrophone();
+        await webrtcService.disableMicrophone()
       }
-      setIsMuted(!isMuted);
+      setIsMuted(!isMuted)
     } catch (err) {
-      console.error('Error toggling mic:', err);
-      setError('Could not toggle microphone. Please check permissions.');
+      console.error('Error toggling mic:', err)
+      setError('Could not toggle microphone. Please check permissions.')
     }
-  }, [isMuted]);
+  }, [isMuted])
 
   const handleToggleCamera = useCallback(async () => {
     try {
       if (isCameraOff) {
-        await webrtcService.enableCamera();
+        await webrtcService.enableCamera()
       } else {
-        await webrtcService.disableCamera();
+        await webrtcService.disableCamera()
       }
-      setIsCameraOff(!isCameraOff);
+      setIsCameraOff(!isCameraOff)
     } catch (err) {
-      console.error('Error toggling camera:', err);
-      setError('Could not toggle camera. Please check permissions.');
+      console.error('Error toggling camera:', err)
+      setError('Could not toggle camera. Please check permissions.')
     }
-  }, [isCameraOff]);
+  }, [isCameraOff])
 
   const handleToggleScreenShare = useCallback(async () => {
     try {
       if (isScreenSharing) {
-        await webrtcService.stopScreenShare();
+        await webrtcService.stopScreenShare()
       } else {
-        await webrtcService.shareScreen();
+        await webrtcService.shareScreen()
       }
-      setIsScreenSharing(!isScreenSharing);
+      setIsScreenSharing(!isScreenSharing)
     } catch (err) {
-      console.error('Error toggling screen share:', err);
-      setError('Could not share screen. Please try again.');
+      console.error('Error toggling screen share:', err)
+      setError('Could not share screen. Please try again.')
     }
-  }, [isScreenSharing]);
+  }, [isScreenSharing])
 
   const handleToggleRecording = useCallback(() => {
     if (!hasRecordingConsent) {
-      setShowConsentModal(true);
-      return;
+      setShowConsentModal(true)
+      return
     }
-    setIsRecording(!isRecording);
+    setIsRecording(!isRecording)
     if (!isRecording) {
-      setRecordingDuration(0);
+      setRecordingDuration(0)
     }
-  }, [isRecording, hasRecordingConsent]);
+  }, [isRecording, hasRecordingConsent])
 
   const handleConsentConfirm = useCallback(() => {
-    setHasRecordingConsent(true);
-    setShowConsentModal(false);
-    setIsRecording(true);
-    setRecordingDuration(0);
-  }, []);
+    setHasRecordingConsent(true)
+    setShowConsentModal(false)
+    setIsRecording(true)
+    setRecordingDuration(0)
+  }, [])
 
   const handleSendMessage = useCallback(async (content: string) => {
     const newMessage: ChatMessage = {
@@ -273,26 +250,26 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
       content,
       timestamp: new Date(),
       isOwn: true
-    };
-    setChatMessages(prev => [...prev, newMessage]);
+    }
+    setChatMessages(prev => [...prev, newMessage])
 
     try {
       await sendChatMessage({
         callId: sessionId,
         content
-      });
+      })
     } catch (err) {
-      console.error('Failed to send message:', err);
+      console.error('Failed to send message:', err)
     }
-  }, [userName, sessionId]);
+  }, [userName, sessionId])
 
   const handleReturnToDashboard = useCallback(() => {
-    window.location.href = '/';
-  }, []);
+    window.location.href = '/'
+  }, [])
 
   const dismissError = useCallback(() => {
-    setError(null);
-  }, []);
+    setError(null)
+  }, [])
 
   if (unsupportedBrowser) {
     return (
@@ -317,33 +294,26 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
           </a>
         </div>
       </div>
-    );
+    )
   }
 
   switch (callState) {
     case 'waiting':
-      return (
-        <div>
-          <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded">
-            Skip to main content
-          </a>
-          <WaitingRoom onJoinCall={handleJoinCall} isDoctor={isDoctor} />
-        </div>
-      );
+      return <WaitingRoom onJoinCall={handleJoinCall} isDoctor={isDoctor} />
 
     case 'connecting':
       return (
         <div className="flex items-center justify-center min-h-screen bg-gray-50" role="status" aria-live="polite">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4" aria-hidden="true"></div>
-            <h2 className="text-lg font-medium">Connecting to call...</h2>
+            <p className="text-lg font-medium">Connecting to call...</p>
             <p className="text-sm text-gray-500 mt-2">Please wait while we establish the connection</p>
             {retryCount > 0 && (
               <p className="text-sm text-orange-500 mt-2">Retry attempt {retryCount} of {MAX_RETRY_ATTEMPTS}</p>
             )}
           </div>
         </div>
-      );
+      )
 
     case 'error':
       return (
@@ -366,7 +336,7 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
                 </button>
               )}
               <button
-                onClick={() => { setCallState('waiting'); setError(null); }}
+                onClick={() => { setCallState('waiting'); setError(null) }}
                 className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
               >
                 Back to Waiting Room
@@ -374,7 +344,7 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
             </div>
           </div>
         </div>
-      );
+      )
 
     case 'postCall':
       return (
@@ -384,16 +354,12 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
           wasRecorded={isRecording}
           onEnd={handleReturnToDashboard}
         />
-      );
+      )
 
     case 'inCall':
     case 'disconnected':
       return (
         <div className="flex flex-col h-screen bg-gray-900 relative" role="main" aria-label="Video consultation room">
-          <a href="#call-controls" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded">
-            Skip to call controls
-          </a>
-
           {showConsentModal && (
             <ConsentModal
               onConfirm={handleConsentConfirm}
@@ -416,13 +382,12 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
             </div>
           )}
 
-          <div id="main-content" className="flex-1 flex overflow-hidden">
+          <div className="flex-1 flex overflow-hidden">
             <div className="flex-1 flex flex-col">
               <div className="flex-1 p-2 md:p-4" role="region" aria-label="Video grid">
                 <VideoGrid
                   localParticipant={localParticipant}
                   remoteParticipants={remoteParticipants}
-                  localStream={webbrtcService.getLocalParticipant()?.videoTrackPublications.values().next().value?.track?.mediaStreamTrack ? new MediaStream([webbrtcService.getLocalParticipant()?.videoTrackPublications.values().next().value?.track?.mediaStreamTrack!]) : undefined}
                   isLocalMuted={isMuted}
                   isLocalCameraOff={isCameraOff}
                   isScreenSharing={isScreenSharing}
@@ -440,8 +405,8 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
                   onToggleScreenShare={handleToggleScreenShare}
                   onToggleRecording={handleToggleRecording}
                   onEndCall={handleEndCall}
-                  onToggleChat={() => { setShowChat(!showChat); setShowParticipants(false); }}
-                  onToggleParticipants={() => { setShowParticipants(!showParticipants); setShowChat(false); }}
+                  onToggleChat={() => { setShowChat(!showChat); setShowParticipants(false) }}
+                  onToggleParticipants={() => { setShowParticipants(!showParticipants); setShowChat(false) }}
                 />
               </div>
             </div>
@@ -449,8 +414,9 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
             {(showChat || showParticipants) && (
               <div className="w-full md:w-80 border-l border-gray-700 bg-white fixed inset-0 md:relative z-10 md:z-auto" role="complementary" aria-label="Side panel">
                 <button
+                  type="button"
                   className="md:hidden absolute top-2 right-2 z-20 p-2 bg-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  onClick={() => { setShowChat(false); setShowParticipants(false); }}
+                  onClick={() => { setShowChat(false); setShowParticipants(false) }}
                   aria-label="Close sidebar"
                 >
                   ✕
@@ -479,6 +445,7 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
                 <h2 className="text-2xl font-bold mb-2">Call Ended</h2>
                 <p>You have been disconnected from the call.</p>
                 <button
+                  type="button"
                   onClick={handleReturnToDashboard}
                   className="mt-4 px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
@@ -488,9 +455,9 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
             </div>
           )}
         </div>
-      );
+      )
 
     default:
-      return null;
+      return null
   }
-};
+}

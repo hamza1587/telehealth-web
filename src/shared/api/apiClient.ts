@@ -1,19 +1,64 @@
-import { API_CONFIG, API_ENDPOINTS } from '@shared/config/api.ts'
+import { API_CONFIG } from '@shared/config/api.ts'
 import type { AuthTokens, RefreshTokenRequest, LoginResponse, ApiError } from '@shared/types/auth.ts'
+import type { RetryConfig } from './errors'
+import { classifyError, shouldRetry, withExponentialBackoff, getUserFriendlyMessage } from './errors'
+
+const DEFAULT_RETRY: RetryConfig = {
+  maxAttempts: 3,
+  baseDelayMs: 1000,
+  maxDelayMs: 10000,
+  retryOn: ['NETWORK_ERROR', 'TIMEOUT', 'SERVER_ERROR', 'SERVICE_UNAVAILABLE'],
+}
 
 class ApiClient {
   private baseUrl: string
   private timeout: number
   private tokens: AuthTokens | null = null
   private refreshPromise: Promise<string | null> | null = null
+  private retryConfig: RetryConfig
 
   constructor() {
     this.baseUrl = API_CONFIG.baseUrl
     this.timeout = API_CONFIG.timeout
+    this.retryConfig = DEFAULT_RETRY
   }
 
   setTokens(tokens: AuthTokens | null) {
     this.tokens = tokens
+  }
+
+  setRetryConfig(config: Partial<RetryConfig>) {
+    this.retryConfig = { ...this.retryConfig, ...config }
+  }
+
+  private async requestWithRetry<T>(
+    endpoint: string,
+    options: RequestInit = {},
+    attempt = 0
+  ): Promise<T> {
+    try {
+      return await this.request<T>(endpoint, options)
+    } catch (error) {
+      const appError = classifyError(error, endpoint)
+
+      if (shouldRetry(appError, attempt, this.retryConfig.maxAttempts)) {
+        const delay = withExponentialBackoff(
+          attempt,
+          this.retryConfig.baseDelayMs,
+          this.retryConfig.maxDelayMs
+        )
+        await new Promise(resolve => setTimeout(resolve, delay))
+        return this.requestWithRetry<T>(endpoint, options, attempt + 1)
+      }
+
+      const friendlyMessage = getUserFriendlyMessage(appError)
+      const err = new Error(friendlyMessage)
+        ; (err as unknown as Record<string, unknown>).code = appError.code
+        ; (err as unknown as Record<string, unknown>).statusCode = appError.statusCode
+        ; (err as unknown as Record<string, unknown>).details = appError.details
+        ; (err as unknown as Record<string, unknown>).endpoint = appError.endpoint
+      throw err
+    }
   }
 
   private async request<T>(
@@ -24,10 +69,9 @@ class ApiClient {
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...((options.headers as Record<string, string>) || {}),
+      ...((options.headers as Record<string, string> | undefined) || {}),
     }
 
-    // Add auth header if we have a token
     if (this.tokens?.accessToken) {
       headers['Authorization'] = `Bearer ${this.tokens.accessToken}`
     }
@@ -44,11 +88,9 @@ class ApiClient {
 
       clearTimeout(timeoutId)
 
-      // Handle 401 - try to refresh token
       if (response.status === 401 && this.tokens?.refreshToken) {
         const newToken = await this.refreshAccessToken()
         if (newToken) {
-          // Retry the request with new token
           headers['Authorization'] = `Bearer ${newToken}`
           const retryResponse = await fetch(url, {
             ...options,
@@ -63,7 +105,7 @@ class ApiClient {
       clearTimeout(timeoutId)
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
-          throw new Error('Request timeout')
+          throw new Error('Request timed out')
         }
         throw error
       }
@@ -73,11 +115,13 @@ class ApiClient {
 
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
-      const errorData: ApiError = await response.json().catch(() => ({ error: 'Unknown error' }))
-      throw new ApiRequestError(errorData.error, response.status, errorData.errorCode)
+      const errorData: ApiError = await response.json().catch(() => ({ error: 'Unknown error', errorCode: undefined }))
+      const message = errorData.error || `HTTP ${response.status}`
+      const err = new ApiRequestError(message, response.status, errorData.errorCode)
+        ; (err as unknown as Record<string, unknown>).details = errorData.errorCode ? { errorCode: [errorData.errorCode] } : undefined
+      throw err
     }
 
-    // Handle 204 No Content
     if (response.status === 204) {
       return undefined as T
     }
@@ -86,29 +130,21 @@ class ApiClient {
   }
 
   private async refreshAccessToken(): Promise<string | null> {
-    // Prevent multiple concurrent refresh requests
-    if (this.refreshPromise) {
-      return this.refreshPromise
-    }
-
+    if (this.refreshPromise) return this.refreshPromise
     this.refreshPromise = this.performRefresh()
-
     try {
-      const result = await this.refreshPromise
-      return result
+      return await this.refreshPromise
     } finally {
       this.refreshPromise = null
     }
   }
 
   private async performRefresh(): Promise<string | null> {
-    if (!this.tokens?.refreshToken) {
-      return null
-    }
-
+    if (!this.tokens?.refreshToken) return null
     try {
+      const refreshPath = '/platform/auth/refresh-token'
       const deviceId = localStorage.getItem('deviceId')
-      const response = await fetch(`${this.baseUrl}${API_ENDPOINTS.auth.refresh}`, {
+      const response = await fetch(`${this.baseUrl}${refreshPath}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -117,13 +153,9 @@ class ApiClient {
         } as RefreshTokenRequest),
       })
 
-      if (!response.ok) {
-        throw new Error('Refresh failed')
-      }
-
+      if (!response.ok) throw new Error('Refresh failed')
       const data: LoginResponse = await response.json()
 
-      // Update stored tokens
       const newTokens: AuthTokens = {
         accessToken: data.accessToken,
         refreshToken: data.refreshToken,
@@ -131,18 +163,11 @@ class ApiClient {
       }
 
       this.tokens = newTokens
-      localStorage.setItem('auth_tokens', JSON.stringify(newTokens))
-
-      // Dispatch event to notify auth context
+      localStorage.setItem('authTokens', JSON.stringify(newTokens))
       window.dispatchEvent(new CustomEvent('auth:tokensRefreshed', { detail: newTokens }))
-
       return data.accessToken
     } catch (err) {
-      console.error('[API Error] Token refresh failed:', {
-        error: err instanceof Error ? err.message : String(err),
-        timestamp: new Date().toISOString()
-      })
-      // Refresh failed - clear tokens
+      console.error('[API Error] Token refresh failed:', err)
       this.clearTokens()
       window.dispatchEvent(new CustomEvent('auth:sessionExpired'))
       return null
@@ -151,17 +176,16 @@ class ApiClient {
 
   private clearTokens() {
     this.tokens = null
-    localStorage.removeItem('auth_tokens')
+    localStorage.removeItem('authTokens')
     localStorage.removeItem('deviceId')
   }
 
-  // HTTP methods
   get<T>(endpoint: string, headers?: Record<string, string>): Promise<T> {
-    return this.request<T>(endpoint, { method: 'GET', headers })
+    return this.requestWithRetry<T>(endpoint, { method: 'GET', headers })
   }
 
   post<T>(endpoint: string, body: unknown, headers?: Record<string, string>): Promise<T> {
-    return this.request<T>(endpoint, {
+    return this.requestWithRetry<T>(endpoint, {
       method: 'POST',
       body: JSON.stringify(body),
       headers,
@@ -169,7 +193,7 @@ class ApiClient {
   }
 
   put<T>(endpoint: string, body: unknown, headers?: Record<string, string>): Promise<T> {
-    return this.request<T>(endpoint, {
+    return this.requestWithRetry<T>(endpoint, {
       method: 'PUT',
       body: JSON.stringify(body),
       headers,
@@ -177,7 +201,7 @@ class ApiClient {
   }
 
   patch<T>(endpoint: string, body: unknown, headers?: Record<string, string>): Promise<T> {
-    return this.request<T>(endpoint, {
+    return this.requestWithRetry<T>(endpoint, {
       method: 'PATCH',
       body: JSON.stringify(body),
       headers,
@@ -185,7 +209,7 @@ class ApiClient {
   }
 
   delete<T>(endpoint: string, headers?: Record<string, string>): Promise<T> {
-    return this.request<T>(endpoint, { method: 'DELETE', headers })
+    return this.requestWithRetry<T>(endpoint, { method: 'DELETE', headers })
   }
 }
 
@@ -193,11 +217,7 @@ export class ApiRequestError extends Error {
   statusCode: number
   errorCode?: string
 
-  constructor(
-    message: string,
-    statusCode: number,
-    errorCode?: string
-  ) {
+  constructor(message: string, statusCode: number, errorCode?: string) {
     super(message)
     this.name = 'ApiRequestError'
     this.statusCode = statusCode

@@ -3,6 +3,14 @@ import { apiClient } from '@shared/api/Client.ts'
 import type { GDPRRequestForm } from '@shared/types/index.ts'
 import type { DataRightRequest } from '@shared/types/dataRights.ts'
 
+interface GDPRListResponse {
+  items: DataRightRequest[]
+}
+
+interface GDPRSubmitResponse {
+  request: DataRightRequest
+}
+
 export function useGDPRRequests() {
   const [requests, setRequests] = useState<DataRightRequest[]>([])
   const [loading, setLoading] = useState(false)
@@ -12,7 +20,7 @@ export function useGDPRRequests() {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.get<any>('/platform/gdpr/requests')
+      const res = await apiClient.get<GDPRListResponse>('/platform/gdpr/requests')
       setRequests(res.items || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch GDPR requests')
@@ -25,7 +33,7 @@ export function useGDPRRequests() {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.post<any>('/platform/gdpr/requests/submit', form)
+      const res = await apiClient.post<GDPRSubmitResponse>('/platform/gdpr/requests/submit', form)
       setRequests(prev => [res.request, ...prev])
       return { success: true, request: res.request }
     } catch (err) {

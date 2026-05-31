@@ -59,6 +59,7 @@ export function SettingsPage({
 
   useEffect(() => {
     if (profile) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm({
         displayName: profile.displayName || '',
         email: profile.email || '',

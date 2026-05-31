@@ -30,15 +30,15 @@ export const ConsultationWorkspace: React.FC = () => {
         status: 'scheduled'
       }
     ]
-    // Use a ref-based pattern to avoid setState-in-effect lint warning
-    setSessions(mockSessions)
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSessions(mockSessions)
   }, [])
 
   const startConsultation = (session: ConsultationSession) => {
     setActiveSession({ ...session, status: 'in-progress' })
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const endConsultation = () => {
     if (activeSession) {
       setSessions(prev =>
@@ -49,9 +49,6 @@ export const ConsultationWorkspace: React.FC = () => {
       setActiveSession(null)
     }
   }
-
-  // Suppress unused variable warning — endConsultation is wired to the active session UI
-  void endConsultation
 
   if (activeSession) {
     return (

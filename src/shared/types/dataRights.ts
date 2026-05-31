@@ -1,4 +1,4 @@
-export type DataRightType = 
+export type DataRightType =
   | 'access'
   | 'rectification'
   | 'erasure'
@@ -6,7 +6,7 @@ export type DataRightType =
   | 'portability'
   | 'objection'
 
-export type DataRightStatus = 
+export type DataRightStatus =
   | 'submitted'
   | 'identity_verification_required'
   | 'in_review'

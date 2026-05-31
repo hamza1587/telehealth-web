@@ -78,6 +78,7 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
 
   useEffect(() => {
     if (!isBrowserSupported()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUnsupportedBrowser(true)
     }
   }, [])

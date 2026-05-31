@@ -46,7 +46,7 @@ export function useGDPRRequests() {
     }
   }, [])
 
-  const deleteAccount = useCallback(async (reason: string) => {
+  const deleteAccount = useCallback(async (_reason: string) => {
     setLoading(true)
     setError(null)
     try {

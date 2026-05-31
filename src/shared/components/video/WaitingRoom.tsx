@@ -22,16 +22,6 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({ onJoinCall, isDoctor =
   const [micEnabled, setMicEnabled] = useState(true)
   const [previewStream, setPreviewStream] = useState<MediaStream | null>(null)
 
-  useEffect(() => {
-    enumerateDevices()
-    startPreview()
-    return () => {
-      if (previewStream) {
-        previewStream.getTracks().forEach(track => track.stop())
-      }
-    }
-  }, [])
-
   const enumerateDevices = async () => {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices()
@@ -71,6 +61,17 @@ export const WaitingRoom: React.FC<WaitingRoomProps> = ({ onJoinCall, isDoctor =
       console.error('Error starting preview:', error)
     }
   }
+
+  useEffect(() => {
+    enumerateDevices()
+    startPreview()
+    return () => {
+      if (previewStream) {
+        previewStream.getTracks().forEach(track => track.stop())
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const toggleCamera = useCallback(() => {
     setCameraEnabled(prev => !prev)

@@ -93,7 +93,7 @@ export function GDPRRequestForm({
                     <InputLabel>Request Type</InputLabel>
                     <Select
                       value={form.type}
-                      onChange={e => setForm(f => ({ ...f, type: e.target.value as any }))}
+                      onChange={(e: SelectChangeEvent) => setForm(f => ({ ...f, type: e.target.value as GDPRRequestForm['type'] }))}
                       label="Request Type"
                     >
                       <MenuItem value="access">Right of Access</MenuItem>

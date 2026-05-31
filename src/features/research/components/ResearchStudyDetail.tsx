@@ -1,16 +1,17 @@
 import { useState } from 'react'
 import {
-Box, Card, CardContent, Typography, Button,
-Stack, CircularProgress, Alert, Grid,
-Avatar, Chip, Divider,
+  Box, Card, CardContent, Typography, Button,
+  Stack, CircularProgress, Alert, Grid,
+  Avatar, Chip, Divider,
 } from '@mui/material'
 import {
- Science as ScienceIcon,
- Person as PersonIcon,
- CheckCircle as CheckIcon,
- CalendarToday,
- Public,
+  Science as ScienceIcon,
+  Person as PersonIcon,
+  CheckCircle as CheckIcon,
+  CalendarToday,
+  Public,
 } from '@mui/icons-material'
+import type { ChipOwnProps } from '@mui/material'
 import type { ResearchStudy, ResearchEnrollmentForm as EnrollmentForm } from '@shared/types/index.ts'
 
 interface ResearchStudyDetailProps {
@@ -30,17 +31,6 @@ export function ResearchStudyDetail({
   onWithdraw,
   isEnrolled,
 }: ResearchStudyDetailProps) {
-  const [form, setForm] = useState<EnrollmentForm>({
-    studyId: study?.id || '',
-    consentGiven: true,
-    dataSharingPreferences: [],
-    demographicData: {
-      ageRange: '',
-      gender: '',
-      countryCode: '',
-      conditions: [],
-    },
-  })
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState('')
 
@@ -64,9 +54,15 @@ export function ResearchStudyDetail({
     setSubmitting(true)
     setSuccess('')
     const result = await onEnroll({
-      ...form,
       studyId: study.id,
+      consentGiven: true,
       dataSharingPreferences: study.dataTypes,
+      demographicData: {
+        ageRange: '',
+        gender: '',
+        countryCode: '',
+        conditions: [],
+      },
     })
     if (result) {
       setSuccess('Successfully enrolled in the study!')
@@ -83,7 +79,7 @@ export function ResearchStudyDetail({
     setSubmitting(false)
   }
 
-  const statusColors: Record<string, string> = {
+  const statusColors: Record<string, ChipOwnProps['color']> = {
     recruiting: 'primary',
     active: 'success',
     completed: 'default',
@@ -115,7 +111,7 @@ export function ResearchStudyDetail({
             </Box>
             <Chip
               label={study.status}
-              color={statusColors[study.status] as any}
+              color={statusColors[study.status]}
               variant="outlined"
               size="small"
             />
@@ -190,7 +186,7 @@ export function ResearchStudyDetail({
               size="large"
               fullWidth
               onClick={handleEnroll}
-              disabled={submitting || !form.consentGiven}
+              disabled={submitting}
               startIcon={<CheckIcon />}
               sx={{ borderRadius: 3, py: 1.5, fontWeight: 700 }}
             >

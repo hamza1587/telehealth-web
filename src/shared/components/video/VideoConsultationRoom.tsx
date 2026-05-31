@@ -102,6 +102,19 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
     return () => clearInterval(interval)
   }, [isRecording])
 
+  // handleEndCall must be declared before the auto-disconnect useEffect that references it
+  const handleEndCall = useCallback(async () => {
+    try {
+      if (autoDisconnectTimer.current) {
+        clearTimeout(autoDisconnectTimer.current)
+      }
+      await webrtcService.disconnect()
+      setCallState('postCall')
+    } catch (err) {
+      console.error('Error ending call:', err)
+    }
+  }, [])
+
   useEffect(() => {
     if (callState === 'inCall') {
       autoDisconnectTimer.current = setTimeout(() => {
@@ -113,7 +126,7 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
         clearTimeout(autoDisconnectTimer.current)
       }
     }
-  }, [callState])
+  }, [callState, handleEndCall])
 
   const handleJoinCall = useCallback(async () => {
     try {
@@ -170,18 +183,6 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
     await webrtcService.disconnect()
     await handleJoinCall()
   }, [retryCount, handleJoinCall])
-
-  const handleEndCall = useCallback(async () => {
-    try {
-      if (autoDisconnectTimer.current) {
-        clearTimeout(autoDisconnectTimer.current)
-      }
-      await webrtcService.disconnect()
-      setCallState('postCall')
-    } catch (err) {
-      console.error('Error ending call:', err)
-    }
-  }, [])
 
   const handleToggleMic = useCallback(async () => {
     try {

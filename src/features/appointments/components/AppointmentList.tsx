@@ -14,6 +14,7 @@ import {
   Videocam as VideoIcon,
   Person as PersonIcon
 } from '@mui/icons-material'
+import type { ChipOwnProps } from '@mui/material'
 import type { Appointment, AppointmentStatus } from '@shared/types/appointment.ts'
 
 interface AppointmentListProps {
@@ -25,7 +26,7 @@ interface AppointmentListProps {
   onReschedule: (id: string) => void
 }
 
-const statusConfig: Record<AppointmentStatus, { color: any; label: string }> = {
+const statusConfig: Record<AppointmentStatus, { color: ChipOwnProps['color']; label: string }> = {
   draft: { color: 'default', label: 'Draft' },
   pending_payment: { color: 'warning', label: 'Pending Payment' },
   confirmed: { color: 'primary', label: 'Confirmed' },
@@ -232,7 +233,7 @@ export function AppointmentList({
               <Pagination
                 count={totalPages}
                 page={page}
-                onChange={(p: any) => setPage(p)}
+                onChange={(_e: React.ChangeEvent<unknown>, p: number) => setPage(p)}
                 variant="outlined"
                 shape="rounded"
                 siblingCount={1}

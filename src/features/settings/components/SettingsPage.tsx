@@ -1,25 +1,25 @@
 import {
   Box, Card, CardContent, Typography, TextField, Button,
-  Stack, Alert, CircularProgress, Divider, Paper, FormControl,
+  Stack, Alert, Paper, FormControl,
   InputLabel, Select, MenuItem, Grid,
 } from '@mui/material'
 import {
   Person as PersonIcon,
-  Email as EmailIcon,
   Lock as LockIcon,
   Security as SecurityIcon,
   Save as SaveIcon,
 } from '@mui/icons-material'
 import { useState, useEffect } from 'react'
 import type { ProfileForm, SecuritySettingsForm, MfaSettingsForm } from '@shared/types/index.ts'
+import type { User, MfaSetupResponse } from '@shared/types/auth.ts'
 
 interface SettingsProps {
   loading: boolean
   error: string | null
-  profile: any
+  profile: User | null
   onUpdateProfile: (form: ProfileForm) => Promise<{ success: boolean }>
   onChangePassword: (form: SecuritySettingsForm) => Promise<{ success: boolean }>
-  onSetupMfa: () => Promise<any>
+  onSetupMfa: () => Promise<MfaSetupResponse | null>
   onConfirmMfa: (form: MfaSettingsForm) => Promise<{ success: boolean }>
   onDisableMfa: (code: string) => Promise<{ success: boolean }>
 }
@@ -69,7 +69,8 @@ export function SettingsPage({
         timeZone: profile.timeZone || '',
       })
     }
-  }, [profile])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.userId])
 
   const handleProfileUpdate = async () => {
     setSuccess('')
@@ -99,6 +100,8 @@ export function SettingsPage({
       if (res) {
         setMfaSecret(res.secretKey)
         setMfaStep('confirm')
+      } else {
+        setMfaStep('done')
       }
     } catch {
       setMfaStep('done')

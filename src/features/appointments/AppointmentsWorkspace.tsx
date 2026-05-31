@@ -36,7 +36,7 @@ export function AppointmentsWorkspace() {
     setSelectedId(null)
   }, [])
 
-  const handleCancel = useCallback(async (id: string, _reason: string) => {
+  const handleCancel = useCallback(async (id: string) => {
     await cancelAppointment(id)
   }, [cancelAppointment])
 
@@ -48,7 +48,7 @@ export function AppointmentsWorkspace() {
         error={error || undefined}
         onJoin={() => { }}
         onCancel={() => {
-          if (selectedId) handleCancel(selectedId, 'Patient requested')
+          if (selectedId) handleCancel(selectedId)
         }}
         onReschedule={() => { }}
         onBack={handleBack}
@@ -162,7 +162,7 @@ export function AppointmentsWorkspace() {
         appointments={appointments}
         loading={loading}
         error={error || undefined}
-        onCancel={(id: any) => handleCancel(id)}
+        onCancel={(id: string) => handleCancel(id)}
         onView={handleView}
         onReschedule={() => { }}
       />

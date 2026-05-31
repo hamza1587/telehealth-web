@@ -1,4 +1,4 @@
-export type NotificationType = 
+export type NotificationType =
   | 'account_verification'
   | 'appointment_confirmation'
   | 'appointment_reminder'

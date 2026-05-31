@@ -1,4 +1,4 @@
-export type AppointmentStatus = 
+export type AppointmentStatus =
   | 'draft'
   | 'pending_payment'
   | 'confirmed'
@@ -49,6 +49,10 @@ export type AppointmentForm = {
   scheduledStart: string
   scheduledEnd: string
   notes: string
+}
+
+export type AppointmentDetail = Appointment & {
+  cancellationReason?: string
 }
 
 export type ApiValidationErrors = Record<string, string[]>

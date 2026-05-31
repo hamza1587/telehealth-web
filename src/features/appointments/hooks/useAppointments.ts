@@ -1,7 +1,18 @@
 import { useState, useEffect, useCallback } from 'react'
 import { apiClient } from '@shared/api/Client.ts'
-import type { Appointment } from '@shared/types/appointment.ts'
-import type { AppointmentDetail } from '@shared/types/index.ts'
+import type { Appointment, AppointmentDetail } from '@shared/types/appointment.ts'
+
+interface AppointmentListResponse {
+  items: Appointment[]
+}
+
+interface AppointmentBookResponse {
+  Appointment: AppointmentDetail
+}
+
+interface RescheduleResponse {
+  appointment: AppointmentDetail
+}
 
 export function useAppointments(patientId: string | null) {
   const [appointments, setAppointments] = useState<Appointment[]>([])
@@ -14,7 +25,7 @@ export function useAppointments(patientId: string | null) {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.get<any>('/platform/appointments/my-appointments')
+      const res = await apiClient.get<AppointmentListResponse>('/platform/appointments/my-appointments')
       setAppointments(res.items || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch appointments')
@@ -31,7 +42,7 @@ export function useAppointments(patientId: string | null) {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.get<any>(`/platform/appointments/${appointmentId}`)
+      const res = await apiClient.get<AppointmentDetail>(`/platform/appointments/${appointmentId}`)
       setSelectedAppointment(res)
       return res
     } catch (err) {
@@ -68,7 +79,7 @@ export function useAppointments(patientId: string | null) {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.post<any>(
+      const res = await apiClient.post<RescheduleResponse>(
         `/platform/appointments/${appointmentId}/reschedule`,
         { newStartTime: newStart, newEndTime: newEnd }
       )
@@ -86,14 +97,13 @@ export function useAppointments(patientId: string | null) {
     setLoading(true)
     setError(null)
     try {
-      // Convert dates to ISO strings for the API
       const startIso = scheduledStart.toISOString()
       const endIso = scheduledEnd.toISOString()
 
-      const res = await apiClient.post<any>('/platform/appointments/book', {
+      const res = await apiClient.post<AppointmentBookResponse>('/platform/appointments/book', {
         doctorProfileId: doctorId,
-        specialtyCode: "GP",        // TODO: make this dynamic based on selected doctor
-        consultationMode: "Video",    // TODO: make this dynamic based on UI selection
+        specialtyCode: 'GP',
+        consultationMode: 'Video',
         scheduledStartsAt: startIso,
         scheduledEndsAt: endIso,
         notes,
@@ -104,7 +114,7 @@ export function useAppointments(patientId: string | null) {
       return null
     } finally {
       setLoading(false)
-      await fetchAppointments()  // Refresh appointments immediately
+      await fetchAppointments()
     }
   }
 

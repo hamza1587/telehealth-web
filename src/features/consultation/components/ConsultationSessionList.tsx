@@ -7,6 +7,7 @@ import {
   Videocam, VideocamOff, CheckCircle, Pending, Error,
   Visibility, Refresh,
 } from '@mui/icons-material'
+import type { ChipOwnProps } from '@mui/material'
 import type { ConsultationSession, ConsultationStatus } from '@shared/types/consultation.ts'
 import type { JSX } from 'react'
 
@@ -18,7 +19,7 @@ interface ConsultationSessionListProps {
   onJoin: (session: ConsultationSession) => void
 }
 
-const statusConfig: Record<ConsultationStatus, { color: string; label: string; icon: JSX.Element }> = {
+const statusConfig: Record<ConsultationStatus, { color: ChipOwnProps['color']; label: string; icon: JSX.Element }> = {
   waiting_room: { color: 'info', label: 'Waiting Room', icon: <Pending fontSize="small" /> },
   connecting: { color: 'warning', label: 'Connecting', icon: <Refresh fontSize="small" /> },
   in_progress: { color: 'success', label: 'In Progress', icon: <Videocam fontSize="small" /> },
@@ -107,7 +108,7 @@ export function ConsultationSessionList({
                 <TableCell>
                   <Chip
                     label={config.label}
-                    color={config.color as any}
+                    color={config.color}
                     size="small"
                     icon={config.icon}
                     variant={session.status === 'in_progress' ? 'filled' : 'outlined'}

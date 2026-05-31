@@ -1,3 +1,4 @@
+import type { SelectChangeEvent } from '@mui/material'
 import {
   Box, Card, CardContent, Typography, TextField, Button,
   Stack, Alert, FormControl, InputLabel,
@@ -43,7 +44,7 @@ export function GDPRRequestForm({
   const handleSubmit = async () => {
     setSuccess('')
     const result = await onSubmitRequest(form)
-    if (result.success) {
+    if (result) {
       setForm({ type: 'access', description: '', dataCategories: [] })
       setSuccess('Your request has been submitted successfully!')
     }

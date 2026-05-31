@@ -1,8 +1,8 @@
 import {
-  Box, Card, CardContent, Typography, List, ListItem, ListItemText,
+  Box, Typography, List, ListItem, ListItemText,
   ListItemAvatar, Avatar, ListItemSecondaryAction, IconButton, Chip,
-  Badge, CircularProgress, Alert, Paper, Tooltip, Stack,
-  Checkbox, Divider,
+  Badge, CircularProgress, Alert, Tooltip, Stack,
+  Divider,
 } from '@mui/material'
 import {
   Notifications as NotificationsIcon,
@@ -18,6 +18,7 @@ import {
   Public as PublicIcon,
 } from '@mui/icons-material'
 import type { Notification, NotificationChannel } from '@shared/types/notification.ts'
+import type { JSX } from 'react'
 
 interface NotificationListProps {
   notifications: Notification[]

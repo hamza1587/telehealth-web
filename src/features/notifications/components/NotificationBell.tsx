@@ -1,6 +1,6 @@
 import {
-  Badge, IconButton, Popover, Typography, List, ListItem,
-  ListItemText, CircularProgress, Box, Chip, Stack, Avatar,
+  Badge, IconButton, Popover, Typography, ListItem,
+  ListItemText, Box, Chip, Stack, Avatar,
 } from '@mui/material'
 import {
   Notifications as NotificationsIcon,

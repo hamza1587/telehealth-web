@@ -3,7 +3,6 @@ import { ResearchStudiesList } from './components/ResearchStudiesList.tsx'
 import { ResearchStudyDetail } from './components/ResearchStudyDetail.tsx'
 import { useResearchStudies } from './hooks/useResearchStudies.ts'
 import { useState } from 'react'
-import type { ResearchEnrollmentForm } from '@shared/types/index.ts'
 
 export function ResearchWorkspace() {
   const {

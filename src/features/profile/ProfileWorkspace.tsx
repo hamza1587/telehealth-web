@@ -1,11 +1,4 @@
 import { Avatar, Box, Card, CardContent, Typography, Stack } from '@mui/material'
-import {
-  Person as PersonIcon,
-  Lock as LockIcon,
-  Security as SecurityIcon,
-  Delete as DeleteIcon,
-} from '@mui/icons-material'
-import type { User } from '@shared/types/auth.ts'
 import { useAuth } from '@shared/auth/AuthContext.tsx'
 import { useProfileSettings } from './hooks/useProfileSettings.ts'
 import { SettingsPage } from '../settings/components/SettingsPage.tsx'

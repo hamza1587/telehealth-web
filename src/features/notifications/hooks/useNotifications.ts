@@ -2,6 +2,15 @@ import { useState, useEffect, useCallback } from 'react'
 import { apiClient } from '@shared/api/Client.ts'
 import type { Notification, NotificationPreferences } from '@shared/types/notification.ts'
 
+interface NotificationListResponse {
+  items: Notification[]
+  unreadCount: number
+}
+
+interface PreferencesResponse {
+  preferences: NotificationPreferences
+}
+
 export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [preferences, setPreferences] = useState<NotificationPreferences | null>(null)
@@ -13,7 +22,7 @@ export function useNotifications() {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.get<any>(
+      const res = await apiClient.get<NotificationListResponse>(
         `/platform/notifications/my-notifications?page=${page}&pageSize=${pageSize}`
       )
       setNotifications(res.items || [])
@@ -27,8 +36,10 @@ export function useNotifications() {
 
   const fetchPreferences = useCallback(async () => {
     try {
-      const res = await apiClient.get<any>('/platform/notifications/my-preferences')
-      setPreferences(res)
+      const res = await apiClient.get<NotificationPreferences | PreferencesResponse>('/platform/notifications/my-preferences')
+      // Handle both direct preferences and wrapped response
+      const prefs = (res as PreferencesResponse).preferences ?? (res as NotificationPreferences)
+      setPreferences(prefs)
     } catch {
       // Silently fail - preferences are optional
     }
@@ -38,7 +49,7 @@ export function useNotifications() {
     try {
       await apiClient.post(`/platform/notifications/${notificationId}/read`, {})
       setNotifications(prev =>
-        prev.map(n => n.id === notificationId ? { ...n, status: 'sent' } : n)
+        prev.map(n => n.id === notificationId ? { ...n, status: 'sent' as const } : n)
       )
       setUnreadCount(prev => Math.max(0, prev - 1))
     } catch (err) {
@@ -49,7 +60,7 @@ export function useNotifications() {
   const markAllAsRead = useCallback(async () => {
     try {
       await apiClient.post('/platform/notifications/read-all', {})
-      setNotifications(prev => prev.map(n => ({ ...n, status: 'sent' })))
+      setNotifications(prev => prev.map(n => ({ ...n, status: 'sent' as const })))
       setUnreadCount(0)
     } catch (err) {
       console.error('[Notification] Failed to mark all as read:', err)
@@ -60,7 +71,7 @@ export function useNotifications() {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.put<any>('/platform/notifications/my-preferences', prefs)
+      const res = await apiClient.put<PreferencesResponse>('/platform/notifications/my-preferences', prefs)
       setPreferences(res.preferences || prefs)
       return true
     } catch (err) {

@@ -41,7 +41,6 @@ const NOTIFICATION_TYPES = [
 
 export function NotificationCenter({
   preferences,
-  loading: _loading,
   error,
   onSavePreferences,
   onExportData,

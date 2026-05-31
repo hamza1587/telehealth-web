@@ -35,6 +35,7 @@ export function useAppointments(patientId: string | null) {
   }, [patientId])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAppointments()
   }, [fetchAppointments])
 

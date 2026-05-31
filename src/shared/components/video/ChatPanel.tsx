@@ -17,7 +17,8 @@ interface ChatPanelProps {
 export const ChatPanel: React.FC<ChatPanelProps> = ({
   messages,
   onSendMessage,
-  currentUserId: _currentUserId
+  // currentUserId is part of the public API for future sender-filtering features
+  currentUserId: _currentUserId, // eslint-disable-line @typescript-eslint/no-unused-vars
 }) => {
   const [newMessage, setNewMessage] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -55,9 +56,8 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
               className={`flex ${message.isOwn ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-[80%] p-3 rounded-lg ${
-                  message.isOwn ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'
-                }`}
+                className={`max-w-[80%] p-3 rounded-lg ${message.isOwn ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'
+                  }`}
               >
                 {!message.isOwn && (
                   <p className="text-xs font-medium mb-1 opacity-70">{message.sender}</p>

@@ -12,7 +12,7 @@ export function useGDPRRequests() {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.get('/platform/gdpr/requests')
+      const res = await apiClient.get<any>('/platform/gdpr/requests')
       setRequests(res.items || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch GDPR requests')
@@ -25,7 +25,7 @@ export function useGDPRRequests() {
     setLoading(true)
     setError(null)
     try {
-      const res = await apiClient.post('/platform/gdpr/requests/submit', form)
+      const res = await apiClient.post<any>('/platform/gdpr/requests/submit', form)
       setRequests(prev => [res.request, ...prev])
       return { success: true, request: res.request }
     } catch (err) {
@@ -46,7 +46,7 @@ export function useGDPRRequests() {
     }
   }, [])
 
-  const deleteAccount = useCallback(async (_reason: string) => {
+  const deleteAccount = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {

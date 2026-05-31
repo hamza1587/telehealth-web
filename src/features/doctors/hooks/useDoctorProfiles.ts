@@ -52,6 +52,7 @@ export function useDoctorProfiles() {
   }, [])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     searchDoctors()
   }, [searchDoctors])
 

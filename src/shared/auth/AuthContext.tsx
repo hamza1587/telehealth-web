@@ -397,22 +397,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider')
   }
   return context
-}
-
-// Hook for checking if user has specific role
-export function useHasRole(role: string): boolean {
-  const { user } = useAuth()
-  return user?.roles.includes(role) ?? false
-}
-
-// Hook for checking if user is specific type
-export function useIsUserType(type: string): boolean {
-  const { user } = useAuth()
-  return user?.userType === type
 }

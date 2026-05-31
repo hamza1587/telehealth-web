@@ -1,6 +1,6 @@
 import {
   Box, Typography, List, ListItem, ListItemText,
-  ListItemAvatar, Avatar, ListItemSecondaryAction, IconButton, Chip,
+  ListItemAvatar, Avatar, ListItemSecondaryAction, IconButton,
   Badge, CircularProgress, Alert, Tooltip, Stack,
   Divider,
 } from '@mui/material'

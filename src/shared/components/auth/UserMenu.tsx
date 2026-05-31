@@ -71,7 +71,7 @@ export function UserMenu({ onOpenProfile, onOpenSettings }: UserMenuProps) {
   }
 
   const Icon = userTypeIcons[user.userType]
-  const displayName = user.displayName || user.email.split('@')[0]
+  const displayName = user.displayName?.trim() || user.email?.split('@')[0] || 'User'
   const initials = displayName
     .split(' ')
     .map(n => n[0])

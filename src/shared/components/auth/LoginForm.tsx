@@ -30,7 +30,7 @@ interface LoginFormProps {
 
 export function LoginForm({ onSuccess, onRegisterClick, onForgotPasswordClick }: LoginFormProps) {
   const { login, isLoading, error, clearError } = useAuth()
-  
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
@@ -45,10 +45,10 @@ export function LoginForm({ onSuccess, onRegisterClick, onForgotPasswordClick }:
 
     if (result.success) {
       if (result.mfaRequired) {
-        // MFA required, show MFA form
-        // The mfaToken is not returned in response but we need to handle MFA flow
-        // For now, we'll set a flag to show MFA input
-        setMfaToken('pending')
+        // Use a non-null sentinel to trigger MFA form display.
+        // The actual MFA token is managed server-side via the session;
+        // the client only needs to know MFA is required.
+        setMfaToken('mfa-required')
       } else {
         onSuccess?.()
       }
@@ -80,7 +80,7 @@ export function LoginForm({ onSuccess, onRegisterClick, onForgotPasswordClick }:
         <Typography variant="h5" align="center" sx={{ fontWeight: 'bold' }}>
           Welcome Back
         </Typography>
-        
+
         <Typography variant="body2" color="text.secondary" align="center">
           Sign in to your Telehealth Platform account
         </Typography>
@@ -91,49 +91,49 @@ export function LoginForm({ onSuccess, onRegisterClick, onForgotPasswordClick }:
           </Alert>
         )}
 
-  <TextField
-    label="Email Address"
-    type="email"
-    required
-    fullWidth
-    value={email}
-    onChange={(e) => setEmail(e.target.value)}
-    disabled={isLoading}
-    InputProps={{
-      startAdornment: (
-        <InputAdornment position="start">
-          <EmailIcon color="action" />
-        </InputAdornment>
-      ),
-    }}
-  />
+        <TextField
+          label="Email Address"
+          type="email"
+          required
+          fullWidth
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={isLoading}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <EmailIcon color="action" />
+              </InputAdornment>
+            ),
+          }}
+        />
 
-  <TextField
-    label="Password"
-    type={showPassword ? 'text' : 'password'}
-    required
-    fullWidth
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    disabled={isLoading}
-    InputProps={{
-      startAdornment: (
-        <InputAdornment position="start">
-          <LockIcon color="action" />
-        </InputAdornment>
-      ),
-      endAdornment: (
-        <InputAdornment position="end">
-          <IconButton
-            onClick={() => setShowPassword(!showPassword)}
-            edge="end"
-          >
-            {showPassword ? <VisibilityOff /> : <Visibility />}
-          </IconButton>
-        </InputAdornment>
-      ),
-    }}
-  />
+        <TextField
+          label="Password"
+          type={showPassword ? 'text' : 'password'}
+          required
+          fullWidth
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          disabled={isLoading}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <LockIcon color="action" />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setShowPassword(!showPassword)}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <FormControlLabel

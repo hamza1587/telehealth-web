@@ -1,6 +1,18 @@
 import type { OnboardingForm, RegistrationForm } from '@shared/types/patient.ts'
 
-export const apiBaseUrl = import.meta.env.VITE_PLATFORM_API_URL ?? 'http://localhost:5131'
+function getPlatformApiUrl(): string {
+  const url = import.meta.env.VITE_PLATFORM_API_URL
+  if (!url) {
+    if (import.meta.env.PROD) {
+      throw new Error('VITE_PLATFORM_API_URL is required in production')
+    }
+    console.warn('[Config] VITE_PLATFORM_API_URL not set — falling back to http://localhost:5131')
+    return 'http://localhost:5131'
+  }
+  return url
+}
+
+export const apiBaseUrl = getPlatformApiUrl()
 export const consentVersion = '2026.05'
 export const patientSteps = ['Register account', 'Capture consents', 'Save medical profile']
 

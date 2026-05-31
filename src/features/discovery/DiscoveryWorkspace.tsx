@@ -11,8 +11,8 @@ import {
   Public as PublicIcon,
 } from '@mui/icons-material'
 import { useState } from 'react'
-import { useDoctorProfiles } from './hooks/useDoctorProfiles.ts'
-import { DoctorProfileDetail } from './components/DoctorProfileDetail.tsx'
+import { useDoctorProfiles } from '@features/doctors/hooks/useDoctorProfiles.ts'
+import { DoctorProfileDetail } from '@features/doctors/components/DoctorProfileDetail.tsx'
 
 interface Props {
   onBookDoctor: (doctorId: string) => void

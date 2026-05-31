@@ -74,16 +74,26 @@ export const API_ENDPOINTS = {
       refund: (id: string) => `/billing/${id}/refund`,
       feeStructure: '/billing/admin/fee-structure',
     },
-      support: {
-        tickets: '/support/agent/tickets',
-        assign: (id: string) => `/support/agent/tickets/${id}/assign`,
-        resolve: (id: string) => `/support/agent/tickets/${id}/resolve`,
-        escalate: (id: string) => `/support/agent/tickets/${id}/escalate`,
-      },
+    support: {
+      tickets: '/support/agent/tickets',
+      assign: (id: string) => `/support/agent/tickets/${id}/assign`,
+      resolve: (id: string) => `/support/agent/tickets/${id}/resolve`,
+      escalate: (id: string) => `/support/agent/tickets/${id}/escalate`,
+    },
   },
 }
 
 export const API_CONFIG = {
-  baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:5000',
+  baseUrl: (() => {
+    const url = import.meta.env.VITE_API_URL
+    if (!url) {
+      if (import.meta.env.PROD) {
+        throw new Error('VITE_API_URL is required in production')
+      }
+      console.warn('[Config] VITE_API_URL not set — falling back to http://localhost:5000')
+      return 'http://localhost:5000'
+    }
+    return url
+  })(),
   timeout: 30000,
 }

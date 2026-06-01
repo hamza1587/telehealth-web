@@ -18,6 +18,7 @@ import { ProfileWorkspace } from '@features/profile/ProfileWorkspace.tsx'
 import { GDPRWorkspace } from '@features/gdpr/GDPRWorkspace.tsx'
 import { ResearchWorkspace } from '@features/research/ResearchWorkspace.tsx'
 import { AdminWorkspace } from '@features/admin/AdminWorkspace.tsx'
+import { AnalyticsDashboard } from '@features/analytics/AnalyticsDashboard.tsx'
 import { usePatientOnboarding } from '@features/patient/hooks/usePatientOnboarding.ts'
 import { useDoctorWorkspace } from '@features/doctor/hooks/useDoctorWorkspace.ts'
 import { useAppTitle } from '@shared/hooks/useAppTitle.ts'
@@ -104,6 +105,7 @@ export function AppShell() {
                   {selectedWorkspace === 'gdpr' && <GDPRWorkspace />}
                   {selectedWorkspace === 'research' && <ResearchWorkspace />}
                   {selectedWorkspace === 'admin' && <AdminWorkspace />}
+                  {selectedWorkspace === 'analytics' && <AnalyticsDashboard />}
                 </Stack>
               </Paper>
             </Stack>

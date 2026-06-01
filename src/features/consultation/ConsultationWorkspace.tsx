@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useVideoService } from './hooks/useVideoService'
 import { VideoConsultationRoom } from '@shared/components/video/VideoConsultationRoom'
 
 interface ConsultationSession {
@@ -12,6 +13,8 @@ interface ConsultationSession {
 export const ConsultationWorkspace: React.FC = () => {
   const [activeSession, setActiveSession] = useState<ConsultationSession | null>(null)
   const [sessions, setSessions] = useState<ConsultationSession[]>([])
+  const [roomToken, setRoomToken] = useState<{ roomUrl: string; token: string } | null>(null)
+  const { createRoom, activateRoom, generateToken, loading, error } = useVideoService()
 
   useEffect(() => {
     const mockSessions: ConsultationSession[] = [
@@ -30,35 +33,44 @@ export const ConsultationWorkspace: React.FC = () => {
         status: 'scheduled'
       }
     ]
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSessions(mockSessions)
   }, [])
 
-  const startConsultation = (session: ConsultationSession) => {
-    setActiveSession({ ...session, status: 'in-progress' })
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const endConsultation = () => {
-    if (activeSession) {
-      setSessions(prev =>
-        prev.map(s =>
-          s.id === activeSession.id ? { ...s, status: 'completed' } : s
-        )
+  const startConsultation = async (session: ConsultationSession) => {
+    try {
+      // Create video room
+      const room = await createRoom(
+        `Consultation with ${session.patientName}`,
+        10,
+        'US'
       )
-      setActiveSession(null)
+
+      // Activate the room
+      const activeRoom = await activateRoom(room.id)
+
+      // Generate token for current user
+      const token = await generateToken(activeRoom.id, 'doctor-user-id')
+
+      setRoomToken({
+        roomUrl: activeRoom.twilioRoomSid || '',
+        token: token
+      })
+
+      setActiveSession({ ...session, status: 'in-progress' })
+    } catch (err) {
+      console.error('Failed to start consultation:', err)
     }
   }
 
-  if (activeSession) {
+  if (activeSession && roomToken) {
     return (
       <VideoConsultationRoom
         sessionId={activeSession.id}
-        token="mock-token"
+        token={roomToken.token}
         serverUrl="wss://your-livekit-server.com"
         isDoctor={true}
-        userId="current-user-id"
-        userName="Current User"
+        userId="doctor-user-id"
+        userName="Dr. Smith"
       />
     )
   }
@@ -72,6 +84,12 @@ export const ConsultationWorkspace: React.FC = () => {
         </p>
       </div>
 
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          {error}
+        </div>
+      )}
+
       <div className="grid gap-6">
         <div className="border rounded-lg bg-white shadow-sm">
           <div className="p-4 border-b">
@@ -81,9 +99,10 @@ export const ConsultationWorkspace: React.FC = () => {
             <div className="flex gap-4">
               <button
                 type="button"
-                className="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                disabled={loading}
               >
-                Start New Consultation
+                {loading ? 'Starting...' : 'Start New Consultation'}
               </button>
               <button
                 type="button"
@@ -125,9 +144,10 @@ export const ConsultationWorkspace: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => startConsultation(session)}
-                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                      disabled={loading}
                     >
-                      Join Now
+                      {loading ? 'Joining...' : 'Join Now'}
                     </button>
                   </div>
                 </div>

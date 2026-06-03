@@ -1,4 +1,7 @@
 export { WaitingRoom } from './WaitingRoom';
+export { DeviceSelector } from './DeviceSelector';
+export { NetworkQualityBadge } from './NetworkQualityBadge';
+export type { NetworkQuality } from './NetworkQualityBadge';
 export { VideoTile } from './VideoTile';
 export { CallControls } from './CallControls';
 export { VideoGrid } from './VideoGrid';

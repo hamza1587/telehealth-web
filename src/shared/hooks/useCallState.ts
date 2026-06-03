@@ -52,6 +52,7 @@ export function useCallState({
 
   const [showConsentModal, setShowConsentModal] = useState(false)
   const [hasRecordingConsent, setHasRecordingConsent] = useState(initialRecordingConsent)
+  const [isReconnecting, setIsReconnecting] = useState(false)
 
   const autoDisconnectTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -106,6 +107,8 @@ export function useCallState({
       })
       webrtcService.onTrackSubscribed(() => setTrackVersion(v => v + 1))
       webrtcService.onTrackUnsubscribed(() => setTrackVersion(v => v + 1))
+      webrtcService.onReconnecting(() => setIsReconnecting(true))
+      webrtcService.onReconnected(() => setIsReconnecting(false))
 
       setCallPhase('inCall')
       setRetryCount(0)
@@ -227,6 +230,8 @@ export function useCallState({
     maxRetryAttempts: MAX_RETRY_ATTEMPTS,
     showConsentModal,
     hasRecordingConsent,
+
+    isReconnecting,
 
     // Actions
     joinCall,

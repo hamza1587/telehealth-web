@@ -62,6 +62,7 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
   const [localParticipant, setLocalParticipant] = useState<LocalParticipant | null>(null)
   const [remoteParticipants, setRemoteParticipants] = useState<RemoteParticipant[]>([])
   const [, setTrackVersion] = useState(0)
+  const [isReconnecting, setIsReconnecting] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [isCameraOff, setIsCameraOff] = useState(false)
   const [isScreenSharing, setIsScreenSharing] = useState(false)
@@ -156,6 +157,8 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
       // Re-render VideoGrid when tracks arrive or leave (tracks are async)
       webrtcService.onTrackSubscribed(() => setTrackVersion(v => v + 1))
       webrtcService.onTrackUnsubscribed(() => setTrackVersion(v => v + 1))
+      webrtcService.onReconnecting(() => setIsReconnecting(true))
+      webrtcService.onReconnected(() => setIsReconnecting(false))
 
       setCallState('inCall')
       setRetryCount(0)
@@ -376,6 +379,13 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
           )}
 
           <RecordingIndicator isRecording={isRecording} duration={recordingDuration} />
+
+          {isReconnecting && (
+            <div className="bg-yellow-500 text-white px-4 py-2 flex items-center gap-2" role="status" aria-live="polite">
+              <span className="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full" aria-hidden="true" />
+              <span className="text-sm font-medium">Reconnecting…</span>
+            </div>
+          )}
 
           {error && (
             <div className="bg-yellow-500 text-white px-4 py-2 flex items-center justify-between" role="alert" aria-live="assertive">

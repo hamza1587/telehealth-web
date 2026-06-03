@@ -2,6 +2,30 @@
 export const API_ENDPOINTS = {
   // ... existing endpoints from api.ts
 
+  // Video consultation (routed to video microservice via videoServiceUrl)
+  video: {
+    // Call session lifecycle
+    createCall: '/api/calls',
+    getCall: (id: string) => `/api/calls/${id}`,
+    endCall: (id: string) => `/api/calls/${id}/end`,
+
+    // LiveKit token exchange (the "signaling" step)
+    getRoomToken: '/api/rtc/token',
+
+    // Room management
+    createRoom: '/api/videoroom/rooms',
+    getRoom: (id: string) => `/api/videoroom/rooms/${id}`,
+    activateRoom: (id: string) => `/api/videoroom/rooms/${id}/activate`,
+    endRoom: (id: string) => `/api/videoroom/rooms/${id}/end`,
+    generateRoomToken: (id: string) => `/api/videoroom/rooms/${id}/token`,
+    enableRecording: (id: string) => `/api/videoroom/rooms/${id}/recording/enable`,
+    disableRecording: (id: string) => `/api/videoroom/rooms/${id}/recording/disable`,
+
+    // Network quality
+    getNetworkMetrics: (roomId: string) => `/api/networkquality/rooms/${roomId}/metrics`,
+    recordNetworkMetrics: (roomId: string) => `/api/networkquality/rooms/${roomId}/metrics`,
+  },
+
   // Appointments (patient)
   appointments: {
     list: '/platform/appointments/my-appointments',
@@ -92,6 +116,16 @@ export const API_CONFIG = {
       }
       console.warn('[Config] VITE_API_URL not set — falling back to http://localhost:5000')
       return 'http://localhost:5000'
+    }
+    return url
+  })(),
+  videoServiceUrl: (() => {
+    const url = import.meta.env.VITE_VIDEO_SERVICE_URL
+    if (!url) {
+      if (import.meta.env.PROD) {
+        throw new Error('VITE_VIDEO_SERVICE_URL is required in production')
+      }
+      return 'http://localhost:5003'
     }
     return url
   })(),

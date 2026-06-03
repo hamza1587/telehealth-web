@@ -7,4 +7,5 @@ export { ParticipantList } from './ParticipantList';
 export { RecordingIndicator } from './RecordingIndicator';
 export { PostCallSummary } from './PostCallSummary';
 export { ConsentModal } from './ConsentModal';
+export { ScreenShareView } from './ScreenShareView';
 export { VideoConsultationRoom } from './VideoConsultationRoom';

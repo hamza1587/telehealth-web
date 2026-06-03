@@ -9,7 +9,8 @@ import { PostCallSummary } from './PostCallSummary'
 import { ConsentModal } from './ConsentModal'
 import { webrtcService } from '@shared/services/webrtc'
 import { sendChatMessage, getChatHistory } from '@shared/api/chatApi'
-import { Participant, ConnectionState } from 'livekit-client'
+import { ConnectionState } from 'livekit-client'
+import type { LocalParticipant, RemoteParticipant } from 'livekit-client'
 
 interface ChatMessage {
   id: string
@@ -58,8 +59,9 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
   recordingConsent = false
 }) => {
   const [callState, setCallState] = useState<CallState>('waiting')
-  const [localParticipant, setLocalParticipant] = useState<Participant | null>(null)
-  const [remoteParticipants, setRemoteParticipants] = useState<Participant[]>([])
+  const [localParticipant, setLocalParticipant] = useState<LocalParticipant | null>(null)
+  const [remoteParticipants, setRemoteParticipants] = useState<RemoteParticipant[]>([])
+  const [, setTrackVersion] = useState(0)
   const [isMuted, setIsMuted] = useState(false)
   const [isCameraOff, setIsCameraOff] = useState(false)
   const [isScreenSharing, setIsScreenSharing] = useState(false)
@@ -137,11 +139,11 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
       const room = await webrtcService.connect(token, serverUrl)
       setLocalParticipant(room.localParticipant)
 
-      webrtcService.onParticipantConnected((participant: Participant) => {
+      webrtcService.onParticipantConnected((participant: RemoteParticipant) => {
         setRemoteParticipants(prev => [...prev, participant])
       })
 
-      webrtcService.onParticipantDisconnected((participant: Participant) => {
+      webrtcService.onParticipantDisconnected((participant: RemoteParticipant) => {
         setRemoteParticipants(prev => prev.filter(p => p.identity !== participant.identity))
       })
 
@@ -150,6 +152,10 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
           setCallState('disconnected')
         }
       })
+
+      // Re-render VideoGrid when tracks arrive or leave (tracks are async)
+      webrtcService.onTrackSubscribed(() => setTrackVersion(v => v + 1))
+      webrtcService.onTrackUnsubscribed(() => setTrackVersion(v => v + 1))
 
       setCallState('inCall')
       setRetryCount(0)
@@ -393,6 +399,7 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
                   isLocalMuted={isMuted}
                   isLocalCameraOff={isCameraOff}
                   isScreenSharing={isScreenSharing}
+                  onStopScreenShare={handleToggleScreenShare}
                 />
               </div>
 

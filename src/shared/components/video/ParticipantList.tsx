@@ -1,5 +1,5 @@
 import React from 'react'
-import { Participant } from 'livekit-client'
+import type { Participant } from 'livekit-client'
 
 interface ParticipantListProps {
   participants: Participant[]

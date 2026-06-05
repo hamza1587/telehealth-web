@@ -17,8 +17,8 @@ export function SurfaceTile({ title, items }: { title: string; items: string[] }
           {title}
         </Typography>
         <List disablePadding>
-          {items.map((item) => (
-            <BulletRow key={item} text={item} />
+          {items.map((item, index) => (
+            <BulletRow key={`${item}-${index}`} text={item} />
           ))}
         </List>
       </Stack>

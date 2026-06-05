@@ -80,6 +80,16 @@ export function usePatientOnboarding(setWorkspace: Dispatch<SetStateAction<Works
       return
     }
 
+    if (
+      !onboardingForm.termsAccepted ||
+      !onboardingForm.privacyAccepted ||
+      !onboardingForm.teleconsultationAccepted ||
+      !onboardingForm.healthDataProcessingAccepted
+    ) {
+      setRequestError('You must accept all required consents before completing onboarding.')
+      return
+    }
+
     setOnboardingPending(true)
     setOnboardingErrors({})
     setRequestError('')

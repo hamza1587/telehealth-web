@@ -12,6 +12,19 @@ export function useDoctorWorkspace() {
   const [pendingAction, setPendingAction] = useState('')
 
   async function submitDoctorProfile() {
+    if (!doctorForm.displayName.trim()) {
+      setRequestError('Display name is required.')
+      return
+    }
+    if (!doctorForm.email.trim()) {
+      setRequestError('Email is required.')
+      return
+    }
+    if (!doctorForm.phoneNumber.trim()) {
+      setRequestError('Phone number is required.')
+      return
+    }
+
     setPendingAction('profile')
     setRequestError('')
 
@@ -68,7 +81,11 @@ export function useDoctorWorkspace() {
 
       setDoctor(result)
       setVerificationForm((current) => ({ ...current, verificationStatus: result.verificationStatus }))
-    } catch {
+    } catch (error) {
+      console.error('[API Error] Doctor profile submission network error:', {
+        error: error instanceof Error ? error.message : String(error),
+        timestamp: new Date().toISOString(),
+      })
       setRequestError('Doctor API is unavailable right now. Check that the platform API is running locally.')
     } finally {
       setPendingAction('')
@@ -121,7 +138,11 @@ export function useDoctorWorkspace() {
 
       setDoctor(result)
       setAvailabilityForm(initialDoctorAvailabilityForm)
-    } catch {
+    } catch (error) {
+      console.error('[API Error] Availability update network error:', {
+        error: error instanceof Error ? error.message : String(error),
+        timestamp: new Date().toISOString(),
+      })
       setRequestError('Doctor API is unavailable right now. Check that the platform API is running locally.')
     } finally {
       setPendingAction('')
@@ -158,7 +179,11 @@ export function useDoctorWorkspace() {
       const result = await response.json()
 
       setDoctor(result)
-    } catch {
+    } catch (error) {
+      console.error('[API Error] Verification update network error:', {
+        error: error instanceof Error ? error.message : String(error),
+        timestamp: new Date().toISOString(),
+      })
       setRequestError('Doctor API is unavailable right now. Check that the platform API is running locally.')
     } finally {
       setPendingAction('')

@@ -1,200 +1,195 @@
 import { useState, useCallback } from 'react'
+import { apiBaseUrl } from '@shared/config/patient.ts'
 
-interface PrescriptionItem {
-  id: string
-  medicationCode: string
-  medicationName: string
-  dosage: string
-  frequency: string
-  durationDays: number
-  instructions: string
-  quantity: number
-  refills: number
-  isControlledSubstance: boolean
+const GATEWAY_BASE = `${apiBaseUrl}/gateway`
+
+interface GatewayMedication {
+  name: string;
+  dosage: string;
+  quantity: string;
+  daysSupply: number;
+  refills: number;
+  instructions: string;
+  isControlledSubstance?: boolean;
 }
 
-interface Prescription {
-  id: string
-  consultationId: string
-  doctorId: string
-  patientId: string
-  countryCode: string
-  status: 'draft' | 'pending' | 'sent' | 'delivered' | 'cancelled'
-  items: PrescriptionItem[]
-  digitalSignature: string | null
-  isControlledSubstance: boolean
-  deaNumber: string | null
-  nationalPrescriptionId: string | null
-  createdAt: string
-  updatedAt: string
+interface GatewayPrescriptionResult {
+  gateway: string;
+  results: {
+    gatewayPrescriptionId: string;
+    status: string;
+    nationalPrescriptionId?: string;
+  }[];
 }
 
 interface DrugInteraction {
-  medication1: string
-  medication2: string
-  severity: 'Low' | 'Moderate' | 'High'
-  description: string
-  recommendation: string
+  medication1: string;
+  medication2: string;
+  severity: 'Low' | 'Moderate' | 'High';
+  description: string;
+  recommendation: string;
 }
 
 interface Pharmacy {
-  id: string
-  name: string
-  address: string
-  city: string
-  countryCode: string
-  isOnline: boolean
-  acceptsEPrescriptions: boolean
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  phone: string;
+  acceptsEPrescriptions: boolean;
+  isOnline: boolean;
 }
 
-const PRESCRIPTION_API_BASE = 'http://localhost:5001/api' // Update with actual Prescription Service URL
+interface LabOrder {
+  id: string;
+  status: string;
+  testCode: string;
+  testDisplay: string;
+  createdAt: string;
+}
+
+interface LabResult {
+  id: string;
+  orderId: string;
+  status: string;
+  conclusion?: string;
+  results: { code: string; display: string; value: string; unit: string; referenceRange?: string; interpretation?: string }[];
+  issuedAt?: string;
+}
 
 export const usePrescriptionService = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const createPrescription = useCallback(async (consultationId: string, doctorId: string, patientId: string, countryCode: string) => {
+  const submitPrescription = useCallback(async (
+    patientId: string,
+    doctorId: string,
+    countryCode: string,
+    medications: GatewayMedication[],
+    deaNumber?: string,
+  ): Promise<GatewayPrescriptionResult> => {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch(`${PRESCRIPTION_API_BASE}/prescription`, {
+      const res = await fetch(`${GATEWAY_BASE}/prescription/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ consultationId, doctorId, patientId, countryCode }),
+        body: JSON.stringify({ patientId, doctorId, countryCode, medications, deaNumber }),
       })
-      if (!response.ok) throw new Error('Failed to create prescription')
-      return await response.json() as Prescription
+      if (!res.ok) {
+        const data = await res.json() as { error?: string; detail?: string }
+        throw new Error(data.detail ?? data.error ?? `HTTP ${res.status}`)
+      }
+      return await res.json() as GatewayPrescriptionResult
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create prescription')
-      throw err
+      const msg = err instanceof Error ? err.message : 'Submission failed'
+      setError(msg)
+      throw new Error(msg)
     } finally {
       setLoading(false)
     }
   }, [])
 
-  const getPrescription = useCallback(async (id: string) => {
+  const getPrescriptionStatus = useCallback(async (gateway: string, gatewayId: string) => {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch(`${PRESCRIPTION_API_BASE}/prescription/${id}`)
-      if (!response.ok) throw new Error('Failed to get prescription')
-      return await response.json() as Prescription
+      const res = await fetch(`${GATEWAY_BASE}/prescription/${gateway}/${gatewayId}/status`)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      return await res.json() as { status: string; nationalId?: string }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to get prescription')
-      throw err
+      const msg = err instanceof Error ? err.message : 'Status check failed'
+      setError(msg)
+      throw new Error(msg)
     } finally {
       setLoading(false)
     }
   }, [])
 
-  const addItem = useCallback(async (prescriptionId: string, item: Omit<PrescriptionItem, 'id'>) => {
+  const checkDrugInteractions = useCallback(async (
+    existingMedications: string[],
+    newMedications: string[],
+    countryCode = 'DE',
+  ): Promise<DrugInteraction[]> => {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch(`${PRESCRIPTION_API_BASE}/prescription/${prescriptionId}/items`, {
+      const res = await fetch(`${GATEWAY_BASE}/drug-interactions/check`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(item),
+        body: JSON.stringify({ existingMedications, newMedications, countryCode }),
       })
-      if (!response.ok) throw new Error('Failed to add item')
-      return await response.json() as Prescription
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      return await res.json() as DrugInteraction[]
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add item')
-      throw err
+      const msg = err instanceof Error ? err.message : 'Interaction check failed'
+      setError(msg)
+      throw new Error(msg)
     } finally {
       setLoading(false)
     }
   }, [])
 
-  const finalizePrescription = useCallback(async (id: string, digitalSignature: string, deaNumber?: string) => {
+  const getNearbyPharmacies = useCallback(async (countryCode: string, city: string): Promise<Pharmacy[]> => {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch(`${PRESCRIPTION_API_BASE}/prescription/${id}/finalize`, {
+      const params = new URLSearchParams({ countryCode, city })
+      const res = await fetch(`${GATEWAY_BASE}/pharmacies/nearby?${params}`)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      return await res.json() as Pharmacy[]
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Pharmacy search failed'
+      setError(msg)
+      throw new Error(msg)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const submitLabOrder = useCallback(async (
+    patientId: string,
+    testCode: string,
+    testDisplay: string,
+    priority: 'routine' | 'urgent' | 'asap',
+    countryCode = 'DE',
+    notes?: string,
+  ): Promise<LabOrder> => {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch(`${GATEWAY_BASE}/lab-orders/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ digitalSignature, deaNumber }),
+        body: JSON.stringify({ patientId, testCode, testDisplay, priority, countryCode, notes }),
       })
-      if (!response.ok) throw new Error('Failed to finalize prescription')
-      return await response.json() as Prescription
+      if (!res.ok) {
+        const data = await res.json() as { error?: string; detail?: string }
+        throw new Error(data.detail ?? data.error ?? `HTTP ${res.status}`)
+      }
+      return await res.json() as LabOrder
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to finalize prescription')
-      throw err
+      const msg = err instanceof Error ? err.message : 'Lab order failed'
+      setError(msg)
+      throw new Error(msg)
     } finally {
       setLoading(false)
     }
   }, [])
 
-  const sendToNationalGateway = useCallback(async (id: string, pharmacyId?: string) => {
+  const getLabResults = useCallback(async (orderId: string, countryCode = 'DE'): Promise<LabResult | null> => {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch(`${PRESCRIPTION_API_BASE}/prescription/${id}/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pharmacyId }),
-      })
-      if (!response.ok) throw new Error('Failed to send prescription')
-      const data = await response.json()
-      return data.nationalPrescriptionId as string
+      const res = await fetch(`${GATEWAY_BASE}/lab-orders/${orderId}/results?countryCode=${countryCode}`)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      return await res.json() as LabResult | null
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to send prescription')
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  const checkDrugInteractions = useCallback(async (existingMedications: string[], newMedications: string[]) => {
-    setLoading(true)
-    setError(null)
-    try {
-      const response = await fetch(`${PRESCRIPTION_API_BASE}/drug-interactions/check`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ existingMedications, newMedications }),
-      })
-      if (!response.ok) throw new Error('Failed to check interactions')
-      return await response.json() as DrugInteraction[]
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to check interactions')
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  const getNearbyPharmacies = useCallback(async (countryCode: string, city?: string) => {
-    setLoading(true)
-    setError(null)
-    try {
-      const params = new URLSearchParams({ countryCode })
-      if (city) params.append('city', city)
-      const response = await fetch(`${PRESCRIPTION_API_BASE}/pharmacies/nearby?${params}`)
-      if (!response.ok) throw new Error('Failed to get pharmacies')
-      return await response.json() as Pharmacy[]
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to get pharmacies')
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  const sendToPharmacy = useCallback(async (prescriptionId: string, pharmacyId: string) => {
-    setLoading(true)
-    setError(null)
-    try {
-      const response = await fetch(`${PRESCRIPTION_API_BASE}/pharmacies/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prescriptionId, pharmacyId }),
-      })
-      if (!response.ok) throw new Error('Failed to send to pharmacy')
-      return await response.json() as boolean
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to send to pharmacy')
-      throw err
+      const msg = err instanceof Error ? err.message : 'Failed to fetch results'
+      setError(msg)
+      throw new Error(msg)
     } finally {
       setLoading(false)
     }
@@ -203,13 +198,11 @@ export const usePrescriptionService = () => {
   return {
     loading,
     error,
-    createPrescription,
-    getPrescription,
-    addItem,
-    finalizePrescription,
-    sendToNationalGateway,
+    submitPrescription,
+    getPrescriptionStatus,
     checkDrugInteractions,
     getNearbyPharmacies,
-    sendToPharmacy,
+    submitLabOrder,
+    getLabResults,
   }
 }

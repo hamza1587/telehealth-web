@@ -28,6 +28,7 @@ interface VideoConsultationRoomProps {
   userId: string
   userName: string
   recordingConsent?: boolean
+  onCallEnd?: () => void
 }
 
 type CallState = 'waiting' | 'connecting' | 'inCall' | 'disconnected' | 'error' | 'postCall'
@@ -56,7 +57,8 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
   isDoctor = false,
   userId,
   userName,
-  recordingConsent = false
+  recordingConsent = false,
+  onCallEnd,
 }) => {
   const [callState, setCallState] = useState<CallState>('waiting')
   const [localParticipant, setLocalParticipant] = useState<LocalParticipant | null>(null)
@@ -275,8 +277,12 @@ export const VideoConsultationRoom: React.FC<VideoConsultationRoomProps> = ({
   }, [userName, sessionId])
 
   const handleReturnToDashboard = useCallback(() => {
-    window.location.href = '/'
-  }, [])
+    if (onCallEnd) {
+      onCallEnd()
+    } else {
+      window.location.href = '/'
+    }
+  }, [onCallEnd])
 
   const dismissError = useCallback(() => {
     setError(null)

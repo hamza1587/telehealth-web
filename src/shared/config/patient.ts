@@ -13,6 +13,20 @@ function getPlatformApiUrl(): string {
 }
 
 export const apiBaseUrl = getPlatformApiUrl()
+
+function getLivekitServerUrl(): string {
+  const url = import.meta.env.VITE_LIVEKIT_SERVER_URL
+  if (!url) {
+    if (import.meta.env.PROD) {
+      throw new Error('VITE_LIVEKIT_SERVER_URL is required in production')
+    }
+    console.warn('[Config] VITE_LIVEKIT_SERVER_URL not set — falling back to wss://localhost:7880')
+    return 'wss://localhost:7880'
+  }
+  return url
+}
+
+export const livekitServerUrl = getLivekitServerUrl()
 export const consentVersion = '2026.05'
 export const patientSteps = ['Register account', 'Capture consents', 'Save medical profile']
 

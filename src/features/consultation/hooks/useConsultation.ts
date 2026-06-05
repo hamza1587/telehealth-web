@@ -17,7 +17,7 @@ export function useConsultation(appointmentId: string | null) {
       setLoading(true)
       setError(null)
       try {
-        const response = await fetch(`${apiBaseUrl}/consultations/${appointmentId}`)
+        const response = await fetch(`${apiBaseUrl}/platform/consultations/${appointmentId}`)
         if (!response.ok) {
           throw new Error('Failed to fetch session')
         }
@@ -45,7 +45,7 @@ export function useConsultation(appointmentId: string | null) {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch(`${apiBaseUrl}/consultations/${appointmentId}/join`, {
+      const response = await fetch(`${apiBaseUrl}/platform/consultations/${appointmentId}/join`, {
         method: 'POST',
       })
 
@@ -85,7 +85,7 @@ export function useConsultation(appointmentId: string | null) {
     if (!session) return
 
     try {
-      const response = await fetch(`${apiBaseUrl}/consultations/${session.id}/end`, {
+      const response = await fetch(`${apiBaseUrl}/platform/consultations/${session.id}/end`, {
         method: 'POST',
       })
 

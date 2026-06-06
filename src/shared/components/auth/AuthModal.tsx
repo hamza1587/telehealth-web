@@ -44,20 +44,31 @@ export function AuthModal({ open, onClose, initialView = 'login', onSuccess }: A
     setForgotSent(true)
   }
 
+  const titleId = 'auth-modal-title'
+  const viewLabel =
+    view === 'login' ? 'Sign in to your account'
+    : view === 'register' ? 'Create your account'
+    : 'Reset your password'
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
       maxWidth="sm"
       fullWidth
+      // 4.9 — aria-labelledby links the dialog to its visible title
+      aria-labelledby={titleId}
       PaperComponent={Paper}
       PaperProps={{
         sx: { borderRadius: 4, overflow: 'hidden' },
       }}
     >
       <Box sx={{ position: 'relative' }}>
+        {/* Hidden title for screen readers; updates as the view changes */}
+        <span id={titleId} className="sr-only">{viewLabel}</span>
         <IconButton
           onClick={onClose}
+          aria-label="Close dialog"
           sx={{ position: 'absolute', right: 16, top: 16, zIndex: 1 }}
         >
           <CloseIcon />
@@ -87,7 +98,7 @@ export function AuthModal({ open, onClose, initialView = 'login', onSuccess }: A
             {view === 'forgot-password' && (
               <Stack spacing={3}>
                 <Stack direction="row" alignItems="center" spacing={1}>
-                  <IconButton size="small" onClick={() => setView('login')}>
+                  <IconButton size="small" onClick={() => setView('login')} aria-label="Back to sign in">
                     <BackIcon fontSize="small" />
                   </IconButton>
                   <Typography variant="h5" sx={{ fontWeight: 'bold' }}>

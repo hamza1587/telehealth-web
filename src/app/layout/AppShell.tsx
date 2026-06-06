@@ -59,63 +59,77 @@ export function AppShell() {
       py: { xs: 3, md: 4 },
     }}
     >
+      {/* 4.1 — Skip-navigation link; .skip-link CSS shows it on :focus */}
+      <a href="#main-content" className="skip-link">Skip to main content</a>
+
+      {/* 4.5 — Polite live region: announces active workspace to screen readers on change */}
+      <Box role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {`${activeWorkspace.label} workspace`}
+      </Box>
+
       <Container maxWidth="xl">
         <Grid container spacing={3}>
+          {/* 4.2 — <nav> landmark wraps the sidebar */}
           <Grid xs={12} lg={3}>
-            <Sidebar activeKey={selectedWorkspace} onSelect={setSelectedWorkspace} statusMessage={patientOnboarding.statusMessage} />
+            <Box component="nav" aria-label="Main navigation">
+              <Sidebar activeKey={selectedWorkspace} onSelect={setSelectedWorkspace} statusMessage={patientOnboarding.statusMessage} />
+            </Box>
           </Grid>
-          <Grid>
-            <Stack spacing={3}>
-              <Paper elevation={0} sx={{ p: { xs: 2.5, md: 3.5 }, borderRadius: 6, border: '1px solid', borderColor: 'divider' }}>
-                <Stack spacing={2}>
-                  <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ justifyContent: 'space-between', alignItems: { md: 'center' } }}>
-                    <Box>
-                      <Typography variant="overline" color="text.secondary">
-                        Active workspace
-                      </Typography>
-                      <Typography variant="h4" sx={{ fontWeight: 800 }}>
-                        {activeWorkspace.label}
-                      </Typography>
-                      <Typography color="text.secondary">{activeWorkspace.subtitle}</Typography>
-                    </Box>
-                    <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-                      <LanguageSwitcher />
-                      <Chip label="Phase 1 implementation design" color="primary" variant="outlined" />
-                      {isAuthenticated ? (
-                        <UserMenu />
-                      ) : (
-                        <LoginButton onClick={() => setAuthModalOpen(true)} />
-                      )}
-                    </Stack>
-                  </Stack>
 
-                  {/* === WORKSPACE ROUTING === */}
-                  {selectedWorkspace === 'overview' && <OverviewWorkspace />}
-                  {selectedWorkspace === 'patient' && <PatientWorkspace onboarding={patientOnboarding} />}
-                  {selectedWorkspace === 'doctor' && <DoctorWorkspace workspace={doctorWorkspace} />}
-                  {selectedWorkspace === 'discovery' && (
-                    <DiscoveryWorkspace onBookDoctor={() => { setSelectedWorkspace('consultation') }} />
-                  )}
-                  {selectedWorkspace === 'consultation' && <ConsultationWorkspace />}
-                  {selectedWorkspace === 'appointments' && <AppointmentsWorkspace />}
-                  {selectedWorkspace === 'billing' && <BillingWorkspace />}
-                  {selectedWorkspace === 'clinical' && <ClinicalWorkspace />}
-                  {selectedWorkspace === 'operations' && <OperationsWorkspace />}
-                  {selectedWorkspace === 'settings' && <ProfileWorkspace />}
-                  {selectedWorkspace === 'gdpr' && <GDPRWorkspace />}
-                  {selectedWorkspace === 'research' && <ResearchWorkspace />}
-                  {selectedWorkspace === 'admin' && <AdminWorkspace />}
-                  {selectedWorkspace === 'analytics' && <AnalyticsDashboard />}
-                </Stack>
-              </Paper>
-            </Stack>
+          {/* 4.2 — <main> landmark; tabIndex={-1} so the skip link can focus it */}
+          <Grid>
+            <Box component="main" id="main-content" tabIndex={-1} sx={{ outline: 'none' }}>
+              <Stack spacing={3}>
+                <Paper elevation={0} sx={{ p: { xs: 2.5, md: 3.5 }, borderRadius: 6, border: '1px solid', borderColor: 'divider' }}>
+                  <Stack spacing={2}>
+                    <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ justifyContent: 'space-between', alignItems: { md: 'center' } }}>
+                      <Box>
+                        <Typography variant="overline" color="text.secondary">
+                          Active workspace
+                        </Typography>
+                        {/* h1 — unique page title; screen readers announce active context on navigation */}
+                        <Typography variant="h4" component="h1" sx={{ fontWeight: 800 }}>
+                          {activeWorkspace.label}
+                        </Typography>
+                        <Typography color="text.secondary">{activeWorkspace.subtitle}</Typography>
+                      </Box>
+                      <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
+                        <LanguageSwitcher />
+                        <Chip label="Phase 1 implementation design" color="primary" variant="outlined" />
+                        {isAuthenticated ? (
+                          <UserMenu />
+                        ) : (
+                          <LoginButton onClick={() => setAuthModalOpen(true)} />
+                        )}
+                      </Stack>
+                    </Stack>
+
+                    {/* === WORKSPACE ROUTING === */}
+                    {selectedWorkspace === 'overview' && <OverviewWorkspace />}
+                    {selectedWorkspace === 'patient' && <PatientWorkspace onboarding={patientOnboarding} />}
+                    {selectedWorkspace === 'doctor' && <DoctorWorkspace workspace={doctorWorkspace} />}
+                    {selectedWorkspace === 'discovery' && (
+                      <DiscoveryWorkspace onBookDoctor={() => { setSelectedWorkspace('consultation') }} />
+                    )}
+                    {selectedWorkspace === 'consultation' && <ConsultationWorkspace />}
+                    {selectedWorkspace === 'appointments' && <AppointmentsWorkspace />}
+                    {selectedWorkspace === 'billing' && <BillingWorkspace />}
+                    {selectedWorkspace === 'clinical' && <ClinicalWorkspace />}
+                    {selectedWorkspace === 'operations' && <OperationsWorkspace />}
+                    {selectedWorkspace === 'settings' && <ProfileWorkspace />}
+                    {selectedWorkspace === 'gdpr' && <GDPRWorkspace />}
+                    {selectedWorkspace === 'research' && <ResearchWorkspace />}
+                    {selectedWorkspace === 'admin' && <AdminWorkspace />}
+                    {selectedWorkspace === 'analytics' && <AnalyticsDashboard />}
+                  </Stack>
+                </Paper>
+              </Stack>
+            </Box>
           </Grid>
         </Grid>
       </Container>
 
-      <AuthModal open={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-      />
+      <AuthModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
     </Box>
   )
 }

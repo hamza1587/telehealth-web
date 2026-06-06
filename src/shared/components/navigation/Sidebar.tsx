@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { Avatar, Card, CardContent, Chip, List, ListItem, ListItemButton, ListItemText, Paper, Stack, Typography } from '@mui/material'
 import { InfoCard } from '@shared/components/common/InfoCard.tsx'
 import { MetricRow } from '@shared/components/common/MetricRow.tsx'
@@ -13,6 +14,33 @@ export function Sidebar({
   onSelect: (key: WorkspaceKey) => void
   statusMessage: string
 }) {
+  // Refs for roving-tabindex arrow-key navigation (4.8)
+  const itemRefs = useRef<Array<HTMLDivElement | null>>([])
+
+  function handleKeyDown(e: React.KeyboardEvent, index: number) {
+    const count = workspaceDefinitions.length
+    let targetIndex: number | null = null
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      targetIndex = (index + 1) % count
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      targetIndex = (index - 1 + count) % count
+    } else if (e.key === 'Home') {
+      e.preventDefault()
+      targetIndex = 0
+    } else if (e.key === 'End') {
+      e.preventDefault()
+      targetIndex = count - 1
+    }
+
+    if (targetIndex !== null) {
+      onSelect(workspaceDefinitions[targetIndex].key)
+      itemRefs.current[targetIndex]?.focus()
+    }
+  }
+
   return (
     <Stack spacing={3}>
       <Paper
@@ -49,37 +77,54 @@ export function Sidebar({
       <Card sx={{ borderRadius: 5 }}>
         <CardContent>
           <Stack spacing={1.5}>
-            <Typography variant="overline" color="text.secondary">
+            <Typography variant="overline" color="text.secondary" id="workspace-nav-label">
               Workspaces
             </Typography>
-            <List disablePadding>
-              {workspaceDefinitions.map((workspace) => (
-                <ListItem key={workspace.key} disablePadding sx={{ mb: 1 }}>
-                  <ListItemButton
-                    selected={workspace.key === activeKey}
-                    onClick={() => onSelect(workspace.key)}
-                    sx={{
-                      borderRadius: 3,
-                      alignItems: 'flex-start',
-                      border: '1px solid',
-                      borderColor: workspace.key === activeKey ? 'primary.main' : 'divider',
-                      bgcolor: workspace.key === activeKey ? 'rgba(21,101,192,0.08)' : 'transparent',
-                    }}
-                  >
-                    <Avatar
+            {/*
+              4.8 — Roving tabindex: only the active item is in the tab order;
+              arrow keys move focus and selection between items.
+              aria-labelledby points to the "Workspaces" heading above.
+            */}
+            <List disablePadding role="menu" aria-labelledby="workspace-nav-label">
+              {workspaceDefinitions.map((workspace, index) => {
+                const isActive = workspace.key === activeKey
+                return (
+                  <ListItem key={workspace.key} disablePadding sx={{ mb: 1 }}>
+                    <ListItemButton
+                      role="menuitem"
+                      selected={isActive}
+                      // 4.4 — aria-current marks the active workspace for screen readers
+                      aria-current={isActive ? 'page' : undefined}
+                      onClick={() => onSelect(workspace.key)}
+                      onKeyDown={(e) => handleKeyDown(e, index)}
+                      // Roving tabindex: only active item is reachable by Tab
+                      tabIndex={isActive ? 0 : -1}
+                      ref={(el) => { itemRefs.current[index] = el }}
                       sx={{
-                        mr: 1.5,
-                        bgcolor: workspace.accent,
-                        width: 40,
-                        height: 40,
+                        borderRadius: 3,
+                        alignItems: 'flex-start',
+                        border: '1px solid',
+                        borderColor: isActive ? 'primary.main' : 'divider',
+                        bgcolor: isActive ? 'rgba(21,101,192,0.08)' : 'transparent',
                       }}
                     >
-                      {workspace.icon}
-                    </Avatar>
-                    <ListItemText primary={workspace.label} secondary={workspace.subtitle} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
+                      {/* 4.4 — aria-hidden on decorative icon avatar */}
+                      <Avatar
+                        aria-hidden="true"
+                        sx={{
+                          mr: 1.5,
+                          bgcolor: workspace.accent,
+                          width: 40,
+                          height: 40,
+                        }}
+                      >
+                        {workspace.icon}
+                      </Avatar>
+                      <ListItemText primary={workspace.label} secondary={workspace.subtitle} />
+                    </ListItemButton>
+                  </ListItem>
+                )
+              })}
             </List>
           </Stack>
         </CardContent>

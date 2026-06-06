@@ -31,10 +31,12 @@ export const CallControls: React.FC<CallControlsProps> = ({
 
   return (
     <div className="flex justify-center gap-2 p-4 bg-gray-100 rounded-lg" role="toolbar" aria-label="Call controls">
+      {/* 4.7 — aria-pressed exposes toggle state to screen readers */}
       <button
         type="button"
         onClick={onToggleMic}
         aria-label={isMuted ? 'Unmute microphone' : 'Mute microphone'}
+        aria-pressed={isMuted}
         className={`${baseBtn} ${isMuted ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-800'}`}
       >
         {isMuted ? 'Unmute' : 'Mute'}
@@ -44,6 +46,7 @@ export const CallControls: React.FC<CallControlsProps> = ({
         type="button"
         onClick={onToggleCamera}
         aria-label={isCameraOff ? 'Turn on camera' : 'Turn off camera'}
+        aria-pressed={isCameraOff}
         className={`${baseBtn} ${isCameraOff ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-800'}`}
       >
         {isCameraOff ? 'Camera On' : 'Camera Off'}
@@ -53,6 +56,7 @@ export const CallControls: React.FC<CallControlsProps> = ({
         type="button"
         onClick={onToggleScreenShare}
         aria-label={isScreenSharing ? 'Stop screen sharing' : 'Share screen'}
+        aria-pressed={isScreenSharing}
         className={`${baseBtn} ${isScreenSharing ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
       >
         {isScreenSharing ? 'Stop Share' : 'Share Screen'}
@@ -62,6 +66,7 @@ export const CallControls: React.FC<CallControlsProps> = ({
         type="button"
         onClick={onToggleRecording}
         aria-label={isRecording ? 'Stop recording' : 'Start recording'}
+        aria-pressed={isRecording}
         className={`${baseBtn} ${isRecording ? 'bg-red-600 text-white animate-pulse' : 'bg-gray-200 text-gray-800'}`}
       >
         {isRecording ? 'Stop Rec' : 'Record'}

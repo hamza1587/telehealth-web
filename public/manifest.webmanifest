@@ -1,0 +1,19 @@
+{
+  "name": "Telehealth Platform",
+  "short_name": "Telehealth",
+  "description": "EU-regulated teleconsultation platform for credit-based specialist video and audio consultations",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4f7fb",
+  "theme_color": "#1565c0",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,6 +1,15 @@
 import { alpha, createTheme } from '@mui/material/styles'
 
 export const appTheme = createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 900,
+      lg: 1200,
+      xl: 1536,
+    },
+  },
   palette: {
     mode: 'light',
     primary: {
@@ -92,6 +101,23 @@ export const appTheme = createTheme({
       styleOverrides: {
         root: {
           fontWeight: 700,
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          minWidth: 48,
+          minHeight: 48,
+        },
+      },
+    },
+    MuiBottomNavigationAction: {
+      styleOverrides: {
+        root: {
+          minWidth: 48,
+          paddingTop: 10,
+          paddingBottom: 10,
         },
       },
     },

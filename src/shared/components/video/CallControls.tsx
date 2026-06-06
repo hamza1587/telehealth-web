@@ -27,7 +27,7 @@ export const CallControls: React.FC<CallControlsProps> = ({
   onToggleChat,
   onToggleParticipants
 }) => {
-  const baseBtn = 'px-4 py-2 rounded font-medium focus:outline-none focus:ring-2 focus:ring-offset-2'
+  const baseBtn = 'px-4 py-3 min-h-[48px] rounded font-medium focus:outline-none focus:ring-2 focus:ring-offset-2'
 
   return (
     <div className="flex justify-center gap-2 p-4 bg-gray-100 rounded-lg" role="toolbar" aria-label="Call controls">

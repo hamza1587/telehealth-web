@@ -10,6 +10,8 @@ import {
   Button,
   Alert,
   Stack,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material'
 import { Close as CloseIcon, ArrowBack as BackIcon } from '@mui/icons-material'
 import { LoginForm } from './LoginForm.tsx'
@@ -30,6 +32,8 @@ export function AuthModal({ open, onClose, initialView = 'login', onSuccess }: A
   const { isLoading, error, clearError } = useAuth()
   const [forgotEmail, setForgotEmail] = useState('')
   const [forgotSent, setForgotSent] = useState(false)
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   const handleSuccess = () => {
     onSuccess?.()
@@ -56,11 +60,12 @@ export function AuthModal({ open, onClose, initialView = 'login', onSuccess }: A
       onClose={onClose}
       maxWidth="sm"
       fullWidth
+      fullScreen={isMobile}
       // 4.9 — aria-labelledby links the dialog to its visible title
       aria-labelledby={titleId}
       PaperComponent={Paper}
       PaperProps={{
-        sx: { borderRadius: 4, overflow: 'hidden' },
+        sx: { borderRadius: isMobile ? 0 : 4, overflow: 'hidden' },
       }}
     >
       <Box sx={{ position: 'relative' }}>

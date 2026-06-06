@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { Track } from 'livekit-client'
 import type { LocalParticipant, RemoteParticipant, LocalTrack, RemoteTrack } from 'livekit-client'
 import { VideoTile } from './VideoTile'
@@ -49,7 +49,7 @@ function getParticipantName(p: LocalParticipant | RemoteParticipant): string {
   return p.name ?? p.identity ?? 'Unknown'
 }
 
-export const VideoGrid: React.FC<VideoGridProps> = ({
+const VideoGridBase: React.FC<VideoGridProps> = ({
   localParticipant,
   remoteParticipants,
   isLocalMuted = false,
@@ -110,3 +110,5 @@ export const VideoGrid: React.FC<VideoGridProps> = ({
     </div>
   )
 }
+
+export const VideoGrid = memo(VideoGridBase)

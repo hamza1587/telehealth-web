@@ -1,32 +1,40 @@
-import { useMemo, useState } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { useLocalStorage } from 'react-haiku'
-import { Box, Chip, Container, Drawer, Grid, IconButton, Paper, Stack, Typography } from '@mui/material'
+import { Box, Chip, CircularProgress, Container, Drawer, Grid, IconButton, Paper, Stack, Typography } from '@mui/material'
 import { Menu as MenuIcon, Close as CloseIcon } from '@mui/icons-material'
 import type { WorkspaceKey } from '@shared/types/workspace.ts'
 import { Sidebar } from '@shared/components/navigation/Sidebar.tsx'
 import { MobileNav } from '@shared/components/navigation/MobileNav.tsx'
 import { LanguageSwitcher } from '@shared/i18n/LanguageSwitcher.tsx'
 import { workspaceDefinitions } from '@shared/config/workspaces.tsx'
-import { OverviewWorkspace } from '@features/overview/components/OverviewWorkspace.tsx'
-import { PatientWorkspace } from '@features/patient/components/PatientWorkspace.tsx'
-import { DoctorWorkspace } from '@features/doctor/components/DoctorWorkspace.tsx'
-import { DiscoveryWorkspace } from '@features/discovery/DiscoveryWorkspace.tsx'
-import { ConsultationWorkspace } from '@features/consultation/ConsultationWorkspace.tsx'
-import { BillingWorkspace } from '@features/billing/components/BillingWorkspace.tsx'
-import { ClinicalWorkspace } from '@features/clinical/components/ClinicalWorkspace.tsx'
-import { OperationsWorkspace } from '@features/operations/components/OperationsWorkspace.tsx'
-import { AppointmentsWorkspace } from '@features/appointments/AppointmentsWorkspace.tsx'
-import { ProfileWorkspace } from '@features/profile/ProfileWorkspace.tsx'
-import { GDPRWorkspace } from '@features/gdpr/GDPRWorkspace.tsx'
-import { ResearchWorkspace } from '@features/research/ResearchWorkspace.tsx'
-import { AdminWorkspace } from '@features/admin/AdminWorkspace.tsx'
-import { AnalyticsDashboard } from '@features/analytics/AnalyticsDashboard.tsx'
 import { usePatientOnboarding } from '@features/patient/hooks/usePatientOnboarding.ts'
 import { useDoctorWorkspace } from '@features/doctor/hooks/useDoctorWorkspace.ts'
 import { useAppTitle } from '@shared/hooks/useAppTitle.ts'
 import { useAuth } from '@shared/auth/AuthContext.tsx'
 import { UserMenu, LoginButton } from '@shared/components/auth/UserMenu.tsx'
 import { AuthModal } from '@shared/components/auth/AuthModal.tsx'
+
+// 6.1 — Route-level code splitting: each workspace is a separate JS chunk loaded on demand
+const OverviewWorkspace = lazy(() => import('@features/overview/components/OverviewWorkspace.tsx').then(m => ({ default: m.OverviewWorkspace })))
+const PatientWorkspace = lazy(() => import('@features/patient/components/PatientWorkspace.tsx').then(m => ({ default: m.PatientWorkspace })))
+const DoctorWorkspace = lazy(() => import('@features/doctor/components/DoctorWorkspace.tsx').then(m => ({ default: m.DoctorWorkspace })))
+const DiscoveryWorkspace = lazy(() => import('@features/discovery/DiscoveryWorkspace.tsx').then(m => ({ default: m.DiscoveryWorkspace })))
+const ConsultationWorkspace = lazy(() => import('@features/consultation/ConsultationWorkspace.tsx').then(m => ({ default: m.ConsultationWorkspace })))
+const BillingWorkspace = lazy(() => import('@features/billing/components/BillingWorkspace.tsx').then(m => ({ default: m.BillingWorkspace })))
+const ClinicalWorkspace = lazy(() => import('@features/clinical/components/ClinicalWorkspace.tsx').then(m => ({ default: m.ClinicalWorkspace })))
+const OperationsWorkspace = lazy(() => import('@features/operations/components/OperationsWorkspace.tsx').then(m => ({ default: m.OperationsWorkspace })))
+const AppointmentsWorkspace = lazy(() => import('@features/appointments/AppointmentsWorkspace.tsx').then(m => ({ default: m.AppointmentsWorkspace })))
+const ProfileWorkspace = lazy(() => import('@features/profile/ProfileWorkspace.tsx').then(m => ({ default: m.ProfileWorkspace })))
+const GDPRWorkspace = lazy(() => import('@features/gdpr/GDPRWorkspace.tsx').then(m => ({ default: m.GDPRWorkspace })))
+const ResearchWorkspace = lazy(() => import('@features/research/ResearchWorkspace.tsx').then(m => ({ default: m.ResearchWorkspace })))
+const AdminWorkspace = lazy(() => import('@features/admin/AdminWorkspace.tsx').then(m => ({ default: m.AdminWorkspace })))
+const AnalyticsDashboard = lazy(() => import('@features/analytics/AnalyticsDashboard.tsx').then(m => ({ default: m.AnalyticsDashboard })))
+
+const WorkspaceLoader = (
+  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 8 }}>
+    <CircularProgress size={36} />
+  </Box>
+)
 
 export function AppShell() {
   const { isAuthenticated } = useAuth()
@@ -63,24 +71,20 @@ export function AppShell() {
       pb: { xs: 10, md: 4 },
     }}
     >
-      {/* 4.1 — Skip-navigation link; .skip-link CSS shows it on :focus */}
       <a href="#main-content" className="skip-link">Skip to main content</a>
 
-      {/* 4.5 — Polite live region: announces active workspace to screen readers on change */}
       <Box role="status" aria-live="polite" aria-atomic="true" className="sr-only">
         {`${activeWorkspace.label} workspace`}
       </Box>
 
       <Container maxWidth="xl">
         <Grid container spacing={3}>
-          {/* 4.2 — <nav> landmark wraps the sidebar; hidden on mobile (Drawer handles it) */}
           <Grid xs={12} lg={3} sx={{ display: { xs: 'none', lg: 'block' } }}>
             <Box component="nav" aria-label="Main navigation">
               <Sidebar activeKey={selectedWorkspace} onSelect={setSelectedWorkspace} statusMessage={patientOnboarding.statusMessage} />
             </Box>
           </Grid>
 
-          {/* 4.2 — <main> landmark; tabIndex={-1} so the skip link can focus it */}
           <Grid sx={{ flexGrow: 1, minWidth: 0 }}>
             <Box component="main" id="main-content" tabIndex={-1} sx={{ outline: 'none' }}>
               <Stack spacing={3}>
@@ -88,7 +92,6 @@ export function AppShell() {
                   <Stack spacing={2}>
                     <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ justifyContent: 'space-between', alignItems: { md: 'center' } }}>
                       <Stack direction="row" alignItems="flex-start" spacing={1}>
-                        {/* 5.3 — Hamburger trigger: visible only on mobile (lg+ uses persistent sidebar) */}
                         <IconButton
                           onClick={() => setDrawerOpen(true)}
                           aria-label="Open navigation menu"
@@ -100,7 +103,6 @@ export function AppShell() {
                           <Typography variant="overline" color="text.secondary">
                             Active workspace
                           </Typography>
-                          {/* h1 — unique page title; screen readers announce active context on navigation */}
                           <Typography variant="h4" component="h1" sx={{ fontWeight: 800 }}>
                             {activeWorkspace.label}
                           </Typography>
@@ -118,23 +120,25 @@ export function AppShell() {
                       </Stack>
                     </Stack>
 
-                    {/* === WORKSPACE ROUTING === */}
-                    {selectedWorkspace === 'overview' && <OverviewWorkspace />}
-                    {selectedWorkspace === 'patient' && <PatientWorkspace onboarding={patientOnboarding} />}
-                    {selectedWorkspace === 'doctor' && <DoctorWorkspace workspace={doctorWorkspace} />}
-                    {selectedWorkspace === 'discovery' && (
-                      <DiscoveryWorkspace onBookDoctor={() => { setSelectedWorkspace('consultation') }} />
-                    )}
-                    {selectedWorkspace === 'consultation' && <ConsultationWorkspace />}
-                    {selectedWorkspace === 'appointments' && <AppointmentsWorkspace />}
-                    {selectedWorkspace === 'billing' && <BillingWorkspace />}
-                    {selectedWorkspace === 'clinical' && <ClinicalWorkspace />}
-                    {selectedWorkspace === 'operations' && <OperationsWorkspace />}
-                    {selectedWorkspace === 'settings' && <ProfileWorkspace />}
-                    {selectedWorkspace === 'gdpr' && <GDPRWorkspace />}
-                    {selectedWorkspace === 'research' && <ResearchWorkspace />}
-                    {selectedWorkspace === 'admin' && <AdminWorkspace />}
-                    {selectedWorkspace === 'analytics' && <AnalyticsDashboard />}
+                    {/* 6.1 — Suspense boundary: shows spinner while workspace chunk loads */}
+                    <Suspense fallback={WorkspaceLoader}>
+                      {selectedWorkspace === 'overview' && <OverviewWorkspace />}
+                      {selectedWorkspace === 'patient' && <PatientWorkspace onboarding={patientOnboarding} />}
+                      {selectedWorkspace === 'doctor' && <DoctorWorkspace workspace={doctorWorkspace} />}
+                      {selectedWorkspace === 'discovery' && (
+                        <DiscoveryWorkspace onBookDoctor={() => { setSelectedWorkspace('consultation') }} />
+                      )}
+                      {selectedWorkspace === 'consultation' && <ConsultationWorkspace />}
+                      {selectedWorkspace === 'appointments' && <AppointmentsWorkspace />}
+                      {selectedWorkspace === 'billing' && <BillingWorkspace />}
+                      {selectedWorkspace === 'clinical' && <ClinicalWorkspace />}
+                      {selectedWorkspace === 'operations' && <OperationsWorkspace />}
+                      {selectedWorkspace === 'settings' && <ProfileWorkspace />}
+                      {selectedWorkspace === 'gdpr' && <GDPRWorkspace />}
+                      {selectedWorkspace === 'research' && <ResearchWorkspace />}
+                      {selectedWorkspace === 'admin' && <AdminWorkspace />}
+                      {selectedWorkspace === 'analytics' && <AnalyticsDashboard />}
+                    </Suspense>
                   </Stack>
                 </Paper>
               </Stack>
@@ -143,7 +147,6 @@ export function AppShell() {
         </Grid>
       </Container>
 
-      {/* 5.3 — Mobile nav drawer: replaces persistent sidebar on xs/sm/md */}
       <Drawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
@@ -169,7 +172,6 @@ export function AppShell() {
         </Box>
       </Drawer>
 
-      {/* 5.9 — Bottom navigation bar: quick access to 5 core workspaces on mobile */}
       <MobileNav activeKey={selectedWorkspace} onSelect={setSelectedWorkspace} />
 
       <AuthModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />

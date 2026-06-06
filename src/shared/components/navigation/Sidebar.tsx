@@ -1,11 +1,11 @@
-import { useRef } from 'react'
+import { memo, useRef } from 'react'
 import { Avatar, Card, CardContent, Chip, List, ListItem, ListItemButton, ListItemText, Paper, Stack, Typography } from '@mui/material'
 import { InfoCard } from '@shared/components/common/InfoCard.tsx'
 import { MetricRow } from '@shared/components/common/MetricRow.tsx'
 import { workspaceDefinitions } from '@shared/config/workspaces.tsx'
 import type { WorkspaceKey } from '@shared/types/workspace.ts'
 
-export function Sidebar({
+function SidebarBase({
   activeKey,
   onSelect,
   statusMessage,
@@ -141,3 +141,6 @@ export function Sidebar({
     </Stack>
   )
 }
+
+// 6.3 — memo prevents re-render when parent re-renders with identical props
+export const Sidebar = memo(SidebarBase)

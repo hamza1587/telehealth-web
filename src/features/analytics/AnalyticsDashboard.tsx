@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Box,
   Card,
@@ -12,145 +12,179 @@ import {
   InputLabel,
   CircularProgress,
   Alert,
-  Chip,
+  Divider,
 } from '@mui/material'
 import {
-  TrendingUp,
-  TrendingDown,
   People,
+  MedicalServices,
   VideoCall,
-  LocalPharmacy,
-  Assessment,
-  Download,
+  AttachMoney,
+  Refresh,
 } from '@mui/icons-material'
+import { apiBaseUrl } from '@shared/config/patient.ts'
+import {
+  TelehealthLineChart,
+  TelehealthBarChart,
+  TelehealthPieChart,
+  TelehealthAreaChart,
+} from '@shared/components/charts'
 
-interface DashboardMetric {
-  id: string
-  metricName: string
-  value: number
-  category: string
-  timestamp: string
+const ANALYTICS_BASE = `${apiBaseUrl}/platform/analytics`
+
+interface Summary {
+  totalPatients: number;
+  totalDoctors: number;
+  totalAppointments: number;
+  completedAppointments: number;
+  activeConsultations: number;
+  totalRevenueCents: number;
 }
 
-interface AnalyticsReport {
-  id: string
-  reportName: string
-  status: 'pending' | 'completed' | 'failed'
-  generatedAt: string
-  downloadUrl?: string
+interface DailyDataPoint {
+  day: string;
+  count: number;
 }
 
-interface PredictionResult {
-  metricName: string
-  predictedValue: number
-  confidence: number
-  predictedFor: string
-  metadata: Record<string, number>
+interface DailyRevenuePoint {
+  day: string;
+  totalCents: number;
+}
+
+interface StatusBreakdown {
+  status: string;
+  count: number;
+}
+
+interface SpecialtyBreakdown {
+  specialty: string;
+  count: number;
+}
+
+interface ForecastPoint {
+  day: string;
+  predicted: number;
+  lower: number;
+  upper: number;
+}
+
+interface DailyData {
+  consultations: DailyDataPoint[];
+  patients: DailyDataPoint[];
+}
+
+function fmtCurrency(cents: number) {
+  return `€${(cents / 100).toLocaleString('en-IE', { maximumFractionDigits: 0 })}`
+}
+
+function fmtDay(iso: string) {
+  return iso.slice(5) // MM-DD
+}
+
+interface StatCardProps {
+  label: string;
+  value: string | number;
+  icon: React.ReactNode;
+  sub?: string;
+}
+function StatCard({ label, value, icon, sub }: StatCardProps) {
+  return (
+    <Card>
+      <CardContent>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+          <Box sx={{ p: 0.75, borderRadius: 1, bgcolor: 'primary.light', color: 'primary.contrastText', display: 'flex' }}>
+            {icon}
+          </Box>
+          <Typography variant="body2" color="text.secondary">{label}</Typography>
+        </Box>
+        <Typography variant="h4" fontWeight="bold">{value}</Typography>
+        {sub && <Typography variant="caption" color="text.secondary">{sub}</Typography>}
+      </CardContent>
+    </Card>
+  )
 }
 
 export const AnalyticsDashboard: React.FC = () => {
-  const [metrics, setMetrics] = useState<DashboardMetric[]>([])
-  const [reports, setReports] = useState<AnalyticsReport[]>([])
-  const [predictions, setPredictions] = useState<PredictionResult[]>([])
+  const [summary, setSummary] = useState<Summary | null>(null)
+  const [daily, setDaily] = useState<DailyData | null>(null)
+  const [revenue, setRevenue] = useState<DailyRevenuePoint[]>([])
+  const [statusBreakdown, setStatusBreakdown] = useState<StatusBreakdown[]>([])
+  const [specialtyBreakdown, setSpecialtyBreakdown] = useState<SpecialtyBreakdown[]>([])
+  const [forecast, setForecast] = useState<ForecastPoint[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [daysAhead, setDaysAhead] = useState<number>(7)
+  const [days, setDays] = useState(30)
+  const [horizon, setHorizon] = useState(7)
 
-  useEffect(() => {
-    loadDashboardData()
-  }, [])
-
-  const loadDashboardData = async () => {
+  const load = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
-      // In production, these would be real API calls to the Analytics Service
-      // For now, using mock data that matches the backend structure
-      const mockMetrics: DashboardMetric[] = [
-        { id: '1', metricName: 'Active Users', value: 1250, category: 'User Engagement', timestamp: new Date().toISOString() },
-        { id: '2', metricName: 'Daily Consultations', value: 450, category: 'Consultations', timestamp: new Date().toISOString() },
-        { id: '3', metricName: 'Prescription Success Rate', value: 98.5, category: 'Prescriptions', timestamp: new Date().toISOString() },
-        { id: '4', metricName: 'Average Wait Time', value: 5.2, category: 'Performance', timestamp: new Date().toISOString() },
-        { id: '5', metricName: 'Patient Satisfaction', value: 4.7, category: 'User Engagement', timestamp: new Date().toISOString() },
-        { id: '6', metricName: 'Revenue (Daily)', value: 12500, category: 'Financial', timestamp: new Date().toISOString() },
-        { id: '7', metricName: 'Video Call Success Rate', value: 99.2, category: 'Performance', timestamp: new Date().toISOString() },
-        { id: '8', metricName: 'New Registrations', value: 85, category: 'User Engagement', timestamp: new Date().toISOString() },
-      ]
+      const [summaryRes, dailyRes, revenueRes, statusRes, specialtyRes, forecastRes] = await Promise.all([
+        fetch(`${ANALYTICS_BASE}/summary`),
+        fetch(`${ANALYTICS_BASE}/daily?days=${days}`),
+        fetch(`${ANALYTICS_BASE}/revenue?days=${days}`),
+        fetch(`${ANALYTICS_BASE}/status-breakdown`),
+        fetch(`${ANALYTICS_BASE}/specialty-breakdown`),
+        fetch(`${ANALYTICS_BASE}/demand-forecast?horizon=${horizon}`),
+      ])
 
-      const mockReports: AnalyticsReport[] = [
-        { id: '1', reportName: 'Monthly Consultation Report', status: 'completed', generatedAt: new Date().toISOString(), downloadUrl: '#' },
-        { id: '2', reportName: 'Prescription Analytics', status: 'completed', generatedAt: new Date().toISOString(), downloadUrl: '#' },
-        { id: '3', reportName: 'User Engagement Analysis', status: 'pending', generatedAt: new Date().toISOString() },
-      ]
+      if (!summaryRes.ok) throw new Error('Failed to load summary')
 
-      const mockPredictions: PredictionResult[] = [
-        {
-          metricName: 'Active Users',
-          predictedValue: 1350,
-          confidence: 0.85,
-          predictedFor: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          metadata: { historical_average: 1250, trend: 0.08, volatility: 0.1 },
-        },
-        {
-          metricName: 'Daily Consultations',
-          predictedValue: 480,
-          confidence: 0.82,
-          predictedFor: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          metadata: { historical_average: 450, trend: 0.067, volatility: 0.12 },
-        },
-      ]
+      const [summaryData, dailyData, revenueData, statusData, specialtyData, forecastData] = await Promise.all([
+        summaryRes.json(),
+        dailyRes.json(),
+        revenueRes.json(),
+        statusRes.json(),
+        specialtyRes.json(),
+        forecastRes.json(),
+      ])
 
-      setMetrics(mockMetrics)
-      setReports(mockReports)
-      setPredictions(mockPredictions)
-    } catch (err) {
-      setError('Failed to load dashboard data')
-      console.error(err)
+      setSummary(summaryData)
+      setDaily(dailyData)
+      setRevenue(revenueData)
+      setStatusBreakdown(statusData)
+      setSpecialtyBreakdown(specialtyData)
+      setForecast(forecastData)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load analytics')
     } finally {
       setLoading(false)
     }
-  }
+  }, [days, horizon])
 
-  const generateReport = async (reportName: string) => {
-    try {
-      // In production, this would call the Analytics Service API
-      console.log('Generating report:', reportName)
-    } catch (err) {
-      setError('Failed to generate report')
-    }
-  }
+  useEffect(() => { load() }, [load])
 
-  const runPrediction = async (metricName: string) => {
-    try {
-      // In production, this would call the PredictiveModelingService API
-      console.log('Running prediction for:', metricName)
-    } catch (err) {
-      setError('Failed to run prediction')
-    }
-  }
+  const consultationChartData = (daily?.consultations ?? []).map(d => ({
+    day: fmtDay(d.day),
+    consultations: d.count,
+    patients: daily?.patients.find(p => p.day === d.day)?.count ?? 0,
+  }))
 
-  const filteredMetrics = selectedCategory === 'all' 
-    ? metrics 
-    : metrics.filter(m => m.category === selectedCategory)
+  const revenueChartData = revenue.map(r => ({
+    day: fmtDay(r.day),
+    revenue: Math.round(r.totalCents / 100),
+  }))
 
-  const categories = ['all', ...Array.from(new Set(metrics.map(m => m.category)))]
+  const forecastChartData = forecast.map(f => ({
+    day: fmtDay(f.day),
+    predicted: Math.round(f.predicted),
+    lower: Math.round(f.lower),
+    upper: Math.round(f.upper),
+  }))
 
-  const getMetricIcon = (metricName: string) => {
-    if (metricName.includes('User') || metricName.includes('Patient')) return <People />
-    if (metricName.includes('Consultation') || metricName.includes('Video')) return <VideoCall />
-    if (metricName.includes('Prescription') || metricName.includes('Pharmacy')) return <LocalPharmacy />
-    return <Assessment />
-  }
+  const statusPieData = statusBreakdown.map(s => ({
+    name: s.status.replace(/_/g, ' '),
+    value: s.count,
+  }))
 
-  const getTrendIcon = (metadata: Record<string, number>) => {
-    const trend = metadata.trend || 0
-    return trend >= 0 ? <TrendingUp color="success" /> : <TrendingDown color="error" />
-  }
+  const specialtyBarData = specialtyBreakdown.map(s => ({
+    specialty: s.specialty || 'General',
+    count: s.count,
+  }))
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
         <CircularProgress />
       </Box>
     )
@@ -158,184 +192,155 @@ export const AnalyticsDashboard: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      {/* Header */}
+      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2 }}>
         <Box>
-          <Typography variant="h4" fontWeight="bold">
-            Analytics Dashboard
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Real-time insights and predictive analytics
-          </Typography>
+          <Typography variant="h4" fontWeight="bold">Analytics Dashboard</Typography>
+          <Typography variant="body2" color="text.secondary">Platform-wide insights with differential privacy</Typography>
         </Box>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <InputLabel>Category</InputLabel>
-            <Select
-              value={selectedCategory}
-              label="Category"
-              onChange={(e) => setSelectedCategory(e.target.value)}
-            >
-              {categories.map(cat => (
-                <MenuItem key={cat} value={cat}>
-                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                </MenuItem>
-              ))}
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+          <FormControl size="small" sx={{ minWidth: 110 }}>
+            <InputLabel>Period</InputLabel>
+            <Select value={days} label="Period" onChange={e => setDays(Number(e.target.value))}>
+              <MenuItem value={7}>7 days</MenuItem>
+              <MenuItem value={14}>14 days</MenuItem>
+              <MenuItem value={30}>30 days</MenuItem>
+              <MenuItem value={90}>90 days</MenuItem>
             </Select>
           </FormControl>
-          <Button variant="outlined" onClick={loadDashboardData}>
-            Refresh
-          </Button>
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel>Forecast</InputLabel>
+            <Select value={horizon} label="Forecast" onChange={e => setHorizon(Number(e.target.value))}>
+              <MenuItem value={7}>7-day ahead</MenuItem>
+              <MenuItem value={14}>14-day ahead</MenuItem>
+            </Select>
+          </FormControl>
+          <Button variant="outlined" startIcon={<Refresh />} onClick={load}>Refresh</Button>
         </Box>
       </Box>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>{error}</Alert>
       )}
 
-      {/* Key Metrics */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        {filteredMetrics.map((metric) => (
-          <Grid item xs={12} sm={6} md={3} key={metric.id}>
-            <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Box sx={{ p: 1, borderRadius: 1, bgcolor: 'primary.light', mr: 2 }}>
-                    {getMetricIcon(metric.metricName)}
-                  </Box>
-                  <Typography variant="body2" color="text.secondary">
-                    {metric.category}
-                  </Typography>
-                </Box>
-                <Typography variant="h4" fontWeight="bold">
-                  {metric.value.toLocaleString()}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {metric.metricName}
-                </Typography>
-              </CardContent>
-            </Card>
+      {/* KPI cards */}
+      {summary && (
+        <Grid container spacing={2} sx={{ mb: 4 }}>
+          <Grid item xs={6} sm={4} md={2}>
+            <StatCard label="Total Patients" value={summary.totalPatients.toLocaleString()} icon={<People fontSize="small" />} />
           </Grid>
-        ))}
+          <Grid item xs={6} sm={4} md={2}>
+            <StatCard label="Doctors" value={summary.totalDoctors.toLocaleString()} icon={<MedicalServices fontSize="small" />} />
+          </Grid>
+          <Grid item xs={6} sm={4} md={2}>
+            <StatCard label="Appointments" value={summary.totalAppointments.toLocaleString()} icon={<VideoCall fontSize="small" />} sub={`${summary.completedAppointments} completed`} />
+          </Grid>
+          <Grid item xs={6} sm={4} md={2}>
+            <StatCard label="Live Consultations" value={summary.activeConsultations} icon={<VideoCall fontSize="small" />} />
+          </Grid>
+          <Grid item xs={6} sm={4} md={2}>
+            <StatCard label="Total Revenue" value={fmtCurrency(summary.totalRevenueCents)} icon={<AttachMoney fontSize="small" />} />
+          </Grid>
+          <Grid item xs={6} sm={4} md={2}>
+            <StatCard
+              label="Completion Rate"
+              value={summary.totalAppointments > 0
+                ? `${Math.round((summary.completedAppointments / summary.totalAppointments) * 100)}%`
+                : '—'}
+              icon={<MedicalServices fontSize="small" />}
+            />
+          </Grid>
+        </Grid>
+      )}
+
+      {/* Daily consultations + patients */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} md={8}>
+          <Card>
+            <CardContent>
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>
+                Daily Consultations & New Patients
+              </Typography>
+              <TelehealthLineChart
+                data={consultationChartData}
+                xKey="day"
+                series={[
+                  { key: 'consultations', label: 'Consultations', color: '#1565c0' },
+                  { key: 'patients', label: 'New Patients', color: '#00897b' },
+                ]}
+              />
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Card sx={{ height: '100%' }}>
+            <CardContent>
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>
+                Appointment Status
+              </Typography>
+              <TelehealthPieChart data={statusPieData} />
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
 
-      {/* Predictive Analytics */}
-      <Card sx={{ mb: 4 }}>
-        <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h6" fontWeight="bold">
-              Predictive Analytics
+      {/* Revenue + specialty */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} md={8}>
+          <Card>
+            <CardContent>
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>
+                Daily Revenue (€)
+              </Typography>
+              <TelehealthAreaChart
+                data={revenueChartData}
+                xKey="day"
+                series={[{ key: 'revenue', label: 'Revenue', color: '#2e7d32' }]}
+                yTickFormatter={v => `€${(v / 1000).toFixed(0)}k`}
+              />
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Card sx={{ height: '100%' }}>
+            <CardContent>
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>
+                Consultations by Specialty
+              </Typography>
+              <TelehealthBarChart
+                data={specialtyBarData}
+                xKey="specialty"
+                series={[{ key: 'count', label: 'Consultations' }]}
+                colorByCategory
+              />
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Demand forecast */}
+      {forecast.length > 0 && (
+        <Card>
+          <CardContent>
+            <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 0.5 }}>
+              Demand Forecast — next {horizon} days
             </Typography>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <FormControl size="small" sx={{ minWidth: 120 }}>
-                <InputLabel>Days Ahead</InputLabel>
-                <Select
-                  value={daysAhead}
-                  label="Days Ahead"
-                  onChange={(e) => setDaysAhead(Number(e.target.value))}
-                >
-                  <MenuItem value={7}>7 Days</MenuItem>
-                  <MenuItem value={14}>14 Days</MenuItem>
-                  <MenuItem value={30}>30 Days</MenuItem>
-                </Select>
-              </FormControl>
-              <Button variant="contained" size="small">
-                Run Predictions
-              </Button>
-            </Box>
-          </Box>
-
-          <Grid container spacing={3}>
-            {predictions.map((prediction, index) => (
-              <Grid item xs={12} md={6} key={index}>
-                <Card variant="outlined" sx={{ height: '100%' }}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                      <Typography variant="subtitle1" fontWeight="bold">
-                        {prediction.metricName}
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {getTrendIcon(prediction.metadata)}
-                        <Chip
-                          label={`${(prediction.confidence * 100).toFixed(0)}% confidence`}
-                          size="small"
-                          color={prediction.confidence > 0.8 ? 'success' : 'warning'}
-                        />
-                      </Box>
-                    </Box>
-                    <Typography variant="h3" fontWeight="bold" color="primary">
-                      {prediction.predictedValue.toLocaleString()}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Predicted for {new Date(prediction.predictedFor).toLocaleDateString()}
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                      <Typography variant="caption" color="text.secondary">
-                        Trend: {(prediction.metadata.trend * 100).toFixed(1)}%
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Volatility: {(prediction.metadata.volatility * 100).toFixed(1)}%
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </CardContent>
-      </Card>
-
-      {/* Reports */}
-      <Card>
-        <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h6" fontWeight="bold">
-              Generated Reports
+            <Typography variant="caption" color="text.secondary" component="p" sx={{ mb: 2 }}>
+              Holt double-exponential smoothing · 80% prediction interval shown as lower/upper bounds
             </Typography>
-            <Button variant="contained" startIcon={<Assessment />}>
-              Generate New Report
-            </Button>
-          </Box>
-
-          <Grid container spacing={2}>
-            {reports.map((report) => (
-              <Grid item xs={12} sm={6} md={4} key={report.id}>
-                <Card variant="outlined">
-                  <CardContent>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                      <Typography variant="subtitle1" fontWeight="bold">
-                        {report.reportName}
-                      </Typography>
-                      <Chip
-                        label={report.status}
-                        size="small"
-                        color={
-                          report.status === 'completed' ? 'success' :
-                          report.status === 'pending' ? 'warning' : 'error'
-                        }
-                      />
-                    </Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Generated: {new Date(report.generatedAt).toLocaleString()}
-                    </Typography>
-                    {report.status === 'completed' && report.downloadUrl && (
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        startIcon={<Download />}
-                        fullWidth
-                      >
-                        Download
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </CardContent>
-      </Card>
+            <Divider sx={{ mb: 2 }} />
+            <TelehealthLineChart
+              data={forecastChartData}
+              xKey="day"
+              series={[
+                { key: 'predicted', label: 'Predicted', color: '#1565c0' },
+                { key: 'lower', label: 'Lower 80%', color: '#90a4ae' },
+                { key: 'upper', label: 'Upper 80%', color: '#90a4ae' },
+              ]}
+            />
+          </CardContent>
+        </Card>
+      )}
     </Box>
   )
 }

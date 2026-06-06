@@ -1,107 +1,88 @@
 import { useState } from 'react'
 import { useAuth } from '@shared/auth/AuthContext.tsx'
 import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Alert,
-  Stack,
+  Box, Button, TextField, Typography, Alert, Stack, Tabs, Tab,
 } from '@mui/material'
-import {
-  Security as SecurityIcon,
-} from '@mui/icons-material'
+import { Security as SecurityIcon } from '@mui/icons-material'
 
 interface MfaVerificationFormProps {
+  mfaToken: string
   onSuccess: () => void
   onCancel: () => void
 }
 
-export function MfaVerificationForm({ onSuccess, onCancel }: MfaVerificationFormProps) {
+export function MfaVerificationForm({ mfaToken, onSuccess, onCancel }: MfaVerificationFormProps) {
   const { verifyMfa, isLoading, error, clearError } = useAuth()
-  
+  const [tab, setTab] = useState<0 | 1>(0)
   const [code, setCode] = useState('')
-  const [mfaToken] = useState('')
+  const [recoveryCode, setRecoveryCode] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     clearError()
 
-    // Note: In a real implementation, the mfaToken should be passed from the login response
-    // For now, we're using a placeholder. The backend returns mfaToken in the login response
-    
-    // when MFA is required.
-    const result = await verifyMfa({ 
-      mfaToken: mfaToken || 'placeholder-token', 
-      code 
-    })
+    const payload = tab === 0
+      ? { mfaToken, code }
+      : { mfaToken, code: recoveryCode, isRecoveryCode: true }
 
-    if (result.success) {
-      onSuccess()
-    }
+    const result = await verifyMfa(payload)
+    if (result.success) onSuccess()
   }
+
+  const submitDisabled = isLoading || (tab === 0 ? code.length !== 6 : recoveryCode.trim().length === 0)
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
       <Stack spacing={3}>
-        <Box sx={{ textAlign: 'center', mb: 2 }}>
-          <SecurityIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            Two-Factor Authentication
-          </Typography>
+        <Box sx={{ textAlign: 'center' }}>
+          <SecurityIcon sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} />
+          <Typography variant="h5" fontWeight="bold">Two-Factor Authentication</Typography>
           <Typography variant="body2" color="text.secondary">
-            Enter the verification code from your authenticator app
+            Verify your identity to continue.
           </Typography>
         </Box>
 
-        {error && (
-          <Alert severity="error" onClose={clearError}>
-            {error}
-          </Alert>
+        <Tabs value={tab} onChange={(_, v) => { setTab(v); clearError() }} variant="fullWidth">
+          <Tab label="Authenticator code" />
+          <Tab label="Recovery code" />
+        </Tabs>
+
+        {error && <Alert severity="error" onClose={clearError}>{error}</Alert>}
+
+        {tab === 0 ? (
+          <TextField
+            label="6-digit code"
+            required
+            fullWidth
+            value={code}
+            onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+            disabled={isLoading}
+            inputProps={{ inputMode: 'numeric', maxLength: 6 }}
+            placeholder="000000"
+            helperText="Enter the code from your authenticator app."
+            autoFocus
+          />
+        ) : (
+          <TextField
+            label="Recovery code"
+            required
+            fullWidth
+            value={recoveryCode}
+            onChange={e => setRecoveryCode(e.target.value.trim())}
+            disabled={isLoading}
+            placeholder="xxxx-xxxx-xxxx-xxxx"
+            helperText="Enter one of the recovery codes you saved during setup."
+            autoFocus
+          />
         )}
 
-  <TextField
-    label="Verification Code"
-    type="text"
-    required
-    fullWidth
-    value={code}
-    onChange={(e) => setCode(e.target.value)}
-    disabled={isLoading}
-    inputProps={{
-      maxLength: 6,
-      pattern: '[0-9]*',
-    }}
-    placeholder="000000"
-    helperText="Enter the 6-digit code from your authenticator app"
-  />
-
-        <Button
-          type="submit"
-          variant="contained"
-          size="large"
-          fullWidth
-          disabled={isLoading || code.length !== 6}
-        >
-          {isLoading ? 'Verifying...' : 'Verify'}
+        <Button type="submit" variant="contained" size="large" fullWidth disabled={submitDisabled}>
+          {isLoading ? 'Verifying…' : 'Verify'}
         </Button>
 
-        <Button
-          variant="outlined"
-          size="large"
-          fullWidth
-          onClick={onCancel}
-          disabled={isLoading}
-        >
-          Cancel
+        <Button variant="text" fullWidth onClick={onCancel} disabled={isLoading}>
+          Back to sign in
         </Button>
-
-        <Typography variant="body2" color="text.secondary" align="center">
-          Lost access to your authenticator?{' '}
-          <Box component="span" sx={{ color: 'primary.main', cursor: 'pointer' }}>
-            Use recovery code
-          </Box>
-        </Typography>
       </Stack>
     </Box>
   )

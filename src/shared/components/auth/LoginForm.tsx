@@ -45,10 +45,7 @@ export function LoginForm({ onSuccess, onRegisterClick, onForgotPasswordClick }:
 
     if (result.success) {
       if (result.mfaRequired) {
-        // Use a non-null sentinel to trigger MFA form display.
-        // The actual MFA token is managed server-side via the session;
-        // the client only needs to know MFA is required.
-        setMfaToken('mfa-required')
+        setMfaToken(result.mfaToken ?? 'mfa-required')
       } else {
         onSuccess?.()
       }
@@ -68,6 +65,7 @@ export function LoginForm({ onSuccess, onRegisterClick, onForgotPasswordClick }:
   if (mfaToken) {
     return (
       <MfaVerificationForm
+        mfaToken={mfaToken}
         onSuccess={handleMfaSuccess}
         onCancel={handleMfaCancel}
       />

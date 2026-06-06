@@ -13,7 +13,7 @@ import type {
 
 interface AuthContextValue extends AuthState {
   // Authentication
-  login: (credentials: LoginRequest) => Promise<{ success: boolean; mfaRequired?: boolean; error?: string }>
+  login: (credentials: LoginRequest) => Promise<{ success: boolean; mfaRequired?: boolean; mfaToken?: string; error?: string }>
   verifyMfa: (data: MfaVerificationRequest) => Promise<{ success: boolean; error?: string }>
   register: (data: RegisterRequest) => Promise<{ success: boolean; error?: string }>
   logout: () => Promise<void>
@@ -202,11 +202,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Check if MFA is required
       if (response.mfaRequired && response.mfaToken) {
-        setState(prev => ({
-          ...prev,
-          isLoading: false,
-        }))
-        return { success: true, mfaRequired: true }
+        setState(prev => ({ ...prev, isLoading: false }))
+        return { success: true, mfaRequired: true, mfaToken: response.mfaToken }
       }
 
       // Login successful

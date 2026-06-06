@@ -19,6 +19,7 @@
     "@mui/lab": "^5.0.0-alpha.165",
     "livekit-client": "^2.19.1",
     "lucide-react": "^1.17.0",
+    "qrcode.react": "^4.2.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-haiku": "^2.4.1",
